@@ -9,3 +9,5 @@ urlpatterns = [
     path('verify-otp/', views.verify_otp, name='verify_otp'),
 ]
 
+
+

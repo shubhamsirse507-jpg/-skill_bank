@@ -98,4 +98,6 @@ def verify_otp(request):
         'bg_video_url': AUTH_BACKGROUND_VIDEO_URL,
         'brand_logo_image_name': BRAND_LOGO_IMAGE_NAME,
         'email': email,
-    })
+    })
+
+
