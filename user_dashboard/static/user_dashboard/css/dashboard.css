@@ -1,8 +1,18 @@
-body{
-    background: linear-gradient(135deg, #667eea, #764ba2);
-}
+
 
 .dashboard-bg{
     min-height: 50vh;
     background: linear-gradient(180deg, #6ddfd5, #fbfefe);
+}
+
+.skill-card{
+    border: none;
+    border-radius: 20px;
+    background: linear-gradient(135deg, #f8fff9, #d8f3dc);
+    transition: 0.3s;
+}
+
+.skill-card:hover{
+    transform: translateY(-5px);
+    box-shadow: 0 12px 25px rgba(0,0,0,0.15);
 }
