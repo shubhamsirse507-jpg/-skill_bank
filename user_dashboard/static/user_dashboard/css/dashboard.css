@@ -8,7 +8,7 @@
 .skill-card{
     border: none;
     border-radius: 20px;
-    background: linear-gradient(135deg, #f8fff9, #d8f3dc);
+    background: linear-gradient(135deg, #f8fff9, #eefff1);
     transition: 0.3s;
 }
 
