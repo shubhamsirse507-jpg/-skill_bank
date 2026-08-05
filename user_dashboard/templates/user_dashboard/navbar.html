@@ -1,0 +1,50 @@
+{% load static %}
+
+
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm px-4 py-3">
+
+    <div class="container-fluid">
+
+       
+        <a class="navbar-brand d-flex align-items-center fw-bold text-success fs-3" href="#">
+    <img src="{% static 'images/logo1.png' %}"
+    
+         alt="Logo"
+         width="45"
+         height="45"
+         class="me-2 rounded-circle">
+
+    SkillBank
+</a>
+
+        <!-- Search -->
+        <form class="d-flex mx-auto w-50">
+            <input class="form-control rounded-pill"
+                   type="search"
+                   placeholder="Search skills..."
+                   aria-label="Search">
+        </form>
+
+        <!-- Right Side -->
+        <div class="d-flex align-items-center">
+
+            <!-- Notification -->
+            <button class="btn position-relative me-3">
+                <i class="bi bi-bell fs-4"></i>
+
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    3
+                </span>
+            </button>
+
+            <!-- Profile -->
+            <img src="https://ui-avatars.com/api/?name=Purva&background=22c55e&color=fff"
+                 class="rounded-circle"
+                 width="45"
+                 height="45">
+
+        </div>
+
+    </div>
+
+</nav>

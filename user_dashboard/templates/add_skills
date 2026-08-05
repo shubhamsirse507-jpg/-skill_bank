@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h1 class="text-primary text-center">
+        Add New Skill
+    </h1>
+
+
+    <form method="POST" class="mt-4">
+
+        {% csrf_token %}
+
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Skill Name
+            </label>
+
+            <input 
+            type="text" 
+            name="skill_name"
+            class="form-control"
+            placeholder="Enter skill name">
+
+        </div>
+
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Category
+            </label>
+
+            <input 
+            type="text"
+            name="category"
+            class="form-control"
+            placeholder="Programming, Design, Music">
+
+        </div>
+
+
+        <div class="mb-3">
+
+            <label class="form-label">
+                Description
+            </label>
+
+            <textarea
+            name="description"
+            class="form-control"
+            rows="4"
+            placeholder="Describe your skill">
+            </textarea>
+
+        </div>
+
+
+        <button class="btn btn-success">
+            Add Skill
+        </button>
+
+
+    </form>
+
+</div>
+
+{% endblock %}
