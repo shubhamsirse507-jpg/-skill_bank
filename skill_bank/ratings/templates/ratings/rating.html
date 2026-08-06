@@ -1,0 +1,266 @@
+{% extends 'ratings/base.html' %}
+{% load static %}
+
+{% block title %}Review & Rating Hub - Skill Bank{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: flex-end;">
+    <div>
+        <h1 style="font-size: 2rem; font-weight: 800; margin-bottom: 6px;">
+            Platform <span style="background: var(--grad-amber); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Trust & Quality</span> Signals
+        </h1>
+        <p style="color: var(--text-secondary); font-size: 0.95rem;">
+            Submit ratings and community feedback after completed skill exchange sessions.
+        </p>
+    </div>
+
+    {% if unreviewed_exchanges %}
+        <button onclick="document.getElementById('reviewFormContainer').scrollIntoView({behavior: 'smooth'})" class="action-btn action-btn-primary" style="padding: 10px 22px; font-size: 0.95rem;">
+            <i class="fa-solid fa-plus-circle"></i> Write a Review
+        </button>
+    {% endif %}
+</div>
+
+<div class="rating-grid">
+    <!-- Left Column: Aggregate Rating Summary -->
+    <div class="glass-panel summary-card">
+        <h3 style="font-size: 1.2rem; font-weight: 700;">Overall Rating</h3>
+        
+        <div class="big-score-box">
+            <div class="score-number">{{ avg_rating }}</div>
+            <div class="stars-row">
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star"></i>
+                <i class="fa-solid fa-star-half-stroke"></i>
+            </div>
+            <div class="score-subtitle">Based on {{ total_reviews }} verified reviews</div>
+        </div>
+
+        <!-- Star Distribution -->
+        <div class="rating-bars">
+            <div class="bar-row">
+                <span class="bar-label">5 ★</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: {{ star_percents.5 }}%;"></div>
+                </div>
+                <span style="color: var(--text-muted); width: 30px; text-align: right;">{{ star_counts.5 }}</span>
+            </div>
+            <div class="bar-row">
+                <span class="bar-label">4 ★</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: {{ star_percents.4 }}%;"></div>
+                </div>
+                <span style="color: var(--text-muted); width: 30px; text-align: right;">{{ star_counts.4 }}</span>
+            </div>
+            <div class="bar-row">
+                <span class="bar-label">3 ★</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: {{ star_percents.3 }}%;"></div>
+                </div>
+                <span style="color: var(--text-muted); width: 30px; text-align: right;">{{ star_counts.3 }}</span>
+            </div>
+            <div class="bar-row">
+                <span class="bar-label">2 ★</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: {{ star_percents.2 }}%;"></div>
+                </div>
+                <span style="color: var(--text-muted); width: 30px; text-align: right;">{{ star_counts.2 }}</span>
+            </div>
+            <div class="bar-row">
+                <span class="bar-label">1 ★</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: {{ star_percents.1 }}%;"></div>
+                </div>
+                <span style="color: var(--text-muted); width: 30px; text-align: right;">{{ star_counts.1 }}</span>
+            </div>
+        </div>
+
+        <div style="border-top: 1px solid var(--border-glass); padding-top: 1.25rem;">
+            <h4 style="font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; color: var(--text-secondary);">
+                Skill Category Scores
+            </h4>
+            <div class="sub-metrics">
+                <div class="metric-pill">
+                    <div class="metric-val">{{ avg_comm }}</div>
+                    <div class="metric-lbl">Communication</div>
+                </div>
+                <div class="metric-pill">
+                    <div class="metric-val">{{ avg_clarity }}</div>
+                    <div class="metric-lbl">Clarity</div>
+                </div>
+                <div class="metric-pill">
+                    <div class="metric-val">{{ avg_punc }}</div>
+                    <div class="metric-lbl">Punctuality</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="padding: 12px; background: rgba(16, 185, 129, 0.1); border-radius: var(--radius-md); border: 1px solid rgba(16, 185, 129, 0.25); display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-thumbs-up" style="color: var(--accent-emerald); font-size: 1.2rem;"></i>
+            <div>
+                <div style="font-weight: 700; font-size: 0.9rem; color: #6ee7b7;">{{ recommend_pct }}% Recommendation Rate</div>
+                <div style="font-size: 0.75rem; color: var(--text-secondary);">Users would exchange skills again</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Reviews Feed & Submission -->
+    <div class="reviews-section">
+        <!-- New Review Form Card -->
+        <div class="glass-panel" style="padding: 1.5rem;" id="reviewFormContainer">
+            <h3 style="font-size: 1.2rem; font-weight: 700; margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;">
+                <i class="fa-solid fa-pen-to-square" style="color: var(--accent-amber);"></i> Submit Session Rating
+            </h3>
+
+            <form method="POST" action="{% url 'rating_dashboard' %}">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label class="form-label">Select Skill Exchange Session</label>
+                    <select name="exchange_id" class="form-control" required>
+                        {% for ex in unreviewed_exchanges %}
+                            <option value="{{ ex.id }}">
+                                {{ ex.title }} &bull; ({{ ex.requester.username }} & {{ ex.provider.username }})
+                            </option>
+                        {% empty %}
+                            <option value="">No unreviewed sessions available</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem;">
+                    <div>
+                        <label class="form-label">Overall Rating (1 to 5 Stars)</label>
+                        <div class="star-picker" id="starPicker">
+                            <i class="fa-solid fa-star selected" data-val="1"></i>
+                            <i class="fa-solid fa-star selected" data-val="2"></i>
+                            <i class="fa-solid fa-star selected" data-val="3"></i>
+                            <i class="fa-solid fa-star selected" data-val="4"></i>
+                            <i class="fa-solid fa-star selected" data-val="5"></i>
+                        </div>
+                        <input type="hidden" name="rating" id="ratingInput" value="5">
+                    </div>
+
+                    <div>
+                        <label class="form-label">Tags / Highlights</label>
+                        <input type="text" name="tags" class="form-control" placeholder="e.g. Great Communicator, Punctual, Expert Mentor" value="Great Communicator, Super Helpful, Highly Recommended">
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 1.25rem;">
+                    <div>
+                        <label class="form-label">Communication</label>
+                        <input type="range" name="communication_rating" min="1" max="5" value="5" class="form-control" style="padding: 0;">
+                    </div>
+                    <div>
+                        <label class="form-label">Clarity of Teaching</label>
+                        <input type="range" name="clarity_rating" min="1" max="5" value="5" class="form-control" style="padding: 0;">
+                    </div>
+                    <div>
+                        <label class="form-label">Punctuality</label>
+                        <input type="range" name="punctuality_rating" min="1" max="5" value="5" class="form-control" style="padding: 0;">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Detailed Feedback & Experience</label>
+                    <textarea name="comment" rows="3" class="form-control" placeholder="Share your experience during the skill exchange session..." required>The mentor was incredibly articulate and patient. We covered advanced Django architecture and React hooks in depth!</textarea>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <label style="display: flex; align-items: center; gap: 8px; font-size: 0.88rem; color: var(--text-secondary); cursor: pointer;">
+                        <input type="checkbox" name="would_recommend" checked style="accent-color: var(--accent-primary);">
+                        I would recommend this user for future exchanges
+                    </label>
+
+                    <button type="submit" class="action-btn action-btn-primary" style="padding: 10px 24px;">
+                        Submit Feedback
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Community Reviews List -->
+        <h3 style="font-size: 1.25rem; font-weight: 700; margin-top: 1rem;">Community Feedback & Ratings</h3>
+
+        {% for review in reviews %}
+            <div class="glass-panel review-card">
+                <div class="reviewer-meta">
+                    <div class="reviewer-user">
+                        <div class="avatar" style="background: linear-gradient(135deg, #ec4899, #8b5cf6);">
+                            {{ review.reviewer.username|slice:":2"|upper }}
+                        </div>
+                        <div>
+                            <div style="font-weight: 700; font-size: 1rem;">
+                                {{ review.reviewer.first_name|default:review.reviewer.username }}
+                                <span style="font-weight: 400; font-size: 0.82rem; color: var(--text-muted); margin-left: 6px;">
+                                    reviewed {{ review.reviewee.first_name|default:review.reviewee.username }}
+                                </span>
+                            </div>
+                            <div style="font-size: 0.78rem; color: var(--text-muted);">
+                                {{ review.created_at|date:"F d, Y" }} &bull; Verified Exchange Session
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="text-align: right;">
+                        <div style="color: var(--accent-amber); font-size: 1.1rem; font-weight: 700;">
+                            {% for i in "12345"|make_list %}
+                                {% if forloop.counter <= review.rating %}
+                                    <i class="fa-solid fa-star"></i>
+                                {% else %}
+                                    <i class="fa-regular fa-star" style="color: #475569;"></i>
+                                {% endif %}
+                            {% endfor %}
+                            <span style="margin-left: 6px; color: var(--text-primary);">{{ review.rating }}.0</span>
+                        </div>
+                        <div class="skill-pill" style="margin-top: 4px;">
+                            {{ review.exchange.requested_skill }}
+                        </div>
+                    </div>
+                </div>
+
+                <p class="review-comment">"{{ review.comment }}"</p>
+
+                {% if review.tag_list %}
+                    <div class="tag-cloud">
+                        {% for tag in review.tag_list %}
+                            <span class="tag-chip"><i class="fa-solid fa-check" style="font-size: 0.68rem; margin-right: 4px;"></i> {{ tag }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        {% empty %}
+            <div class="glass-panel" style="padding: 3rem; text-align: center; color: var(--text-muted);">
+                <i class="fa-regular fa-star" style="font-size: 3rem; margin-bottom: 1rem; color: var(--accent-amber);"></i>
+                <h3>No Ratings Published Yet</h3>
+                <p>Be the first to submit feedback after completing a session!</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const stars = document.querySelectorAll('#starPicker i');
+    const ratingInput = document.getElementById('ratingInput');
+
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            const val = parseInt(this.getAttribute('data-val'));
+            ratingInput.value = val;
+            
+            stars.forEach((s, idx) => {
+                if (idx < val) {
+                    s.classList.add('selected');
+                } else {
+                    s.classList.remove('selected');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
