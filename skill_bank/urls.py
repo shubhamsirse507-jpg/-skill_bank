@@ -25,6 +25,7 @@ urlpatterns = [
     path('auth/', include('authentication.urls')),
     path('profile/', include('profiles.urls')),
     path('notifications/', include('notifications.urls')),
+    path('chat/', include('chatboat.urls')),
 ]
 
 if settings.DEBUG:

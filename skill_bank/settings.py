@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'authentication',
     'profiles',
     'notifications',
+    'chatboat',
 ]
 
 MIDDLEWARE = [
@@ -125,4 +126,10 @@ STATICFILES_DIRS = [
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
+# AI Provider API Keys (Set your keys here or via environment variables)
+import os
 
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
+GROQ_API_KEY = os.environ.get('GROQ_API_KEY', '')
+OPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY', '')
+COHERE_API_KEY = os.environ.get('COHERE_API_KEY', '')
