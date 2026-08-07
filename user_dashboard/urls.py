@@ -9,4 +9,5 @@ urlpatterns = [
     path("live-session/", views.live_session, name="live_session"),
     path("chatbot/", views.chatbot, name="chatbot"),   # Add this line
     path("logout/", views.logout_user, name="logout"),
+    path("request-skill/", views.request_skill, name="request_skill"),
 ]
