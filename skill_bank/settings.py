@@ -37,21 +37,22 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
     'rest_framework',
+    'rest_framework_simplejwt',
+    'corsheaders',
+    'drf_yasg',
+
     'authentication',
-<<<<<<< HEAD
-    'profiles',
-    'notifications',
-    'chatboat',
-=======
-    'payments',
-    'earnings',
-    'feedback',
-    "django_extensions",
->>>>>>> payment-transaction-backend
+    'dashboard',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+
+    'django.middleware.security.SecurityMiddleware',
+    
+
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -131,13 +132,16 @@ STATICFILES_DIRS = [
     BASE_DIR / 'authentication' / 'constants',
 ]
 
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ),
+}
 
-# AI Provider API Keys (Set your keys here or via environment variables)
-import os
+CORS_ALLOW_ALL_ORIGINS = True
 
-GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
-GROQ_API_KEY = os.environ.get('GROQ_API_KEY', '')
-OPENROUTER_API_KEY = os.environ.get('OPENROUTER_API_KEY', '')
-COHERE_API_KEY = os.environ.get('COHERE_API_KEY', '')
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
+
+STATIC_URL = "static/"
+
