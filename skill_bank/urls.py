@@ -20,6 +20,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+<<<<<<< HEAD
     path('admin/', admin.site.urls),
     path('', include('authentication.urls')),
     path('auth/', include('authentication.urls')),
@@ -33,3 +34,11 @@ if settings.DEBUG:
 
 
 
+=======
+    path("admin/", admin.site.urls),
+
+    path("api/", include("payments.urls")),
+    path("api/", include("earnings.urls")),
+    path("api/", include("feedback.urls")),
+]
+>>>>>>> payment-transaction-backend

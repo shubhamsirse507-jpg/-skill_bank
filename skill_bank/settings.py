@@ -37,10 +37,18 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'authentication',
+<<<<<<< HEAD
     'profiles',
     'notifications',
     'chatboat',
+=======
+    'payments',
+    'earnings',
+    'feedback',
+    "django_extensions",
+>>>>>>> payment-transaction-backend
 ]
 
 MIDDLEWARE = [
