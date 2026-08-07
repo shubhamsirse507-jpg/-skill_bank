@@ -732,6 +732,234 @@
     .stat-divider { display: none; }
     .how-grid { grid-template-columns: 1fr; }
     .footer-inner { flex-direction: column; }
+    .skye-widget-container { bottom: 16px; right: 16px; }
+    .skye-widget { right: -8px; width: calc(100vw - 32px); height: 480px; }
+  }
+
+  /* ─── SKYE FLOATING CHATBOT WIDGET STYLES ─── */
+  .skye-widget-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 9999;
+  }
+
+  .skye-toggle-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #0c6c63;
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 24px rgba(12, 108, 99, 0.35);
+    transition: all 0.25s ease;
+    position: relative;
+  }
+  .skye-toggle-btn:hover {
+    background: #09544d;
+    transform: scale(1.06);
+    box-shadow: 0 10px 28px rgba(12, 108, 99, 0.45);
+  }
+  .skye-toggle-btn .skye-icon-close { display: none; }
+  .skye-toggle-btn.active .skye-icon-chat { display: none; }
+  .skye-toggle-btn.active .skye-icon-close { display: block; }
+
+  .skye-widget {
+    position: absolute;
+    bottom: 72px;
+    right: 0;
+    width: 370px;
+    max-width: calc(100vw - 32px);
+    height: 510px;
+    max-height: calc(100vh - 120px);
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 16px 48px rgba(12, 108, 99, 0.18), 0 4px 16px rgba(0,0,0,0.06);
+    border: 1px solid rgba(12, 108, 99, 0.15);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px) scale(0.95);
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-origin: bottom right;
+  }
+  .skye-widget.open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: all;
+  }
+
+  /* Header */
+  .skye-header {
+    background: #e6f4f3;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid rgba(12, 108, 99, 0.1);
+  }
+  .skye-avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #0c6c63, #6ddfd5);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(12, 108, 99, 0.25);
+  }
+  .skye-header-info { flex: 1; }
+  .skye-title {
+    font-family: var(--font-head);
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.2;
+  }
+  .skye-subtitle {
+    font-size: 0.8rem;
+    color: #64748b;
+    margin-top: 2px;
+  }
+  .skye-close-btn {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+  .skye-close-btn:hover { background: rgba(0,0,0,0.06); color: #0f172a; }
+
+  /* Body */
+  .skye-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    background: #fafdfd;
+  }
+  .skye-msg {
+    display: flex;
+    flex-direction: column;
+    max-width: 88%;
+  }
+  .skye-msg-bot { align-self: flex-start; }
+  .skye-msg-user { align-self: flex-end; }
+
+  .skye-msg-bubble {
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    border-radius: 18px;
+    word-break: break-word;
+  }
+  .skye-msg-bot .skye-msg-bubble {
+    background: #ffffff;
+    color: #334155;
+    border: 1px solid #e2e8f0;
+    border-bottom-left-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+  }
+  .skye-msg-user .skye-msg-bubble {
+    background: #0c6c63;
+    color: #ffffff;
+    border-bottom-right-radius: 4px;
+    box-shadow: 0 4px 14px rgba(12, 108, 99, 0.25);
+  }
+
+  /* Chips */
+  .skye-chips {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 4px;
+  }
+  .skye-chip {
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 0.84rem;
+    color: #475569;
+    font-family: var(--font-body);
+    font-weight: 500;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s;
+    outline: none;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+  }
+  .skye-chip:hover {
+    border-color: #0c6c63;
+    color: #0c6c63;
+    background: #f0faf9;
+    transform: translateX(3px);
+  }
+
+  /* Footer */
+  .skye-footer {
+    padding: 12px 16px;
+    background: #ffffff;
+    border-top: 1px solid #f1f5f9;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .skye-input {
+    flex: 1;
+    height: 42px;
+    border-radius: 21px;
+    border: 1px solid #e2e8f0;
+    padding: 0 16px;
+    font-size: 0.88rem;
+    font-family: var(--font-body);
+    color: #1e293b;
+    outline: none;
+    background: #f8fafc;
+    transition: all 0.2s;
+  }
+  .skye-input:focus {
+    border-color: #0c6c63;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(12, 108, 99, 0.1);
+  }
+  .skye-send-btn {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #52c5bb;
+    color: #ffffff;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .skye-send-btn:hover {
+    background: #0c6c63;
+    transform: scale(1.05);
+  }
+  .skye-send-btn:disabled {
+    background: #cbd5e1;
+    cursor: not-allowed;
+    transform: none;
   }
 </style>
 </head>
@@ -753,6 +981,7 @@
     <li><a href="#how">How it Works</a></li>
     <li><a href="#categories">Browse Skills</a></li>
     <li><a href="#features">Features</a></li>
+    <li><a href="{% url 'chatboat' %}">AI Chat Boat 🤖</a></li>
   </ul>
 
   <div class="nav-cta">
@@ -975,7 +1204,10 @@
           </div>
 
           <div style="margin-top: 24px; padding: 16px; background: rgba(12,108,99,0.12); border: 1px solid rgba(12,108,99,0.25); border-radius: 12px;">
-            <div style="font-size: 0.78rem; color: var(--teal-light); font-weight: 700; margin-bottom: 6px;">🤖 AI Assistant</div>
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px;">
+              <span style="font-size: 0.78rem; color: #0c6c63; font-weight: 700;">🤖 AI Assistant</span>
+              <a href="{% url 'chatboat' %}" style="font-size: 0.75rem; color: #0c6c63; font-weight: 700; text-decoration: none;">Try Full Chat Boat ↗</a>
+            </div>
             <div style="font-size: 0.85rem; color: var(--text2); line-height: 1.6;">"Great match found! Priya & Arjun are a perfect skill swap — Python for Guitar lessons."</div>
           </div>
         </div>
@@ -1047,6 +1279,79 @@
   </div>
 </footer>
 
+<!-- ── SKYE FLOATING CHATBOT WIDGET ── -->
+<div class="skye-widget-container">
+  <!-- Popup Chat Window -->
+  <div class="skye-widget" id="skyeWidget">
+    <!-- Header -->
+    <div class="skye-header">
+      <div class="skye-avatar">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon>
+        </svg>
+      </div>
+      <div class="skye-header-info">
+        <h3 class="skye-title">Skye</h3>
+        <p class="skye-subtitle">Your SkillBank guide</p>
+      </div>
+      <a href="{% url 'chatboat' %}" target="_blank" class="skye-close-btn" title="Open Full AI Chat Boat Page" aria-label="Open full chat">
+        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+          <polyline points="15 3 21 3 21 9"></polyline>
+          <line x1="10" y1="14" x2="21" y2="3"></line>
+        </svg>
+      </a>
+      <button class="skye-close-btn" id="skyeCloseBtn" aria-label="Close chat">
+        <svg viewBox="0 0 24 24" width="18" height="18" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Messages List -->
+    <div class="skye-messages" id="skyeMessages">
+      <div class="skye-msg skye-msg-bot">
+        <div class="skye-msg-bubble">
+          Hi! Tell me what you'd like to learn, or ask how SkillBank works.
+        </div>
+      </div>
+
+      <!-- Suggestion Chips -->
+      <div class="skye-chips" id="skyeChips">
+        <button class="skye-chip" data-prompt="I want to learn guitar">I want to learn guitar</button>
+        <button class="skye-chip" data-prompt="How do payments work?">How do payments work?</button>
+        <button class="skye-chip" data-prompt="Help me write a skill description">Help me write a skill description</button>
+      </div>
+    </div>
+
+    <!-- Footer Input Area -->
+    <div class="skye-footer">
+      <input type="text" id="skyeInput" class="skye-input" placeholder="Ask Skye anything..." autocomplete="off">
+      <button id="skyeSendBtn" class="skye-send-btn" aria-label="Send message">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="22" y1="2" x2="11" y2="13"></line>
+          <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Floating Toggle Button -->
+  <button class="skye-toggle-btn" id="skyeToggleBtn" aria-label="Open chat assistant">
+    <!-- Chat Icon -->
+    <svg class="skye-icon-chat" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+    </svg>
+    <!-- Close Icon -->
+    <svg class="skye-icon-close" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="18" y1="6" x2="6" y2="18"></line>
+      <line x1="6" y1="6" x2="18" y2="18"></line>
+    </svg>
+  </button>
+</div>
+
 <script>
   // Scroll reveal
   const reveals = document.querySelectorAll('.reveal');
@@ -1070,6 +1375,105 @@
       nav.style.background = 'rgba(255,255,255,0.75)';
       nav.style.boxShadow = '0 2px 20px rgba(12,108,99,0.08)';
     }
+  });
+
+  // ── SKYE CHATBOT WIDGET INTERACTION ──
+  const skyeToggleBtn = document.getElementById('skyeToggleBtn');
+  const skyeCloseBtn = document.getElementById('skyeCloseBtn');
+  const skyeWidget = document.getElementById('skyeWidget');
+  const skyeInput = document.getElementById('skyeInput');
+  const skyeSendBtn = document.getElementById('skyeSendBtn');
+  const skyeMessages = document.getElementById('skyeMessages');
+  const skyeChips = document.getElementById('skyeChips');
+
+  function toggleSkye() {
+    skyeWidget.classList.toggle('open');
+    skyeToggleBtn.classList.toggle('active');
+    if (skyeWidget.classList.contains('open')) {
+      skyeInput.focus();
+    }
+  }
+
+  skyeToggleBtn.addEventListener('click', toggleSkye);
+  skyeCloseBtn.addEventListener('click', toggleSkye);
+
+  function addMessage(text, sender) {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = `skye-msg skye-msg-${sender}`;
+    const bubble = document.createElement('div');
+    bubble.className = 'skye-msg-bubble';
+    bubble.textContent = text;
+    msgDiv.appendChild(bubble);
+    skyeMessages.appendChild(msgDiv);
+    skyeMessages.scrollTop = skyeMessages.scrollHeight;
+    return bubble;
+  }
+
+  function addTypingIndicator() {
+    const msgDiv = document.createElement('div');
+    msgDiv.className = 'skye-msg skye-msg-bot';
+    msgDiv.id = 'skyeTyping';
+    const bubble = document.createElement('div');
+    bubble.className = 'skye-msg-bubble';
+    bubble.style.color = '#94a3b8';
+    bubble.style.fontStyle = 'italic';
+    bubble.textContent = 'Skye is typing...';
+    msgDiv.appendChild(bubble);
+    skyeMessages.appendChild(msgDiv);
+    skyeMessages.scrollTop = skyeMessages.scrollHeight;
+  }
+
+  function removeTypingIndicator() {
+    const typing = document.getElementById('skyeTyping');
+    if (typing) typing.remove();
+  }
+
+  async function handleSend(text) {
+    const prompt = text || skyeInput.value.trim();
+    if (!prompt) return;
+
+    if (!text) skyeInput.value = '';
+    
+    // Hide initial chips if present
+    if (skyeChips) skyeChips.style.display = 'none';
+
+    addMessage(prompt, 'user');
+    addTypingIndicator();
+    skyeSendBtn.disabled = true;
+
+    try {
+      const res = await fetch('/chat/api/send/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: prompt })
+      });
+      const data = await res.json();
+      removeTypingIndicator();
+
+      if (data.response) {
+        addMessage(data.response, 'bot');
+      } else if (data.error) {
+        addMessage('Sorry, ' + data.error, 'bot');
+      } else {
+        addMessage('I am here to help you trade skills on SkillBank! Sign up or log in to start skill swapping.', 'bot');
+      }
+    } catch (err) {
+      removeTypingIndicator();
+      addMessage('SkillBank connects people to trade skills! Create a free account or log in to get started.', 'bot');
+    } finally {
+      skyeSendBtn.disabled = false;
+    }
+  }
+
+  skyeSendBtn.addEventListener('click', () => handleSend());
+  skyeInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') handleSend();
+  });
+
+  document.querySelectorAll('.skye-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      handleSend(chip.dataset.prompt);
+    });
   });
 </script>
 </body>

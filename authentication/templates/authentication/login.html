@@ -4,225 +4,336 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Skill Bank Login</title>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@700;800&display=swap" rel="stylesheet">
+<title>Welcome to Skill Bank</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
 
 <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
-    body {
-        height: 100vh;
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: linear-gradient(180deg, #6ddfd5 0%, #fbfefe 100%);
-        background-attachment: fixed;
-        overflow: hidden;
-    }
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(180deg, #6ddfd5 0%, #fbfefe 100%);
+    background-attachment: fixed;
+    font-family: 'Inter', sans-serif;
+    padding: 20px;
+    gap: 18px;
+  }
 
-    /* Brand */
-    .auth-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        width: 100%;
-        max-width: 390px;
-        padding: 20px;
-    }
+  /* ─── Brand Header ─── */
+  .brand-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    animation: slideUp 0.35s ease both;
+  }
 
-    .brand-header {
-        display: flex;
-        align-items: center;
-        gap: 14px;
-        margin-bottom: 24px;
-    }
+  .brand-logo-img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    animation: floatLogo 4s ease-in-out infinite alternate;
+    filter: drop-shadow(0 4px 12px rgba(12,108,99,0.25));
+  }
 
-    .brand-logo-img {
-        width: 58px; height: 58px;
-        object-fit: contain;
-        animation: float 4s ease-in-out infinite alternate;
-    }
+  @keyframes floatLogo {
+    from { transform: translateY(0); }
+    to   { transform: translateY(-7px); }
+  }
 
-    @keyframes float {
-        from { transform: translateY(0); }
-        to   { transform: translateY(-6px); }
-    }
+  .brand-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: #0c6c63;
+    letter-spacing: -0.5px;
+    text-shadow: 0 2px 8px rgba(12,108,99,0.15);
+  }
 
-    .brand-title {
-        font-family: 'Outfit', sans-serif;
-        font-size: 38px;
-        font-weight: 800;
-        color: #0c6c63;
-    }
+  .card {
+    width: 100%;
+    max-width: 440px;
+    background: #ffffff;
+    border-radius: 24px;
+    padding: 36px 32px 32px;
+    box-shadow: 0 12px 48px rgba(12,108,99,0.14), 0 4px 16px rgba(0,0,0,0.06);
+    animation: slideUp 0.4s ease both;
+  }
 
-    /* Card */
-    .login-box {
-        width: 100%;
-        background: rgba(255,255,255,0.75);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-        border: 1px solid rgba(0,0,0,0.08);
-        border-radius: 20px;
-        padding: 40px;
-        box-shadow: 0 8px 40px rgba(12,108,99,0.12);
-    }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
 
-    .page-title {
-        color: #1e293b;
-        font-size: 22px;
-        font-weight: 700;
-        text-align: center;
-        margin-bottom: 26px;
-    }
+  .card-title {
+    font-family: 'Outfit', sans-serif;
+    font-size: 1.65rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 4px;
+  }
+  .card-subtitle { font-size: 0.9rem; color: #0c6c63; font-weight: 500; margin-bottom: 22px; }
+  .role-label { font-size: 0.85rem; font-weight: 600; color: #1e293b; margin-bottom: 10px; }
 
-    /* Inputs */
-    .input-group { margin-bottom: 18px; }
+  .role-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 18px; }
 
-    .input-group label {
-        display: block;
-        color: #44556a;
-        font-size: 13px;
-        font-weight: 600;
-        margin-bottom: 7px;
-    }
+  .role-card {
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 2px solid #e2e8f0;
+    background: #f8fafc;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .role-card:hover { border-color: #0c6c63; background: #f0faf9; }
+  .role-card.active { border-color: #0c6c63; background: #e8f7f5; box-shadow: 0 0 0 1px #0c6c63; }
 
-    .input-group input {
-        width: 100%;
-        padding: 12px 16px;
-        background: rgba(255,255,255,0.9);
-        border: 1px solid rgba(0,0,0,0.12);
-        border-radius: 10px;
-        color: #1e293b;
-        font-size: 14px;
-        outline: none;
-        transition: border-color 0.2s, box-shadow 0.2s;
-    }
+  .role-card-top { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .role-icon { font-size: 1.1rem; }
+  .role-name { font-size: 0.93rem; font-weight: 700; color: #0f172a; }
+  .role-card.active .role-name { color: #0c6c63; }
+  .role-desc { font-size: 0.77rem; color: #64748b; line-height: 1.4; }
 
-    .input-group input::placeholder { color: #94a3b8; }
+  .tab-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background: #f1f5f9;
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 22px;
+  }
+  .tab-btn {
+    padding: 10px;
+    border: none;
+    background: transparent;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .tab-btn.active { background: #fff; color: #0f172a; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
 
-    .input-group input:focus {
-        border-color: #0c6c63;
-        box-shadow: 0 0 0 4px rgba(12,108,99,0.12);
-    }
+  .form-section { display: none; }
+  .form-section.active { display: block; }
 
-    /* Button */
-    .login-btn {
-        width: 100%;
-        padding: 13px;
-        margin-top: 6px;
-        background: #0c6c63;
-        color: #fff;
-        border: none;
-        border-radius: 10px;
-        font-size: 15px;
-        font-weight: 700;
-        cursor: pointer;
-        transition: transform 0.2s, box-shadow 0.2s;
-        box-shadow: 0 4px 15px rgba(12,108,99,0.3);
-    }
+  .input-group { margin-bottom: 14px; }
+  .input-group label { display: block; font-size: 0.84rem; font-weight: 600; color: #1e293b; margin-bottom: 7px; }
+  .input-group input {
+    width: 100%;
+    padding: 12px 16px;
+    background: #f8fafc;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    color: #0f172a;
+    font-size: 0.9rem;
+    font-family: 'Inter', sans-serif;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  }
+  .input-group input::placeholder { color: #94a3b8; }
+  .input-group input:focus {
+    border-color: #0c6c63;
+    background: #ffffff;
+    box-shadow: 0 0 0 4px rgba(12,108,99,0.10);
+  }
 
-    .login-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 22px rgba(124,58,237,0.45);
-    }
+  .submit-btn {
+    width: 100%;
+    padding: 14px;
+    margin-top: 6px;
+    background: #0c6c63;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.93rem;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+    box-shadow: 0 4px 16px rgba(12,108,99,0.3);
+  }
+  .submit-btn:hover { background: #09544d; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(12,108,99,0.38); }
+  .submit-btn:active { transform: translateY(0); }
+  .submit-btn:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
 
-    .login-btn:active { transform: translateY(0); }
+  .error-alert {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(239,68,68,0.08);
+    border: 1px solid rgba(239,68,68,0.3);
+    color: #dc2626; border-radius: 10px;
+    padding: 12px 14px; font-size: 0.83rem;
+    margin-bottom: 14px;
+    animation: shake 0.35s ease;
+  }
+  .error-alert svg { width: 16px; height: 16px; fill: #ef4444; flex-shrink: 0; }
 
-    /* Error */
-    .error-alert {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        background: rgba(239,68,68,0.18);
-        border: 1px solid rgba(239,68,68,0.45);
-        color: #fca5a5;
-        border-radius: 10px;
-        padding: 12px 16px;
-        font-size: 13px;
-        margin-bottom: 18px;
-        animation: shake 0.4s ease;
-    }
+  @keyframes shake {
+    0%   { transform: translateX(-5px); }
+    40%  { transform: translateX(5px); }
+    70%  { transform: translateX(-3px); }
+    100% { transform: translateX(0); }
+  }
 
-    .error-alert svg { width: 18px; height: 18px; fill: #f87171; flex-shrink: 0; }
-
-    @keyframes shake {
-        0%   { transform: translateX(-6px); opacity: 0; }
-        40%  { transform: translateX(6px); }
-        70%  { transform: translateX(-3px); }
-        100% { transform: translateX(0); opacity: 1; }
-    }
-
-    /* Links */
-    .extra-links {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 18px;
-        font-size: 13px;
-    }
-
-    .extra-links a {
-        color: #0c6c63;
-        font-weight: 600;
-        text-decoration: none;
-        transition: color 0.2s;
-    }
-
-    .extra-links a:hover { color: #09544d; text-decoration: underline; }
+  .footer-links { display: flex; justify-content: space-between; margin-top: 14px; font-size: 0.81rem; }
+  .footer-links a { color: #0c6c63; font-weight: 600; text-decoration: none; transition: color 0.2s; }
+  .footer-links a:hover { color: #09544d; text-decoration: underline; }
 </style>
 </head>
 <body>
 
-<div class="auth-container">
+<!-- Brand Logo + Name -->
+<div class="brand-header">
+  <img src="{% static brand_logo_image_name %}" alt="Skill Bank Logo" class="brand-logo-img">
+  <span class="brand-title">Skill Bank</span>
+</div>
 
-    <div class="brand-header">
-        <img src="{% static brand_logo_image_name %}" alt="Skill Bank Logo" class="brand-logo-img">
-        <h1 class="brand-title">Skill Bank</h1>
+<div class="card">
+
+  <h1 class="card-title">Welcome to SkillBank</h1>
+  <p class="card-subtitle">Trade skills, not money.</p>
+
+  <!-- Role Selection -->
+  <p class="role-label">I'm logging in as</p>
+  <div class="role-grid">
+    <div class="role-card active" id="roleStudent" onclick="selectRole('student')">
+      <div class="role-card-top">
+        <span class="role-icon">🎓</span>
+        <span class="role-name">Student</span>
+      </div>
+      <p class="role-desc">Learn skills, join batches, ask doubts</p>
     </div>
-
-    <div class="login-box">
-        <h2 class="page-title">Login</h2>
-
-        <form id="loginForm" method="POST" action="{% url 'login' %}">
-            {% csrf_token %}
-            <input type="hidden" name="next" value="{{ request.GET.next }}">
-
-            {% if error %}
-            <div class="error-alert" role="alert">
-                <svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
-                <span>{{ error }}</span>
-            </div>
-            {% endif %}
-
-            <div class="input-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" placeholder="Enter your username" autocomplete="username" required>
-            </div>
-
-            <div class="input-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required>
-            </div>
-
-            <button type="submit" class="login-btn" id="loginBtn">Login</button>
-
-            <div class="extra-links">
-                <a href="{% url 'forgot_password' %}">Forgot password?</a>
-                <a href="{% url 'register' %}">Register</a>
-            </div>
-        </form>
+    <div class="role-card" id="roleTeacher" onclick="selectRole('teacher')">
+      <div class="role-card-top">
+        <span class="role-icon">📖</span>
+        <span class="role-name">Teacher</span>
+      </div>
+      <p class="role-desc">List skills, run batches, earn</p>
     </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tab-row">
+    <button class="tab-btn" id="tabSignup" onclick="switchTab('signup')">Sign up</button>
+    <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">Log in</button>
+  </div>
+
+  <!-- LOG IN FORM -->
+  <div class="form-section active" id="formLogin">
+    <form id="loginForm" method="POST" action="{% url 'login' %}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.GET.next }}">
+      <input type="hidden" name="role" id="loginRoleField" value="student">
+
+      {% if error %}
+      <div class="error-alert" role="alert">
+        <svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
+        <span>{{ error }}</span>
+      </div>
+      {% endif %}
+
+      <div class="input-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" placeholder="Enter your username" autocomplete="username" required>
+      </div>
+      <div class="input-group">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter your password" autocomplete="current-password" required>
+      </div>
+
+      <button type="submit" class="submit-btn" id="loginBtn">Log in as Student</button>
+
+      <div class="footer-links">
+        <a href="{% url 'forgot_password' %}">Forgot password?</a>
+        <a href="{% url 'register' %}">Create account</a>
+      </div>
+    </form>
+  </div>
+
+  <!-- SIGN UP FORM -->
+  <div class="form-section" id="formSignup">
+    <form id="signupForm" method="POST" action="{% url 'register' %}">
+      {% csrf_token %}
+      <input type="hidden" name="role" id="signupRoleField" value="student">
+
+      <div class="input-group">
+        <label for="su_fullname">Full name</label>
+        <input type="text" id="su_fullname" name="fullname" placeholder="Ada Lovelace" required>
+      </div>
+      <div class="input-group">
+        <label for="su_email">Email</label>
+        <input type="email" id="su_email" name="email" placeholder="you@example.com" required>
+      </div>
+      <div class="input-group">
+        <label for="su_username">Username</label>
+        <input type="text" id="su_username" name="username" placeholder="Choose a username" required>
+      </div>
+      <div class="input-group">
+        <label for="su_password">Password</label>
+        <input type="password" id="su_password" name="password" placeholder="Create a password" required minlength="6">
+      </div>
+
+      <button type="submit" class="submit-btn" id="signupBtn">Create student account</button>
+
+      <div class="footer-links" style="justify-content: center;">
+        <a href="{% url 'forgot_password' %}">Forgot password?</a>
+      </div>
+    </form>
+  </div>
 
 </div>
 
 <script>
-    document.getElementById('loginForm').addEventListener('submit', function () {
-        const btn = document.getElementById('loginBtn');
-        btn.textContent = 'Logging in…';
-        btn.disabled = true;
-        btn.style.opacity = '0.75';
-    });
+  let currentRole = 'student';
+  let currentTab  = 'login';
+
+  function selectRole(role) {
+    currentRole = role;
+    document.getElementById('roleStudent').classList.toggle('active', role === 'student');
+    document.getElementById('roleTeacher').classList.toggle('active', role === 'teacher');
+    document.getElementById('loginRoleField').value  = role;
+    document.getElementById('signupRoleField').value = role;
+    updateButtonLabels();
+  }
+
+  function switchTab(tab) {
+    currentTab = tab;
+    document.getElementById('tabLogin').classList.toggle('active',  tab === 'login');
+    document.getElementById('tabSignup').classList.toggle('active', tab === 'signup');
+    document.getElementById('formLogin').classList.toggle('active',  tab === 'login');
+    document.getElementById('formSignup').classList.toggle('active', tab === 'signup');
+    updateButtonLabels();
+  }
+
+  function updateButtonLabels() {
+    const rn = currentRole === 'student' ? 'Student' : 'Teacher';
+    document.getElementById('loginBtn').textContent  = `Log in as ${rn}`;
+    document.getElementById('signupBtn').textContent = `Create ${rn.toLowerCase()} account`;
+  }
+
+  document.getElementById('loginForm').addEventListener('submit', function() {
+    const btn = document.getElementById('loginBtn');
+    btn.textContent = 'Logging in…';
+    btn.disabled = true;
+  });
+
+  document.getElementById('signupForm').addEventListener('submit', function() {
+    const btn = document.getElementById('signupBtn');
+    btn.textContent = 'Creating account…';
+    btn.disabled = true;
+  });
+
+  // Pre-select tab if sign-up mode is needed
+  {% if request.GET.mode == 'signup' %}switchTab('signup');{% endif %}
+
+  updateButtonLabels();
 </script>
 
 </body>
 </html>
+
