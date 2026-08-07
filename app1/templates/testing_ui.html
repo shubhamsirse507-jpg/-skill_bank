@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillBank App1 - Interactive Testing Dashboard</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-dark: #090d16;
+            --bg-card: rgba(17, 24, 39, 0.7);
+            --bg-card-border: rgba(255, 255, 255, 0.08);
+            --accent-primary: #6366f1;
+            --accent-primary-hover: #4f46e5;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-info: #06b6d4;
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --font-heading: 'Outfit', sans-serif;
+            --font-body: 'Inter', sans-serif;
+            --font-code: 'Fira Code', monospace;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.12) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(16, 185, 129, 0.08) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            font-family: var(--font-body);
+            min-height: 100vh;
+            line-height: 1.5;
+            padding-bottom: 50px;
+        }
+
+        /* Glassmorphism utility */
+        .glass-panel {
+            background: var(--bg-card);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--bg-card-border);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+        }
+
+        /* Header */
+        header {
+            padding: 24px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--bg-card-border);
+            margin-bottom: 30px;
+        }
+
+        .brand-logo {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand-icon {
+            width: 44px;
+            height: 44px;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-info));
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .brand-text h1 {
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .brand-text p {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--accent-success);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--accent-success);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent-success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+
+        /* Container Layout */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Metrics Bar */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .metric-info h3 {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .metric-info .value {
+            font-family: var(--font-heading);
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .metric-icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+        }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--bg-card-border);
+            padding-bottom: 12px;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.04);
+        }
+
+        .tab-btn.active {
+            color: #fff;
+            background: var(--accent-primary);
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.35);
+        }
+
+        /* Tab Content Panels */
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Section Layouts */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 992px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+
+        .panel-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--bg-card-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .panel-header h2 {
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .panel-body {
+            padding: 24px;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.88rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+        }
+
+        .form-control {
+            width: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--bg-card-border);
+            border-radius: 10px;
+            padding: 12px 16px;
+            color: #fff;
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-family: var(--font-body);
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-primary-hover));
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.45);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.07);
+            color: var(--text-main);
+            border: 1px solid var(--bg-card-border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--accent-success), #059669);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, var(--accent-info), #0284c7);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(6, 182, 212, 0.3);
+        }
+
+        /* List & Cards Display */
+        .item-card {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid var(--bg-card-border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 14px;
+            transition: border-color 0.2s ease;
+        }
+
+        .item-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .item-title {
+            font-weight: 600;
+            color: #fff;
+            font-size: 1rem;
+        }
+
+        .item-badge {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 6px;
+            background: rgba(99, 102, 241, 0.15);
+            color: #a5b4fc;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+
+        .item-body {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        /* API Sandbox Console */
+        .console-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 900px) {
+            .console-container { grid-template-columns: 1fr; }
+        }
+
+        .code-output {
+            background: #050811;
+            border: 1px solid var(--bg-card-border);
+            border-radius: 10px;
+            padding: 16px;
+            font-family: var(--font-code);
+            font-size: 0.88rem;
+            color: #38bdf8;
+            max-height: 380px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        /* Toast Notifications */
+        #toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .toast {
+            padding: 14px 20px;
+            border-radius: 12px;
+            background: rgba(17, 24, 39, 0.95);
+            border: 1px solid var(--bg-card-border);
+            color: #fff;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="glass-panel" style="margin: 20px; border-radius: 20px;">
+        <div class="brand-logo">
+            <div class="brand-icon">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <div class="brand-text">
+                <h1>SkillBank Developer Workbench</h1>
+                <p>Interactive API & Module Testing Dashboard for app1</p>
+            </div>
+        </div>
+        <div class="status-badge">
+            <div class="pulse-dot"></div>
+            Backend API Active
+        </div>
+    </header>
+
+    <div class="container">
+
+        <!-- Metrics Overview -->
+        <div class="metrics-grid">
+            <div class="metric-card glass-panel">
+                <div class="metric-info">
+                    <h3>Total Doubts</h3>
+                    <div class="value" id="stat-doubts">0</div>
+                </div>
+                <div class="metric-icon-box" style="background: rgba(99, 102, 241, 0.15); color: #818cf8;">
+                    <i class="fa-solid fa-clipboard-question"></i>
+                </div>
+            </div>
+
+            <div class="metric-card glass-panel">
+                <div class="metric-info">
+                    <h3>Booked Sessions</h3>
+                    <div class="value" id="stat-bookings">0</div>
+                </div>
+                <div class="metric-icon-box" style="background: rgba(16, 185, 129, 0.15); color: #34d399;">
+                    <i class="fa-solid fa-calendar-check"></i>
+                </div>
+            </div>
+
+            <div class="metric-card glass-panel">
+                <div class="metric-info">
+                    <h3>Notifications</h3>
+                    <div class="value" id="stat-notifications">0</div>
+                </div>
+                <div class="metric-icon-box" style="background: rgba(245, 158, 11, 0.15); color: #fbbf24;">
+                    <i class="fa-solid fa-bell"></i>
+                </div>
+            </div>
+
+            <div class="metric-card glass-panel">
+                <div class="metric-info">
+                    <h3>Video Meetings</h3>
+                    <div class="value" id="stat-meetings">Active</div>
+                </div>
+                <div class="metric-icon-box" style="background: rgba(6, 182, 212, 0.15); color: #38bdf8;">
+                    <i class="fa-solid fa-video"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('doubts')">
+                <i class="fa-solid fa-comments"></i> Live Doubts
+            </button>
+            <button class="tab-btn" onclick="switchTab('bookings')">
+                <i class="fa-solid fa-calendar-plus"></i> Bookings
+            </button>
+            <button class="tab-btn" onclick="switchTab('video')">
+                <i class="fa-solid fa-video"></i> Video Meeting Generator
+            </button>
+            <button class="tab-btn" onclick="switchTab('notifications')">
+                <i class="fa-solid fa-bell"></i> Notifications Log
+            </button>
+            <button class="tab-btn" onclick="switchTab('console')">
+                <i class="fa-solid fa-terminal"></i> API Sandbox Console
+            </button>
+        </div>
+
+        <!-- Tab 1: Live Doubts -->
+        <div id="tab-doubts" class="tab-content active">
+            <div class="grid-2">
+                <!-- Add Doubt Form -->
+                <div class="glass-panel">
+                    <div class="panel-header">
+                        <h2><i class="fa-solid fa-plus-circle" style="color: var(--accent-primary);"></i> Submit New Doubt</h2>
+                        <span class="item-badge">POST /add_doubt/</span>
+                    </div>
+                    <div class="panel-body">
+                        <form id="form-add-doubt">
+                            <div class="form-group">
+                                <label><i class="fa-solid fa-user"></i> Student Name</label>
+                                <input type="text" id="doubt-student" class="form-control" placeholder="e.g. Rahul Sharma" required>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fa-solid fa-heading"></i> Doubt Topic / Title</label>
+                                <input type="text" id="doubt-title" class="form-control" placeholder="e.g. Django Foreign Key Cascading Issue" required>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fa-solid fa-align-left"></i> Description</label>
+                                <textarea id="doubt-desc" class="form-control" placeholder="Describe the question or issue in detail..."></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary" style="width: 100%;">
+                                <i class="fa-solid fa-paper-plane"></i> Post Doubt to Backend
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- View Doubts Feed -->
+                <div class="glass-panel">
+                    <div class="panel-header">
+                        <h2><i class="fa-solid fa-list-check" style="color: var(--accent-info);"></i> Registered Doubts Feed</h2>
+                        <button class="btn btn-secondary" onclick="loadDoubts()" style="padding: 6px 14px; font-size: 0.85rem;">
+                            <i class="fa-solid fa-rotate-right"></i> Refresh
+                        </button>
+                    </div>
+                    <div class="panel-body" id="doubts-list" style="max-height: 440px; overflow-y: auto;">
+                        <div style="text-align: center; color: var(--text-muted); padding: 30px;">Loading doubts...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Bookings -->
+        <div id="tab-bookings" class="tab-content">
+            <div class="grid-2">
+                <!-- Book Session Form -->
+                <div class="glass-panel">
+                    <div class="panel-header">
+                        <h2><i class="fa-solid fa-calendar-check" style="color: var(--accent-success);"></i> Book 1-on-1 Session</h2>
+                        <span class="item-badge">POST /book_session/</span>
+                    </div>
+                    <div class="panel-body">
+                        <form id="form-book-session">
+                            <div class="form-group">
+                                <label><i class="fa-solid fa-user-graduate"></i> Student Name</label>
+                                <input type="text" id="booking-student" class="form-control" placeholder="e.g. Ananya Patel" required>
+                            </div>
+                            <div class="form-group">
+                                <label><i class="fa-solid fa-user-tie"></i> Teacher / Mentor Name</label>
+                                <input type="text" id="booking-teacher" class="form-control" placeholder="e.g. Prof. Shubham Sirse" required>
+                            </div>
+                            <button type="submit" class="btn btn-success" style="width: 100%;">
+                                <i class="fa-solid fa-check"></i> Book Session
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Bookings Directory -->
+                <div class="glass-panel">
+                    <div class="panel-header">
+                        <h2><i class="fa-solid fa-address-book" style="color: var(--accent-warning);"></i> Active Bookings List</h2>
+                        <button class="btn btn-secondary" onclick="loadBookings()" style="padding: 6px 14px; font-size: 0.85rem;">
+                            <i class="fa-solid fa-rotate-right"></i> Refresh
+                        </button>
+                    </div>
+                    <div class="panel-body" id="bookings-list" style="max-height: 440px; overflow-y: auto;">
+                        <div style="text-align: center; color: var(--text-muted); padding: 30px;">Loading bookings...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 3: Video Meeting Generator -->
+        <div id="tab-video" class="tab-content">
+            <div class="glass-panel" style="max-width: 800px; margin: 0 auto;">
+                <div class="panel-header">
+                    <h2><i class="fa-solid fa-video" style="color: var(--accent-info);"></i> Instant Video Meeting Creation</h2>
+                    <span class="item-badge">GET /create_meeting/</span>
+                </div>
+                <div class="panel-body" style="text-align: center; padding: 40px 24px;">
+                    <p style="color: var(--text-muted); margin-bottom: 24px; font-size: 1rem;">
+                        Triggers the instant Jitsi Video Session generator for the latest active booking.
+                    </p>
+                    <button class="btn btn-info" onclick="triggerCreateMeeting()" style="font-size: 1.05rem; padding: 14px 32px;">
+                        <i class="fa-solid fa-bolt"></i> Generate Instant Video Link
+                    </button>
+
+                    <div id="meeting-result-box" style="margin-top: 30px; display: none;">
+                        <!-- Generated Meeting Card populated via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 4: Notifications -->
+        <div id="tab-notifications" class="tab-content">
+            <div class="glass-panel" style="max-width: 900px; margin: 0 auto;">
+                <div class="panel-header">
+                    <h2><i class="fa-solid fa-bell" style="color: var(--accent-warning);"></i> System Event Notification Log</h2>
+                    <button class="btn btn-secondary" onclick="loadNotifications()" style="padding: 6px 14px; font-size: 0.85rem;">
+                        <i class="fa-solid fa-rotate-right"></i> Refresh Log
+                    </button>
+                </div>
+                <div class="panel-body" id="notifications-list" style="max-height: 500px; overflow-y: auto;">
+                    <div style="text-align: center; color: var(--text-muted); padding: 30px;">Loading notifications...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 5: API Sandbox Console -->
+        <div id="tab-console" class="tab-content">
+            <div class="glass-panel">
+                <div class="panel-header">
+                    <h2><i class="fa-solid fa-code" style="color: var(--accent-primary);"></i> Interactive Endpoint Tester</h2>
+                    <span style="font-family: var(--font-code); font-size: 0.85rem; color: var(--accent-info);">Direct HTTP Workbench</span>
+                </div>
+                <div class="panel-body">
+                    <div class="console-container">
+                        <!-- Request Config -->
+                        <div>
+                            <div class="form-group">
+                                <label>Target Endpoint</label>
+                                <select id="api-endpoint" class="form-control" onchange="autoFillPayload()">
+                                    <option value="/view_doubt/" data-method="GET">GET /view_doubt/</option>
+                                    <option value="/booking_list/" data-method="GET">GET /booking_list/</option>
+                                    <option value="/notifications/" data-method="GET">GET /notifications/</option>
+                                    <option value="/create_meeting/" data-method="GET">GET /create_meeting/</option>
+                                    <option value="/add_doubt/" data-method="POST">POST /add_doubt/</option>
+                                    <option value="/book_session/" data-method="POST">POST /book_session/</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>HTTP Method</label>
+                                <select id="api-method" class="form-control">
+                                    <option value="GET">GET</option>
+                                    <option value="POST">POST</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Form / Payload Data (Form Data format: key=value)</label>
+                                <textarea id="api-payload" class="form-control" style="height: 140px; font-family: var(--font-code);"></textarea>
+                            </div>
+
+                            <button class="btn btn-primary" onclick="sendApiTest()" style="width: 100%;">
+                                <i class="fa-solid fa-play"></i> Execute API Call
+                            </button>
+                        </div>
+
+                        <!-- Response Viewer -->
+                        <div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                <label style="font-size: 0.88rem; font-weight: 500; color: var(--text-muted);">Response Output</label>
+                                <span id="response-status-tag" style="font-size: 0.75rem; padding: 2px 8px; border-radius: 4px; display: none;"></span>
+                            </div>
+                            <div id="api-response-output" class="code-output">// Execute an API call to inspect the JSON response</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Toast Notifications Container -->
+    <div id="toast-container"></div>
+
+    <script>
+        // Tab switching
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            event.currentTarget.classList.add('active');
+            document.getElementById('tab-' + tabId).classList.add('active');
+
+            if (tabId === 'doubts') loadDoubts();
+            if (tabId === 'bookings') loadBookings();
+            if (tabId === 'notifications') loadNotifications();
+        }
+
+        // Toast Helper
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            let icon = 'fa-info-circle';
+            if (type === 'success') icon = 'fa-check-circle';
+            if (type === 'error') icon = 'fa-exclamation-circle';
+            
+            toast.innerHTML = `<i class="fa-solid ${icon}"></i> <span>${msg}</span>`;
+            container.appendChild(toast);
+            setTimeout(() => toast.remove(), 3500);
+        }
+
+        // Load Doubts
+        async function loadDoubts() {
+            try {
+                const res = await fetch('/view_doubt/');
+                const data = await res.json();
+                document.getElementById('stat-doubts').innerText = data.length || 0;
+                
+                const container = document.getElementById('doubts-list');
+                if (!data || data.length === 0) {
+                    container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 30px;">No doubts submitted yet.</div>`;
+                    return;
+                }
+
+                container.innerHTML = data.map(d => `
+                    <div class="item-card">
+                        <div class="item-header">
+                            <span class="item-title">${d.title || 'General Doubt'}</span>
+                            <span class="item-badge"><i class="fa-solid fa-user"></i> ${d.student_name || 'Student'}</span>
+                        </div>
+                        <div class="item-body">${d.description || 'No description provided.'}</div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error(err);
+                document.getElementById('doubts-list').innerHTML = `<div style="color: #ef4444; padding: 10px;">Failed to load doubts.</div>`;
+            }
+        }
+
+        // Add Doubt Form Submission
+        document.getElementById('form-add-doubt').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const student = document.getElementById('doubt-student').value;
+            const title = document.getElementById('doubt-title').value;
+            const desc = document.getElementById('doubt-desc').value;
+
+            const formData = new FormData();
+            formData.append('student_name', student);
+            formData.append('title', title);
+            formData.append('description', desc);
+
+            try {
+                const res = await fetch('/add_doubt/', { method: 'POST', body: formData });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast('Doubt submitted successfully!', 'success');
+                    document.getElementById('form-add-doubt').reset();
+                    loadDoubts();
+                    loadNotifications();
+                } else {
+                    showToast('Error submitting doubt', 'error');
+                }
+            } catch (err) {
+                showToast('Failed to connect to backend', 'error');
+            }
+        });
+
+        // Load Bookings
+        async function loadBookings() {
+            try {
+                const res = await fetch('/booking_list/');
+                const data = await res.json();
+                document.getElementById('stat-bookings').innerText = data.length || 0;
+
+                const container = document.getElementById('bookings-list');
+                if (!data || data.length === 0) {
+                    container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 30px;">No bookings found.</div>`;
+                    return;
+                }
+
+                container.innerHTML = data.map(b => `
+                    <div class="item-card">
+                        <div class="item-header">
+                            <span class="item-title"><i class="fa-solid fa-user-graduate" style="color: var(--accent-info);"></i> ${b.student_name}</span>
+                            <span class="item-badge"><i class="fa-solid fa-user-tie"></i> ${b.teacher_name}</span>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error(err);
+                document.getElementById('bookings-list').innerHTML = `<div style="color: #ef4444; padding: 10px;">Failed to load bookings.</div>`;
+            }
+        }
+
+        // Book Session Form Submission
+        document.getElementById('form-book-session').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const student = document.getElementById('booking-student').value;
+            const teacher = document.getElementById('booking-teacher').value;
+
+            const formData = new FormData();
+            formData.append('student_name', student);
+            formData.append('teacher_name', teacher);
+
+            try {
+                const res = await fetch('/book_session/', { method: 'POST', body: formData });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast('Session booked successfully!', 'success');
+                    document.getElementById('form-book-session').reset();
+                    loadBookings();
+                    loadNotifications();
+                } else {
+                    showToast('Error booking session', 'error');
+                }
+            } catch (err) {
+                showToast('Failed to connect to backend', 'error');
+            }
+        });
+
+        // Trigger Create Meeting
+        async function triggerCreateMeeting() {
+            try {
+                const res = await fetch('/create_meeting/');
+                const data = await res.json();
+                const box = document.getElementById('meeting-result-box');
+                box.style.display = 'block';
+
+                if (res.ok) {
+                    showToast('Instant Video Meeting Created!', 'success');
+                    box.innerHTML = `
+                        <div class="glass-panel" style="padding: 24px; border-color: rgba(6, 182, 212, 0.4); text-align: left;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                <span style="font-weight: 700; font-size: 1.1rem; color: #fff;"><i class="fa-solid fa-video" style="color: var(--accent-info);"></i> Session Ready</span>
+                                <span class="item-badge">Meeting ID: ${data.meeting_id}</span>
+                            </div>
+                            <p style="color: var(--text-muted); margin-bottom: 8px;"><strong>Student:</strong> ${data.student}</p>
+                            <p style="color: var(--text-muted); margin-bottom: 16px;"><strong>Teacher:</strong> ${data.teacher_name}</p>
+                            <a href="${data.meeting_link}" target="_blank" class="btn btn-info" style="width: 100%;">
+                                <i class="fa-solid fa-up-right-from-square"></i> Join Jitsi Video Call
+                            </a>
+                        </div>
+                    `;
+                } else {
+                    showToast(data.error || 'Failed to create meeting', 'error');
+                    box.innerHTML = `<div style="color: #ef4444; padding: 14px; background: rgba(239, 68, 68, 0.1); border-radius: 10px;">${data.error || 'No booking found. Please create a booking first.'}</div>`;
+                }
+            } catch (err) {
+                showToast('Failed to trigger video meeting endpoint', 'error');
+            }
+        }
+
+        // Load Notifications
+        async function loadNotifications() {
+            try {
+                const res = await fetch('/notifications/');
+                const data = await res.json();
+                document.getElementById('stat-notifications').innerText = data.length || 0;
+
+                const container = document.getElementById('notifications-list');
+                if (!data || data.length === 0) {
+                    container.innerHTML = `<div style="text-align: center; color: var(--text-muted); padding: 30px;">No notifications logged.</div>`;
+                    return;
+                }
+
+                container.innerHTML = data.map(n => `
+                    <div class="item-card" style="display: flex; align-items: center; gap: 14px;">
+                        <i class="fa-solid fa-bell" style="color: var(--accent-warning); font-size: 18px;"></i>
+                        <span style="color: #fff; font-size: 0.95rem;">${n.message}</span>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error(err);
+                document.getElementById('notifications-list').innerHTML = `<div style="color: #ef4444; padding: 10px;">Failed to load notifications.</div>`;
+            }
+        }
+
+        // Auto fill Sandbox Payload based on selected endpoint
+        function autoFillPayload() {
+            const select = document.getElementById('api-endpoint');
+            const selectedOpt = select.options[select.selectedIndex];
+            const method = selectedOpt.getAttribute('data-method');
+            document.getElementById('api-method').value = method;
+
+            const payloadBox = document.getElementById('api-payload');
+            if (select.value === '/add_doubt/') {
+                payloadBox.value = 'student_name=Amit Sharma\ntitle=How to handle Django CSRF tokens?\ndescription=Seeking best practices for fetch API with Django.';
+            } else if (select.value === '/book_session/') {
+                payloadBox.value = 'student_name=Priya Verma\nteacher_name=Dr. Kapoor';
+            } else {
+                payloadBox.value = '';
+            }
+        }
+
+        // API Sandbox Execution
+        async function sendApiTest() {
+            const endpoint = document.getElementById('api-endpoint').value;
+            const method = document.getElementById('api-method').value;
+            const payloadRaw = document.getElementById('api-payload').value.trim();
+            const outputBox = document.getElementById('api-response-output');
+            const statusTag = document.getElementById('response-status-tag');
+
+            outputBox.innerText = 'Sending request...';
+            const startTime = performance.now();
+
+            try {
+                let options = { method: method };
+                if (method === 'POST' && payloadRaw) {
+                    const formData = new FormData();
+                    payloadRaw.split('\n').forEach(line => {
+                        const parts = line.split('=');
+                        if (parts.length >= 2) {
+                            formData.append(parts[0].trim(), parts.slice(1).join('=').trim());
+                        }
+                    });
+                    options.body = formData;
+                }
+
+                const res = await fetch(endpoint, options);
+                const duration = Math.round(performance.now() - startTime);
+                const data = await res.json();
+
+                statusTag.style.display = 'inline-block';
+                statusTag.style.background = res.ok ? 'rgba(16, 185, 129, 0.2)' : 'rgba(239, 68, 68, 0.2)';
+                statusTag.style.color = res.ok ? '#34d399' : '#f87171';
+                statusTag.innerText = `HTTP ${res.status} | ${duration}ms`;
+
+                outputBox.innerText = JSON.stringify(data, null, 2);
+            } catch (err) {
+                statusTag.style.display = 'inline-block';
+                statusTag.style.background = 'rgba(239, 68, 68, 0.2)';
+                statusTag.style.color = '#f87171';
+                statusTag.innerText = 'Network Error';
+                outputBox.innerText = '// Error executing request:\n' + err.message;
+            }
+        }
+
+        // Initial Load
+        loadDoubts();
+        loadBookings();
+        loadNotifications();
+        autoFillPayload();
+    </script>
+</body>
+</html>
