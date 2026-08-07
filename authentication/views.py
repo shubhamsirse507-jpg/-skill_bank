@@ -7,6 +7,11 @@ from django.conf import settings
 from authentication.constants import AUTH_BACKGROUND_VIDEO_URL, BRAND_LOGO_IMAGE_NAME
 
 
+def landing(request):
+    """Public landing page — shown at the root URL."""
+    return render(request, 'authentication/landing.html')
+
+
 def login(request):
     return render(request, 'authentication/login.html', {
         'bg_video_url': AUTH_BACKGROUND_VIDEO_URL,

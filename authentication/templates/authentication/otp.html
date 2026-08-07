@@ -15,41 +15,26 @@
 
     body {
         height: 100vh;
+        min-height: 100vh;
         display: flex;
         align-items: center;
         justify-content: center;
         overflow: hidden;
         position: relative;
         padding: 20px;
-    }
-
-    /* ── Video Background ── */
-    .video-bg {
-        position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        object-fit: cover;
-        z-index: -2;
-    }
-
-    /* ── Dark Overlay ── */
-    .video-overlay {
-        position: fixed;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
-        background: rgba(0, 0, 0, 0.50);
-        z-index: -1;
+        background: linear-gradient(180deg, #6ddfd5 0%, #fbfefe 100%);
+        background-attachment: fixed;
     }
 
     /* ── OTP Card ── */
     .otp-box {
-        background: rgba(255, 255, 255, 0.11);
+        background: rgba(255, 255, 255, 0.75);
         backdrop-filter: blur(16px);
         -webkit-backdrop-filter: blur(16px);
         padding: 42px 36px 36px;
         border-radius: 20px;
-        box-shadow: 0 8px 40px rgba(0, 0, 0, 0.45);
-        border: 1px solid rgba(255, 255, 255, 0.18);
+        box-shadow: 0 8px 40px rgba(12, 108, 99, 0.12);
+        border: 1px solid rgba(0, 0, 0, 0.08);
         width: 100%;
         max-width: 400px;
         animation: slideUp 0.45s ease both;
@@ -86,7 +71,7 @@
     .otp-box h2 {
         text-align: center;
         margin-bottom: 8px;
-        color: #fff;
+        color: #1e293b;
         font-size: 26px;
         font-weight: 700;
         letter-spacing: 0.4px;
@@ -95,13 +80,13 @@
     .otp-box p.subtitle {
         text-align: center;
         font-size: 13px;
-        color: rgba(255, 255, 255, 0.72);
+        color: #64748b;
         margin-bottom: 28px;
         line-height: 1.6;
     }
 
     .otp-box p.subtitle span.email-hint {
-        color: #c4b5fd;
+        color: #0c6c63;
         font-weight: 600;
     }
 
@@ -119,29 +104,29 @@
         text-align: center;
         font-size: 22px;
         font-weight: 700;
-        color: #fff;
-        background: rgba(255, 255, 255, 0.13);
-        border: 1.5px solid rgba(255, 255, 255, 0.28);
+        color: #1e293b;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1.5px solid rgba(0, 0, 0, 0.12);
         border-radius: 12px;
         outline: none;
-        caret-color: #a78bfa;
+        caret-color: #0c6c63;
         transition: border-color 0.2s, background 0.2s, transform 0.15s, box-shadow 0.2s;
     }
 
     .otp-inputs input::placeholder {
-        color: rgba(255, 255, 255, 0.25);
+        color: #94a3b8;
     }
 
     .otp-inputs input:focus {
-        border-color: #a78bfa;
-        background: rgba(167, 139, 250, 0.15);
-        box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.2);
+        border-color: #0c6c63;
+        background: #fff;
+        box-shadow: 0 0 0 3px rgba(12, 108, 99, 0.15);
         transform: translateY(-2px);
     }
 
     .otp-inputs input.filled {
-        border-color: #7c3aed;
-        background: rgba(124, 58, 237, 0.2);
+        border-color: #0c6c63;
+        background: rgba(12, 108, 99, 0.08);
     }
 
     /* ── Timer ── */
@@ -152,13 +137,13 @@
         gap: 6px;
         margin-bottom: 22px;
         font-size: 13px;
-        color: rgba(255, 255, 255, 0.65);
+        color: #64748b;
     }
 
     .timer-row svg {
         width: 15px;
         height: 15px;
-        stroke: rgba(255, 255, 255, 0.5);
+        stroke: #64748b;
         fill: none;
         stroke-width: 2;
         stroke-linecap: round;
@@ -166,7 +151,7 @@
 
     #timerCount {
         font-weight: 700;
-        color: #a78bfa;
+        color: #0c6c63;
         min-width: 28px;
         display: inline-block;
     }
@@ -244,13 +229,13 @@
         text-align: center;
         margin-top: 18px;
         font-size: 13px;
-        color: rgba(255, 255, 255, 0.72);
+        color: #44556a;
     }
 
     .resend-btn {
         background: none;
         border: none;
-        color: #a78bfa;
+        color: #0c6c63;
         font-size: 13px;
         font-weight: 600;
         cursor: pointer;
@@ -258,10 +243,10 @@
         transition: color 0.2s;
     }
 
-    .resend-btn:hover { color: #c4b5fd; }
+    .resend-btn:hover { color: #09544d; }
 
     .resend-btn:disabled {
-        color: rgba(255, 255, 255, 0.35);
+        color: #94a3b8;
         cursor: not-allowed;
     }
 
@@ -269,29 +254,22 @@
         text-align: center;
         margin-top: 14px;
         font-size: 13px;
-        color: rgba(255, 255, 255, 0.75);
+        color: #64748b;
     }
 
     .extra-links a {
-        color: #a78bfa;
+        color: #0c6c63;
         text-decoration: none;
         font-weight: 500;
     }
 
-    .extra-links a:hover { text-decoration: underline; }
+    .extra-links a:hover {
+        text-decoration: underline;
+        color: #09544d;
+    }
 </style>
 </head>
 <body>
-
-<!-- Background Video -->
-<video class="video-bg" autoplay muted loop playsinline crossorigin="anonymous">
-    <source src="{{ bg_video_url }}" type="video/mp4">
-    <source src="{% static 'bg_video.mp4' %}" type="video/mp4">
-    <source src="https://videos.pexels.com/video-files/8675543/8675543-hd_1920_1080_30fps.mp4" type="video/mp4">
-</video>
-
-<!-- Dark Overlay -->
-<div class="video-overlay"></div>
 
 <!-- OTP Card -->
 <div class="otp-box">

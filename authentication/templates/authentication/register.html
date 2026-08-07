@@ -22,39 +22,19 @@
         overflow: auto;
         position: relative;
         padding: 30px 20px;
-    }
-
-    /* ── Video Background ── */
-    .video-bg {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        z-index: -2;
-    }
-
-    /* ── Dark Overlay ── */
-    .video-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.45);
-        z-index: -1;
+        background: linear-gradient(180deg, #6ddfd5 0%, #fbfefe 100%);
+        background-attachment: fixed;
     }
 
     /* ── Register Card ── */
     .register-box {
-        background: rgba(255, 255, 255, 0.12);
+        background: rgba(255,255,255,0.75);
         backdrop-filter: blur(14px);
         -webkit-backdrop-filter: blur(14px);
         padding: 40px 35px;
         border-radius: 16px;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 40px rgba(12,108,99,0.12);
+        border: 1px solid rgba(0,0,0,0.08);
         width: 100%;
         max-width: 400px;
         margin: auto;
@@ -63,7 +43,7 @@
     .register-box h2 {
         text-align: center;
         margin-bottom: 6px;
-        color: #fff;
+        color: #1e293b;
         font-size: 26px;
         font-weight: 700;
         letter-spacing: 0.5px;
@@ -72,7 +52,7 @@
     .register-box p.subtitle {
         text-align: center;
         font-size: 13px;
-        color: rgba(255, 255, 255, 0.75);
+        color: #64748b;
         margin-bottom: 24px;
     }
 
@@ -84,29 +64,30 @@
         display: block;
         margin-bottom: 6px;
         font-size: 13px;
-        color: rgba(255, 255, 255, 0.85);
+        color: #44556a;
         font-weight: 500;
     }
 
     .input-group input {
         width: 100%;
         padding: 10px 14px;
-        border: 1px solid rgba(255, 255, 255, 0.3);
+        border: 1px solid rgba(0,0,0,0.12);
         border-radius: 8px;
         font-size: 14px;
         outline: none;
-        background: rgba(255, 255, 255, 0.15);
-        color: #fff;
+        background: rgba(255,255,255,0.9);
+        color: #1e293b;
         transition: border 0.2s, background 0.2s;
     }
 
     .input-group input::placeholder {
-        color: rgba(255, 255, 255, 0.55);
+        color: #94a3b8;
     }
 
     .input-group input:focus {
-        border-color: #a78bfa;
-        background: rgba(255, 255, 255, 0.22);
+        border-color: #0c6c63;
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(12,108,99,0.12);
     }
 
     .error-msg {
@@ -144,31 +125,22 @@
         text-align: center;
         margin-top: 18px;
         font-size: 13px;
-        color: rgba(255, 255, 255, 0.8);
+        color: #44556a;
     }
 
     .extra-links a {
-        color: #a78bfa;
+        color: #0c6c63;
         text-decoration: none;
         font-weight: 500;
     }
 
     .extra-links a:hover {
         text-decoration: underline;
+        color: #09544d;
     }
 </style>
 </head>
 <body>
-
-<!-- Background Video -->
-<video class="video-bg" autoplay muted loop playsinline crossorigin="anonymous">
-    <source src="{{ bg_video_url }}" type="video/mp4">
-    <source src="{% static 'bg_video.mp4' %}" type="video/mp4">
-    <source src="https://videos.pexels.com/video-files/8675543/8675543-hd_1920_1080_30fps.mp4" type="video/mp4">
-</video>
-
-<!-- Dark Overlay -->
-<div class="video-overlay"></div>
 
 <div class="register-box">
     <h2>Create Account</h2>
