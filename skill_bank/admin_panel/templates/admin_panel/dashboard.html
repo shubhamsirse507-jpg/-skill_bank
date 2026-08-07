@@ -1,0 +1,220 @@
+{% extends 'admin_panel/base_admin.html' %}
+
+{% block title %}Dashboard - Skill Bank Admin Panel{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Executive Dashboard</h1>
+        <p class="page-subtitle">Real-time overview of platform activity, user growth, and moderation alerts.</p>
+    </div>
+    <div style="display: flex; gap: 10px;">
+        <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary btn-sm">
+            <i class="fa-solid fa-rotate-right"></i> Refresh Stats
+        </a>
+    </div>
+</div>
+
+<!-- KPI Stats Grid -->
+<div class="stats-grid">
+    <div class="glass-panel stat-card">
+        <div class="stat-icon-wrapper stat-icon-indigo">
+            <i class="fa-solid fa-users"></i>
+        </div>
+        <div>
+            <div class="stat-value">{{ total_users }}</div>
+            <div class="stat-label">Total Users</div>
+            <div class="stat-trend trend-up">
+                <i class="fa-solid fa-arrow-up"></i> {{ active_users }} Active
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-panel stat-card">
+        <div class="stat-icon-wrapper stat-icon-cyan">
+            <i class="fa-solid fa-handshake-simple"></i>
+        </div>
+        <div>
+            <div class="stat-value">{{ total_exchanges }}</div>
+            <div class="stat-label">Skill Exchanges</div>
+            <div class="stat-trend trend-up">
+                <i class="fa-solid fa-circle-check"></i> {{ completed_exchanges }} Completed
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-panel stat-card">
+        <div class="stat-icon-wrapper stat-icon-amber">
+            <i class="fa-solid fa-star"></i>
+        </div>
+        <div>
+            <div class="stat-value">{{ total_reviews }}</div>
+            <div class="stat-label">Ratings & Reviews</div>
+            <div class="stat-trend trend-up">
+                <i class="fa-solid fa-star"></i> Verified Feedback
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-panel stat-card">
+        <div class="stat-icon-wrapper stat-icon-rose">
+            <i class="fa-solid fa-shield-cat"></i>
+        </div>
+        <div>
+            <div class="stat-value">{{ pending_reports }}</div>
+            <div class="stat-label">Pending Reports</div>
+            <div class="stat-trend {% if pending_reports > 0 %}trend-down{% else %}trend-up{% endif %}">
+                <i class="fa-solid fa-triangle-exclamation"></i> Requires Review
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Analytics & Audit Grid -->
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+    <!-- Recent Skill Exchanges & Categories -->
+    <div class="glass-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+            <h3 style="font-size: 1.1rem; font-weight: 700;">Recent Skill Exchanges</h3>
+            <a href="{% url 'manage_skills' %}" class="btn btn-secondary btn-sm">View All Skills</a>
+        </div>
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Title & Skill</th>
+                        <th>Requester</th>
+                        <th>Provider</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for exchange in recent_exchanges %}
+                    <tr>
+                        <td>
+                            <div style="font-weight: 700; color: var(--text-primary);">{{ exchange.title }}</div>
+                            <div style="font-size: 0.78rem; color: var(--text-muted);">
+                                {{ exchange.requested_skill }} &bull; {{ exchange.offered_skill }}
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge badge-purple">{{ exchange.requester.username }}</span>
+                        </td>
+                        <td>
+                            <span class="badge badge-info">{{ exchange.provider.username }}</span>
+                        </td>
+                        <td>
+                            {% if exchange.status == 'COMPLETED' %}
+                                <span class="badge badge-success">Completed</span>
+                            {% elif exchange.status == 'ACCEPTED' or exchange.status == 'IN_PROGRESS' %}
+                                <span class="badge badge-warning">Active</span>
+                            {% else %}
+                                <span class="badge badge-info">{{ exchange.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td style="color: var(--text-secondary); font-size: 0.82rem;">
+                            {{ exchange.created_at|date:"M d, H:i" }}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                            No exchanges recorded yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Skill Categories Distribution -->
+    <div class="glass-panel">
+        <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1.25rem;">Category Breakdown</h3>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+            {% for cat in categories %}
+            <div>
+                <div style="display: flex; justify-content: space-between; font-size: 0.88rem; margin-bottom: 4px;">
+                    <span style="font-weight: 600;"><i class="{{ cat.icon_class }}" style="color: var(--accent-indigo); margin-right: 6px;"></i> {{ cat.name }}</span>
+                    <span style="color: var(--text-muted);">{{ cat.skill_count }} skills</span>
+                </div>
+                <div style="width: 100%; height: 6px; background: rgba(255,255,255,0.06); border-radius: 999px; overflow: hidden;">
+                    <div style="width: {% if total_skills > 0 %}{% widthratio cat.skill_count total_skills 100 %}{% else %}0{% endif %}%; height: 100%; background: linear-gradient(90deg, var(--accent-indigo), var(--accent-cyan)); border-radius: 999px;"></div>
+                </div>
+            </div>
+            {% empty %}
+            <div style="color: var(--text-muted); font-size: 0.88rem;">No categories created yet. Run `python manage.py seed_admin` to populate.</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Moderation & Recent Activity Row -->
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+    <!-- Recent Reports -->
+    <div class="glass-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+            <h3 style="font-size: 1.1rem; font-weight: 700;">Recent Moderation Reports</h3>
+            <a href="{% url 'manage_reports' %}" class="btn btn-secondary btn-sm">Moderation Queue</a>
+        </div>
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Reported User</th>
+                        <th>Reason</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for report in recent_reports %}
+                    <tr>
+                        <td>
+                            <div style="font-weight: 700;">{{ report.reported_user.username|default:"N/A" }}</div>
+                            <div style="font-size: 0.76rem; color: var(--text-muted);">By {{ report.reporter.username }}</div>
+                        </td>
+                        <td><span class="badge badge-warning">{{ report.get_reason_display }}</span></td>
+                        <td>
+                            {% if report.status == 'PENDING' %}
+                                <span class="badge badge-danger">Pending</span>
+                            {% elif report.status == 'RESOLVED' %}
+                                <span class="badge badge-success">Resolved</span>
+                            {% else %}
+                                <span class="badge badge-info">{{ report.status }}</span>
+                            {% endif %}
+                        </td>
+                        <td style="font-size: 0.8rem; color: var(--text-muted);">{{ report.created_at|date:"M d" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 1.5rem;">
+                            No abuse reports pending.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Audit Log -->
+    <div class="glass-panel">
+        <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1.25rem;">System Audit Trail</h3>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            {% for log in recent_audit_logs %}
+            <div style="display: flex; items-center; gap: 12px; font-size: 0.86rem; padding: 8px 12px; background: rgba(255,255,255,0.02); border-radius: 8px; border: 1px solid var(--border-color);">
+                <i class="fa-solid fa-clock-rotate-left" style="color: var(--accent-indigo); margin-top: 3px;"></i>
+                <div style="flex: 1;">
+                    <div style="font-weight: 600; color: var(--text-primary);">{{ log.action }}</div>
+                    <div style="font-size: 0.76rem; color: var(--text-muted);">By {{ log.actor.username|default:"System" }} &bull; {{ log.created_at|date:"M d, H:i" }}</div>
+                </div>
+            </div>
+            {% empty %}
+            <div style="color: var(--text-muted); font-size: 0.88rem; padding: 1rem; text-align: center;">No audit activity logged yet.</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

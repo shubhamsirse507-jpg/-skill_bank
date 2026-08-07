@@ -1,0 +1,117 @@
+{% extends 'admin_panel/base_admin.html' %}
+
+{% block title %}Abuse & Moderation Reports - Skill Bank Admin Panel{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Abuse & Moderation Queue</h1>
+        <p class="page-subtitle">Review community flag reports, user safety violations, and moderation requests.</p>
+    </div>
+</div>
+
+<!-- Status Counters & Filters Toolbar -->
+<div class="glass-panel" style="margin-bottom: 1.5rem; padding: 1rem 1.25rem;">
+    <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+        <a href="?status=all" class="btn {% if status_filter == 'all' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm">
+            All Reports ({{ reports|length }})
+        </a>
+        <a href="?status=pending" class="btn {% if status_filter == 'pending' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm" style="{% if status_filter != 'pending' %}border-color: rgba(244, 63, 94, 0.4); color: #f87171;{% endif %}">
+            Pending ({{ pending_count }})
+        </a>
+        <a href="?status=in_review" class="btn {% if status_filter == 'in_review' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm">
+            Under Review ({{ in_review_count }})
+        </a>
+        <a href="?status=resolved" class="btn {% if status_filter == 'resolved' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm">
+            Resolved ({{ resolved_count }})
+        </a>
+        <a href="?status=dismissed" class="btn {% if status_filter == 'dismissed' %}btn-primary{% else %}btn-secondary{% endif %} btn-sm">
+            Dismissed ({{ dismissed_count }})
+        </a>
+    </div>
+</div>
+
+<!-- Moderation Tickets Table -->
+<div class="glass-panel">
+    <div class="table-responsive">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Ticket ID</th>
+                    <th>Reporter</th>
+                    <th>Reported Target</th>
+                    <th>Violation Reason</th>
+                    <th>Report Details</th>
+                    <th>Status</th>
+                    <th>Resolution & Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                <tr>
+                    <td style="font-weight: 700; color: var(--accent-indigo);">#RPT-{{ report.id }}</td>
+                    <td>
+                        <div style="font-weight: 600;">@{{ report.reporter.username }}</div>
+                        <div style="font-size: 0.76rem; color: var(--text-muted);">{{ report.created_at|date:"M d, H:i" }}</div>
+                    </td>
+                    <td>
+                        {% if report.reported_user %}
+                            <span class="badge badge-purple">@{{ report.reported_user.username }}</span>
+                        {% else %}
+                            <span style="color: var(--text-muted); font-style: italic;">General / Content</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="badge badge-danger">{{ report.get_reason_display }}</span>
+                    </td>
+                    <td style="max-width: 260px;">
+                        <p style="font-size: 0.86rem; color: var(--text-secondary); line-height: 1.4;">{{ report.details }}</p>
+                        {% if report.action_taken %}
+                            <div style="font-size: 0.78rem; color: var(--accent-emerald); margin-top: 4px; font-weight: 600;">
+                                Note: {{ report.action_taken }}
+                            </div>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if report.status == 'PENDING' %}
+                            <span class="badge badge-danger"><i class="fa-solid fa-clock"></i> Pending</span>
+                        {% elif report.status == 'IN_REVIEW' %}
+                            <span class="badge badge-warning"><i class="fa-solid fa-magnifying-glass"></i> Under Review</span>
+                        {% elif report.status == 'RESOLVED' %}
+                            <span class="badge badge-success"><i class="fa-solid fa-check"></i> Resolved</span>
+                        {% else %}
+                            <span class="badge badge-secondary" style="background: rgba(255,255,255,0.06); border: 1px solid var(--border-color); color: var(--text-muted);">Dismissed</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form action="{% url 'manage_reports' %}" method="POST" style="display: flex; flex-direction: column; gap: 6px;">
+                            {% csrf_token %}
+                            <input type="hidden" name="report_id" value="{{ report.id }}">
+                            
+                            <div style="display: flex; gap: 4px;">
+                                <select name="status" class="form-control" style="padding: 0.25rem 0.5rem; font-size: 0.78rem; background: rgba(255, 255, 255, 0.9); color: #0f172a;">
+                                    <option value="PENDING" {% if report.status == 'PENDING' %}selected{% endif %}>Pending</option>
+                                    <option value="IN_REVIEW" {% if report.status == 'IN_REVIEW' %}selected{% endif %}>In Review</option>
+                                    <option value="RESOLVED" {% if report.status == 'RESOLVED' %}selected{% endif %}>Resolve Ticket</option>
+                                    <option value="DISMISSED" {% if report.status == 'DISMISSED' %}selected{% endif %}>Dismiss</option>
+                                </select>
+                                <button type="submit" class="btn btn-primary btn-sm" style="padding: 0.25rem 0.6rem;">
+                                    Update
+                                </button>
+                            </div>
+                            <input type="text" name="action_taken" placeholder="Resolution note..." value="{{ report.action_taken|default:'' }}" class="form-control" style="padding: 0.25rem 0.5rem; font-size: 0.76rem;">
+                        </form>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 2.5rem;">
+                        No moderation reports found for this status filter.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
