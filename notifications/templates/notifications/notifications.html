@@ -18,50 +18,25 @@
 
         body {
             min-height: 100vh;
-            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
-            color: #f8fafc;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0.516), #65b8a3);
+            color: #1e293b;
             padding-bottom: 60px;
             position: relative;
             overflow-x: hidden;
         }
 
-        /* ── Video Background ── */
-        .video-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            z-index: -2;
-            opacity: 0.25;
-            filter: brightness(0.7);
-        }
-
-        .video-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at center, rgba(15, 23, 42, 0.65), rgba(15, 23, 42, 0.95));
-            z-index: -1;
-        }
-
         /* ── Navbar ── */
         .navbar {
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background: #ffffff;
             max-width: 1100px;
             margin: 20px auto 0;
-            padding: 14px 28px;
+            padding: 12px 28px;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            border-radius: 18px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
         }
 
         .brand-box {
@@ -87,7 +62,7 @@
             font-family: 'Outfit', sans-serif;
             font-size: 26px;
             font-weight: 800;
-            background: linear-gradient(135deg, #feedc7, #f5d027);
+            background: linear-gradient(135deg, #4f46e5, #9333ea);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
@@ -101,7 +76,7 @@
 
         .nav-btn {
             padding: 9px 18px;
-            border-radius: 12px;
+            border-radius: 10px;
             font-size: 14px;
             font-weight: 600;
             text-decoration: none;
@@ -112,25 +87,26 @@
         }
 
         .nav-btn-secondary {
-            background: rgba(255, 255, 255, 0.12);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: #f1f5f9;
+            color: #1e293b;
+            border: 1px solid #cbd5e1;
         }
 
         .nav-btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.22);
-            transform: translateY(-2px);
+            background: #e2e8f0;
+            color: #0f172a;
+            border-color: #94a3b8;
         }
 
         .nav-btn-primary {
             background: linear-gradient(135deg, #4f46e5, #9333ea);
             color: #fff;
-            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.35);
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
         }
 
         .nav-btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(147, 51, 234, 0.45);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
         }
 
         /* ── Main Container ── */
@@ -142,13 +118,13 @@
 
         /* ── Header Card ── */
         .header-card {
-            background: rgba(255, 255, 255, 0.08);
+            background: #ffffff;
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.16);
-            border-radius: 24px;
-            padding: 30px;
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(0, 0, 0, 0.12);
+            border-radius: 20px;
+            padding: 28px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
             margin-bottom: 24px;
             display: flex;
             align-items: center;
@@ -167,11 +143,11 @@
             width: 56px;
             height: 56px;
             border-radius: 16px;
-            background: linear-gradient(135deg, #6366f1, #a855f7);
+            background: linear-gradient(135deg, #4f46e5, #9333ea);
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
         }
 
         .header-icon-box svg {
@@ -188,7 +164,7 @@
             font-family: 'Outfit', sans-serif;
             font-size: 28px;
             font-weight: 800;
-            color: #fff;
+            color: #1e293b;
             display: flex;
             align-items: center;
             gap: 12px;
@@ -201,17 +177,11 @@
             font-weight: 700;
             padding: 4px 12px;
             border-radius: 20px;
-            box-shadow: 0 2px 10px rgba(239, 68, 68, 0.4);
-            animation: pulseGlow 2s infinite;
-        }
-
-        @keyframes pulseGlow {
-            0%, 100% { transform: scale(1); box-shadow: 0 2px 10px rgba(239, 68, 68, 0.4); }
-            50% { transform: scale(1.05); box-shadow: 0 4px 18px rgba(239, 68, 68, 0.6); }
+            box-shadow: 0 2px 10px rgba(239, 68, 68, 0.3);
         }
 
         .header-text p {
-            color: rgba(255, 255, 255, 0.7);
+            color: #64748b;
             font-size: 14px;
             margin-top: 4px;
         }
@@ -223,11 +193,11 @@
         }
 
         .action-btn {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            color: #1e293b;
             padding: 10px 18px;
-            border-radius: 12px;
+            border-radius: 10px;
             font-size: 13px;
             font-weight: 600;
             cursor: pointer;
@@ -239,8 +209,10 @@
         }
 
         .action-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
+            background: #e2e8f0;
+            border-color: #94a3b8;
+            color: #0f172a;
+            transform: translateY(-1px);
         }
 
         .action-btn svg {
@@ -252,9 +224,9 @@
         }
 
         .action-btn-danger:hover {
-            background: rgba(239, 68, 68, 0.25);
-            border-color: rgba(239, 68, 68, 0.4);
-            color: #fca5a5;
+            background: #fee2e2;
+            border-color: #fca5a5;
+            color: #dc2626;
         }
 
         /* ── Filter Tabs ── */
@@ -267,11 +239,11 @@
         }
 
         .tab-btn {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.14);
-            color: rgba(255, 255, 255, 0.75);
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            color: #475569;
             padding: 10px 20px;
-            border-radius: 14px;
+            border-radius: 12px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
@@ -280,26 +252,33 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
 
         .tab-btn:hover {
-            background: rgba(255, 255, 255, 0.16);
-            color: #fff;
+            background: #f8fafc;
+            color: #1e293b;
+            border-color: #94a3b8;
         }
 
         .tab-btn.active {
-            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            background: linear-gradient(135deg, #4f46e5, #9333ea);
             color: #fff;
-            border-color: rgba(167, 139, 250, 0.5);
-            box-shadow: 0 4px 18px rgba(79, 70, 229, 0.4);
+            border-color: transparent;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.35);
         }
 
         .tab-badge {
-            background: rgba(255, 255, 255, 0.2);
-            color: #fff;
+            background: rgba(0, 0, 0, 0.08);
+            color: inherit;
             font-size: 11px;
             padding: 2px 7px;
             border-radius: 10px;
+        }
+
+        .tab-btn.active .tab-badge {
+            background: rgba(255, 255, 255, 0.25);
+            color: #fff;
         }
 
         /* ── Notification List ── */
@@ -310,29 +289,30 @@
         }
 
         .notification-card {
-            background: rgba(255, 255, 255, 0.08);
+            background: #ffffff;
             backdrop-filter: blur(14px);
             -webkit-backdrop-filter: blur(14px);
-            border: 1px solid rgba(255, 255, 255, 0.14);
-            border-radius: 20px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 18px;
             padding: 22px 26px;
             transition: all 0.25s ease;
             display: flex;
             align-items: flex-start;
             gap: 18px;
             position: relative;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
         }
 
         .notification-card:hover {
-            transform: translateY(-3px);
-            background: rgba(255, 255, 255, 0.12);
-            border-color: rgba(255, 255, 255, 0.25);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(0, 0, 0, 0.1);
+            border-color: rgba(79, 70, 229, 0.3);
         }
 
         .notification-card.unread {
-            background: rgba(79, 70, 229, 0.12);
-            border-left: 4px solid #818cf8;
+            background: #ffffff;
+            border-left: 5px solid #4f46e5;
+            box-shadow: 0 6px 24px rgba(79, 70, 229, 0.12);
         }
 
         .unread-dot {
@@ -342,8 +322,8 @@
             width: 10px;
             height: 10px;
             border-radius: 50%;
-            background: #818cf8;
-            box-shadow: 0 0 10px #818cf8;
+            background: #4f46e5;
+            box-shadow: 0 0 10px rgba(79, 70, 229, 0.5);
         }
 
         .avatar-box {
@@ -356,8 +336,8 @@
             height: 52px;
             border-radius: 16px;
             object-fit: cover;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid #e2e8f0;
+            background: #f8fafc;
         }
 
         .type-badge-icon {
@@ -370,7 +350,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            border: 2px solid #0f172a;
+            border: 2px solid #ffffff;
         }
 
         .type-badge-icon.skill_request { background: #3b82f6; }
@@ -400,7 +380,7 @@
             font-family: 'Outfit', sans-serif;
             font-size: 17px;
             font-weight: 700;
-            color: #fff;
+            color: #1e293b;
         }
 
         .category-pill {
@@ -412,14 +392,14 @@
             letter-spacing: 0.5px;
         }
 
-        .category-pill.skill_request { background: rgba(59, 130, 246, 0.25); color: #93c5fd; border: 1px solid rgba(147, 197, 253, 0.3); }
-        .category-pill.message { background: rgba(139, 92, 246, 0.25); color: #c4b5fd; border: 1px solid rgba(196, 181, 253, 0.3); }
-        .category-pill.achievement { background: rgba(234, 179, 8, 0.25); color: #fde047; border: 1px solid rgba(253, 224, 71, 0.3); }
-        .category-pill.system { background: rgba(239, 68, 68, 0.25); color: #fca5a5; border: 1px solid rgba(252, 165, 165, 0.3); }
+        .category-pill.skill_request { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+        .category-pill.message { background: #f3e8ff; color: #7c3aed; border: 1px solid #ddd6fe; }
+        .category-pill.achievement { background: #fefce8; color: #ca8a04; border: 1px solid #fef08a; }
+        .category-pill.system { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
 
         .timestamp {
             font-size: 12px;
-            color: rgba(255, 255, 255, 0.5);
+            color: #94a3b8;
             margin-left: auto;
             display: flex;
             align-items: center;
@@ -428,7 +408,7 @@
 
         .notif-message {
             font-size: 14px;
-            color: rgba(255, 255, 255, 0.82);
+            color: #334155;
             line-height: 1.5;
             margin-bottom: 14px;
         }
@@ -440,7 +420,7 @@
         }
 
         .cta-btn {
-            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            background: linear-gradient(135deg, #4f46e5, #9333ea);
             color: #fff;
             font-size: 13px;
             font-weight: 600;
@@ -451,17 +431,18 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
         }
 
         .cta-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.45);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 18px rgba(147, 51, 234, 0.35);
         }
 
         .icon-action-btn {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            color: rgba(255, 255, 255, 0.7);
+            background: #f1f5f9;
+            border: 1px solid #cbd5e1;
+            color: #64748b;
             width: 34px;
             height: 34px;
             border-radius: 10px;
@@ -474,8 +455,9 @@
         }
 
         .icon-action-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            color: #fff;
+            background: #e2e8f0;
+            color: #1e293b;
+            border-color: #94a3b8;
         }
 
         .icon-action-btn svg {
@@ -488,20 +470,20 @@
 
         /* ── Empty State ── */
         .empty-state {
-            background: rgba(255, 255, 255, 0.06);
-            backdrop-filter: blur(14px);
-            border: 1px dashed rgba(255, 255, 255, 0.2);
+            background: #ffffff;
+            border: 1px dashed #cbd5e1;
             border-radius: 20px;
             padding: 50px 20px;
             text-align: center;
             display: none;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
         }
 
         .empty-icon-box {
             width: 70px;
             height: 70px;
             border-radius: 20px;
-            background: rgba(255, 255, 255, 0.1);
+            background: #f1f5f9;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -511,7 +493,7 @@
         .empty-icon-box svg {
             width: 36px;
             height: 36px;
-            stroke: rgba(255, 255, 255, 0.5);
+            stroke: #64748b;
             fill: none;
             stroke-width: 2;
         }
@@ -519,12 +501,12 @@
         .empty-state h3 {
             font-family: 'Outfit', sans-serif;
             font-size: 20px;
-            color: #fff;
+            color: #1e293b;
             margin-bottom: 6px;
         }
 
         .empty-state p {
-            color: rgba(255, 255, 255, 0.6);
+            color: #64748b;
             font-size: 14px;
         }
 
@@ -533,15 +515,14 @@
             position: fixed;
             bottom: 30px;
             right: 30px;
-            background: rgba(15, 23, 42, 0.9);
-            border: 1px solid rgba(129, 140, 248, 0.4);
+            background: #1e293b;
+            border: 1px solid #4f46e5;
             color: #fff;
             padding: 14px 22px;
             border-radius: 14px;
             font-size: 14px;
             font-weight: 600;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
             display: flex;
             align-items: center;
             gap: 10px;
@@ -559,13 +540,6 @@
 </head>
 
 <body>
-
-    <!-- Background Video -->
-    <video class="video-bg" autoplay muted loop playsinline crossorigin="anonymous">
-        <source src="{{ bg_video_url }}" type="video/mp4">
-        <source src="{% static 'bg_video.mp4' %}" type="video/mp4">
-    </video>
-    <div class="video-overlay"></div>
 
     <!-- Top Navbar -->
     <nav class="navbar">
