@@ -161,8 +161,10 @@
 <body>
 
 <!-- Background Video -->
-<video class="video-bg" autoplay muted loop playsinline>
+<video class="video-bg" autoplay muted loop playsinline crossorigin="anonymous">
     <source src="{{ bg_video_url }}" type="video/mp4">
+    <source src="{% static 'bg_video.mp4' %}" type="video/mp4">
+    <source src="https://videos.pexels.com/video-files/8675543/8675543-hd_1920_1080_30fps.mp4" type="video/mp4">
 </video>
 
 <!-- Dark Overlay -->

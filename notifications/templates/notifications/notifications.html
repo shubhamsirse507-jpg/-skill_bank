@@ -1,0 +1,816 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notification Center | Skill Bank</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            color: #f8fafc;
+            padding-bottom: 60px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* ── Video Background ── */
+        .video-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+            opacity: 0.25;
+            filter: brightness(0.7);
+        }
+
+        .video-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(15, 23, 42, 0.65), rgba(15, 23, 42, 0.95));
+            z-index: -1;
+        }
+
+        /* ── Navbar ── */
+        .navbar {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            max-width: 1100px;
+            margin: 20px auto 0;
+            padding: 14px 28px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .brand-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+
+        .brand-logo-img {
+            width: 44px;
+            height: 44px;
+            object-fit: contain;
+            animation: float 4s ease-in-out infinite alternate;
+        }
+
+        @keyframes float {
+            from { transform: translateY(0); }
+            to { transform: translateY(-5px); }
+        }
+
+        .brand-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 26px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #feedc7, #f5d027);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .nav-btn {
+            padding: 9px 18px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-btn-secondary {
+            background: rgba(255, 255, 255, 0.12);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .nav-btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.22);
+            transform: translateY(-2px);
+        }
+
+        .nav-btn-primary {
+            background: linear-gradient(135deg, #4f46e5, #9333ea);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.35);
+        }
+
+        .nav-btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(147, 51, 234, 0.45);
+        }
+
+        /* ── Main Container ── */
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        /* ── Header Card ── */
+        .header-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-icon-box {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .header-icon-box svg {
+            width: 28px;
+            height: 28px;
+            fill: none;
+            stroke: #fff;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .header-text h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 28px;
+            font-weight: 800;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .unread-pill {
+            background: linear-gradient(135deg, #ef4444, #f97316);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            box-shadow: 0 2px 10px rgba(239, 68, 68, 0.4);
+            animation: pulseGlow 2s infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(1); box-shadow: 0 2px 10px rgba(239, 68, 68, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 4px 18px rgba(239, 68, 68, 0.6); }
+        }
+
+        .header-text p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+            margin-top: 4px;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .action-btn svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .action-btn-danger:hover {
+            background: rgba(239, 68, 68, 0.25);
+            border-color: rgba(239, 68, 68, 0.4);
+            color: #fca5a5;
+        }
+
+        /* ── Filter Tabs ── */
+        .tabs-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 24px;
+            overflow-x: auto;
+            padding-bottom: 6px;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            color: rgba(255, 255, 255, 0.75);
+            padding: 10px 20px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.16);
+            color: #fff;
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: #fff;
+            border-color: rgba(167, 139, 250, 0.5);
+            box-shadow: 0 4px 18px rgba(79, 70, 229, 0.4);
+        }
+
+        .tab-badge {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            font-size: 11px;
+            padding: 2px 7px;
+            border-radius: 10px;
+        }
+
+        /* ── Notification List ── */
+        .notifications-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .notification-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 20px;
+            padding: 22px 26px;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: flex-start;
+            gap: 18px;
+            position: relative;
+        }
+
+        .notification-card:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.25);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .notification-card.unread {
+            background: rgba(79, 70, 229, 0.12);
+            border-left: 4px solid #818cf8;
+        }
+
+        .unread-dot {
+            position: absolute;
+            top: 24px;
+            right: 24px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #818cf8;
+            box-shadow: 0 0 10px #818cf8;
+        }
+
+        .avatar-box {
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .user-avatar {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            object-fit: cover;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .type-badge-icon {
+            position: absolute;
+            bottom: -4px;
+            right: -4px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #0f172a;
+        }
+
+        .type-badge-icon.skill_request { background: #3b82f6; }
+        .type-badge-icon.message { background: #8b5cf6; }
+        .type-badge-icon.achievement { background: #eab308; }
+        .type-badge-icon.system { background: #ef4444; }
+
+        .type-badge-icon svg {
+            width: 11px;
+            height: 11px;
+            fill: #fff;
+        }
+
+        .content-box {
+            flex: 1;
+        }
+
+        .top-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 6px;
+            flex-wrap: wrap;
+        }
+
+        .notif-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 17px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .category-pill {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .category-pill.skill_request { background: rgba(59, 130, 246, 0.25); color: #93c5fd; border: 1px solid rgba(147, 197, 253, 0.3); }
+        .category-pill.message { background: rgba(139, 92, 246, 0.25); color: #c4b5fd; border: 1px solid rgba(196, 181, 253, 0.3); }
+        .category-pill.achievement { background: rgba(234, 179, 8, 0.25); color: #fde047; border: 1px solid rgba(253, 224, 71, 0.3); }
+        .category-pill.system { background: rgba(239, 68, 68, 0.25); color: #fca5a5; border: 1px solid rgba(252, 165, 165, 0.3); }
+
+        .timestamp {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .notif-message {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.82);
+            line-height: 1.5;
+            margin-bottom: 14px;
+        }
+
+        .item-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cta-btn {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 8px 16px;
+            border-radius: 10px;
+            text-decoration: none;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .cta-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.45);
+        }
+
+        .icon-action-btn {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: rgba(255, 255, 255, 0.7);
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+
+        .icon-action-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        .icon-action-btn svg {
+            width: 16px;
+            height: 16px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        /* ── Empty State ── */
+        .empty-state {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(14px);
+            border: 1px dashed rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 50px 20px;
+            text-align: center;
+            display: none;
+        }
+
+        .empty-icon-box {
+            width: 70px;
+            height: 70px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 16px;
+        }
+
+        .empty-icon-box svg {
+            width: 36px;
+            height: 36px;
+            stroke: rgba(255, 255, 255, 0.5);
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .empty-state h3 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 20px;
+            color: #fff;
+            margin-bottom: 6px;
+        }
+
+        .empty-state p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+        }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(129, 140, 248, 0.4);
+            color: #fff;
+            padding: 14px 22px;
+            border-radius: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 9999;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Background Video -->
+    <video class="video-bg" autoplay muted loop playsinline crossorigin="anonymous">
+        <source src="{{ bg_video_url }}" type="video/mp4">
+        <source src="{% static 'bg_video.mp4' %}" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
+
+    <!-- Top Navbar -->
+    <nav class="navbar">
+        <a href="{% url 'notifications' %}" class="brand-box">
+            <img src="{% static brand_logo_image_name %}" alt="Skill Bank Logo" class="brand-logo-img">
+            <span class="brand-title">Skill Bank</span>
+        </a>
+        <div class="nav-links">
+            <a href="{% url 'profile' %}" class="nav-btn nav-btn-secondary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                My Profile
+            </a>
+            <a href="{% url 'login' %}" class="nav-btn nav-btn-primary">Logout</a>
+        </div>
+    </nav>
+
+    <!-- Main Container -->
+    <div class="container">
+
+        <!-- Header Card -->
+        <div class="header-card">
+            <div class="header-info">
+                <div class="header-icon-box">
+                    <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                </div>
+                <div class="header-text">
+                    <h1>
+                        Notifications
+                        {% if unread_count > 0 %}
+                        <span class="unread-pill" id="unreadPill">{{ unread_count }} New</span>
+                        {% endif %}
+                    </h1>
+                    <p>Stay updated on skill swap requests, messages, and platform alerts.</p>
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <a href="{% url 'mark_all_read' %}" class="action-btn" id="markAllBtn">
+                    <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                    Mark All as Read
+                </a>
+                <a href="{% url 'clear_all_notifications' %}" class="action-btn action-btn-danger" id="clearAllBtn">
+                    <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                    Clear All
+                </a>
+            </div>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="tabs-row">
+            <button class="tab-btn active" data-filter="all">
+                All Notifications <span class="tab-badge" id="badgeAll">{{ total_count }}</span>
+            </button>
+            <button class="tab-btn" data-filter="unread">
+                Unread <span class="tab-badge" id="badgeUnread">{{ unread_count }}</span>
+            </button>
+            <button class="tab-btn" data-filter="skill_request">
+                ⚡ Skill Swaps
+            </button>
+            <button class="tab-btn" data-filter="message">
+                💬 Messages
+            </button>
+            <button class="tab-btn" data-filter="system">
+                🛡️ System & Security
+            </button>
+        </div>
+
+        <!-- Notification List -->
+        <div class="notifications-list" id="notifList">
+            {% for item in notifications %}
+            <div class="notification-card {% if not item.is_read %}unread{% endif %}" data-id="{{ item.id }}" data-type="{{ item.notification_type }}" data-read="{{ item.is_read|yesno:'true,false' }}">
+                
+                {% if not item.is_read %}
+                <div class="unread-dot" title="Unread notification"></div>
+                {% endif %}
+
+                <div class="avatar-box">
+                    <img src="{{ item.sender_avatar }}" alt="{{ item.sender_name }}" class="user-avatar">
+                    <div class="type-badge-icon {{ item.notification_type }}">
+                        {% if item.notification_type == 'skill_request' %}
+                        <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                        {% elif item.notification_type == 'message' %}
+                        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        {% elif item.notification_type == 'achievement' %}
+                        <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        {% else %}
+                        <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="content-box">
+                    <div class="top-row">
+                        <span class="notif-title">{{ item.title }}</span>
+                        <span class="category-pill {{ item.notification_type }}">
+                            {% if item.notification_type == 'skill_request' %}Skill Swap{% elif item.notification_type == 'message' %}Message{% elif item.notification_type == 'achievement' %}Milestone{% else %}System{% endif %}
+                        </span>
+                        <span class="timestamp">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                            {{ item.created_at_str }}
+                        </span>
+                    </div>
+
+                    <p class="notif-message">{{ item.message }}</p>
+
+                    <div class="item-actions">
+                        {% if item.action_url and item.action_text %}
+                        <a href="{{ item.action_url }}" class="cta-btn">
+                            {{ item.action_text }}
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                        </a>
+                        {% endif %}
+
+                        {% if not item.is_read %}
+                        <a href="{% url 'mark_as_read' item.id %}" class="icon-action-btn btn-mark-read" title="Mark as Read" data-id="{{ item.id }}">
+                            <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+                        </a>
+                        {% endif %}
+
+                        <a href="{% url 'delete_notification' item.id %}" class="icon-action-btn btn-delete" title="Delete Notification" data-id="{{ item.id }}">
+                            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+            {% empty %}
+            {% endfor %}
+        </div>
+
+        <!-- Empty State Container -->
+        <div class="empty-state" id="emptyState" {% if not notifications %}style="display: block;"{% endif %}>
+            <div class="empty-icon-box">
+                <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            </div>
+            <h3>No Notifications Found</h3>
+            <p>You're all caught up! Check back later for new skill swap requests or messages.</p>
+        </div>
+
+    </div>
+
+    <!-- Toast Component -->
+    <div class="toast" id="toast">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+        <span id="toastMsg">Action completed successfully</span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabs = document.querySelectorAll('.tab-btn');
+            const cards = document.querySelectorAll('.notification-card');
+            const emptyState = document.getElementById('emptyState');
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+
+            function showToast(msg) {
+                toastMsg.textContent = msg;
+                toast.classList.add('show');
+                setTimeout(() => toast.classList.remove('show'), 3000);
+            }
+
+            /* ── Filter Logic ── */
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function () {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const filter = this.dataset.filter;
+                    let visibleCount = 0;
+
+                    cards.forEach(card => {
+                        const type = card.dataset.type;
+                        const isRead = card.dataset.read === 'true';
+
+                        if (filter === 'all') {
+                            card.style.display = 'flex';
+                            visibleCount++;
+                        } else if (filter === 'unread' && !isRead) {
+                            card.style.display = 'flex';
+                            visibleCount++;
+                        } else if (filter === type) {
+                            card.style.display = 'flex';
+                            visibleCount++;
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+
+                    if (visibleCount === 0) {
+                        emptyState.style.display = 'block';
+                    } else {
+                        emptyState.style.display = 'none';
+                    }
+                });
+            });
+
+            /* ── AJAX Mark Read ── */
+            document.querySelectorAll('.btn-mark-read').forEach(btn => {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const url = this.getAttribute('href');
+                    const card = this.closest('.notification-card');
+
+                    fetch(url, {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    }).then(res => res.json()).then(data => {
+                        if (data.status === 'success') {
+                            card.classList.remove('unread');
+                            card.dataset.read = 'true';
+                            const dot = card.querySelector('.unread-dot');
+                            if (dot) dot.remove();
+                            this.remove();
+                            showToast('Notification marked as read.');
+                        }
+                    }).catch(() => {
+                        window.location.href = url;
+                    });
+                });
+            });
+
+            /* ── AJAX Delete Item ── */
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const url = this.getAttribute('href');
+                    const card = this.closest('.notification-card');
+
+                    fetch(url, {
+                        headers: { 'X-Requested-With': 'XMLHttpRequest' }
+                    }).then(res => res.json()).then(data => {
+                        if (data.status === 'success') {
+                            card.style.transform = 'translateX(100px)';
+                            card.style.opacity = '0';
+                            setTimeout(() => {
+                                card.remove();
+                                showToast('Notification removed.');
+                            }, 300);
+                        }
+                    }).catch(() => {
+                        window.location.href = url;
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>
