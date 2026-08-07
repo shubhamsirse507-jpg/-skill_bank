@@ -1,0 +1,210 @@
+/* ==========================================
+Tablet (992px and below)
+========================================== */
+
+@media (max-width: 992px) {
+
+    .dashboard-bg {
+        padding: 20px !important;
+    }
+
+    .skill-card,
+    .card {
+        margin-bottom: 20px;
+    }
+
+}
+
+
+/* ==========================================
+Mobile Sidebar (768px and below)
+========================================== */
+
+@media (max-width: 768px) {
+
+
+    /* Mobile sidebar drawer */
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -260px;
+        width: 250px;
+        height: 100vh;
+        z-index: 999;
+        transition: 0.3s ease;
+    }
+
+
+    .sidebar.active {
+        left: 0;
+    }
+
+
+    /* If using horizontal sidebar */
+
+    .sidebar-horizontal {
+
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+
+        padding: 10px;
+
+        margin: 10px 0;
+
+        border-radius: 12px;
+
+    }
+
+
+    .sidebar-horizontal a {
+
+        font-size: 12px;
+        padding: 8px;
+        text-align: center;
+
+    }
+
+
+    .profile-avatar {
+
+        width: 40px;
+        height: 40px;
+
+    }
+
+
+    .dashboard-bg {
+
+        padding: 15px !important;
+
+    }
+
+
+    .welcome-box {
+
+        text-align: center;
+        padding: 15px;
+
+    }
+
+
+    .stat-card {
+
+        padding: 20px !important;
+        margin-bottom: 12px;
+
+    }
+
+
+    .stat-card h2 {
+
+        font-size: 22px;
+
+    }
+
+
+    .navbar-brand {
+
+        font-size: 18px !important;
+
+    }
+
+
+    .search-box {
+
+        width: 100%;
+
+    }
+
+}
+
+
+/* ==========================================
+Small Mobile (576px and below)
+========================================== */
+
+@media (max-width: 576px) {
+
+
+    .dashboard-bg {
+
+        padding: 15px !important;
+
+    }
+
+
+    h2 {
+
+        font-size: 24px;
+        text-align: center;
+
+    }
+
+
+    .card-body {
+
+        padding: 18px;
+
+    }
+
+
+    .navbar-brand {
+
+        font-size: 20px !important;
+
+    }
+
+
+    .navbar-brand img {
+
+        width: 38px;
+        height: 38px;
+
+    }
+
+
+}
+
+/* ==========================================
+Mobile Stats Cards (768px and below)
+========================================== */
+
+@media(max-width:768px){
+
+    .stats-container,
+    .row{
+
+        width:100%;
+        margin:0;
+
+    }
+
+
+    .stat-card{
+
+        width:100% !important;
+
+        margin-bottom:15px;
+
+        border-radius:15px;
+
+    }
+
+
+    .stat-card .card-body{
+
+        padding:20px;
+
+    }
+
+
+    .stat-card h2{
+
+        font-size:24px;
+
+    }
+
+
+}

@@ -7,9 +7,11 @@ urlpatterns = [
     path("admin/", admin.site.urls),
 
     # Authentication Module
-    path("", include("authentication.urls")),
     path("auth/", include("authentication.urls")),
 
     # Dashboard Module
     path("dashboard/", include("dashboard.urls")),
+
+    # User Dashboard Module
+    path("", include("user_dashboard.urls")),
 ]
