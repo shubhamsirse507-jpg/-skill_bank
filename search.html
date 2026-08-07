@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Skill Bank</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+}
+
+body{
+    background:linear-gradient(180deg, #6ddfd5, #fbfefe);
+}
+
+/* Navbar */
+
+nav{
+    background:#ecedf0;
+    color:#353536;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:15px 50px;
+}
+
+nav h2{
+    font-size:28px;
+}
+
+nav ul{
+    display:flex;
+    list-style:none;
+}
+
+nav ul li{
+    margin-left:25px;
+}
+
+nav ul li a{
+    color:#353536;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+/* Hero */
+
+.hero{
+    text-align:center;
+    padding:40px;
+}
+
+.hero h1{
+    font-size:40px;
+    color:#353536
+}
+
+.hero p{
+    margin-top:10px;
+    color:#353536
+}
+
+/* Search */
+
+.search-box{
+
+    width:90%;
+    margin:auto;
+
+    display:flex;
+    justify-content:center;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+.search-box input,
+.search-box select{
+
+    padding:14px;
+    width:250px;
+    border-radius:8px;
+    border:1px solid #ccc;
+}
+
+.search-box button{
+
+    padding:14px 30px;
+    background:hsl(159, 73%, 45%);
+    color:rgb(255, 255, 255);
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+}
+
+.search-box button:hover{
+
+    background:linear-gradient(180deg, #6ddfd5, #fbfefe);
+}
+
+/* Cards */
+
+.cards{
+
+    width:90%;
+    margin:40px auto;
+
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+
+    gap:20px;
+}
+
+.card{
+
+    background:white;
+    border-radius:12px;
+    padding:20px;
+    text-align:center;
+
+    box-shadow:0 5px 10px rgba(0,0,0,.15);
+
+    transition:.3s;
+}
+
+.card:hover{
+
+    transform:translateY(-8px);
+}
+
+.card h2{
+
+    color:#1E3A8A;
+    margin-bottom:10px;
+}
+
+.card p{
+
+    color:#555;
+    margin:6px;
+}
+
+.card button{
+
+    margin-top:15px;
+
+    padding:10px 20px;
+
+    background:#0e7d73;
+    color:white;
+
+    border:none;
+    border-radius:6px;
+
+    cursor:pointer;
+}
+
+.card button:hover{
+
+    background:linear-gradient(180deg, #0e7d73, #44f1e3);
+}
+
+footer{
+
+    background:#1E3A8A;
+    color:white;
+    text-align:center;
+    padding:20px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<nav>
+
+<h2>Skill Bank</h2>
+
+<ul>
+
+<li><a href="./search.html">Home</a></li>
+
+<li><a href="./search.html">Search Skills</a></li>
+
+<li><a href="./exchange.html">Exchange Request</a></li>
+
+<li><a href="./booking.html">Booking</a></li>
+
+<li><a href="#">About</a></li>
+
+<li><a href="#">Contact</a></li>
+
+</ul>
+
+</nav>
+
+<div class="hero">
+
+<h1>Search & Filter Skills</h1>
+
+<p>Find your desired skill from the Skill Bank.</p>
+
+</div>
+
+<div class="search-box">
+
+<input type="text" placeholder="Search Skills">
+
+<select>
+
+<option>All Categories</option>
+<option>Programming</option>
+<option>Web Development</option>
+<option>Design</option>
+<option>AI</option>
+<option>Database</option>
+<option>Cloud</option>
+<option>Marketing</option>
+<option>Business</option>
+
+</select>
+
+<select>
+
+<option>All Levels</option>
+<option>Beginner</option>
+<option>Intermediate</option>
+<option>Advanced</option>
+
+</select>
+
+<button>Search</button>
+
+</div>
+
+<div class="cards">
+
+<div class="card">
+<h2>🐍 Python</h2>
+<p>Programming</p>
+<p>Beginner</p>
+<button>View Details</button>
+</div>
+
+<div class="card">
+<h2>☕ Java</h2>
+<p>Programming</p>
+<p>Intermediate</p>
+<button>View Details</button>
+</div>
+
+<div class="card">
+<h2>🌐 HTML & CSS</h2>
+<p>Web Development</p>
+<p>Beginner</p>
+<button>View Details</button>
+</div>
+
+<div class="card">
+<h2>⚡ JavaScript</h2>
+<p>Web Development</p>
+<p>Intermediate</p>
+<button>View Details</button>
+</div>
+
+<div class="card">
+<h2>⚛ React</h2>
+<p>Frontend</p>
+<p>Advanced</p>
+<button>View Details</button>
+</div>
+
+<div class="card">
+<h2>🎨 UI/UX Design</h2>
+<p>Design</p>
+<p>Intermediate</p>
+<button>View Details</button>
+</div>
+
+<div class="card">
+<h2>📱 Flutter</h2>
+<p>Mobile Development</p>
+<p>Beginner</p>
+<button>View Details</button>
+</div>
+
+<div class="card">
+<h2>🤖 Machine Learning</h2>
+<p>AI</p>
+<p>Advanced</p>
+<button>View Details</button>
+</div>
+
+<div class="card">
+<h2>📊 Data Science</h2>
+<p>AI</p>
+<p>Intermediate</p>
+<button>View Details</button>
+</div>
+
+<div class="card">
+<h2>🗄 SQL</h2>
+<p>Database</p>
+<p>Beginner</p>
+<button>View Details</button>
+</div>
+
+<div class="card">
+<h2>☁ Cloud Computing</h2>
+<p>Cloud</p>
+<p>Intermediate</p>
+<button>View Details</button>
+</div>
+
+<div class="card">
+<h2>🔒 Cyber Security</h2>
+<p>Security</p>
+<p>Advanced</p>
+<button>View Details</button>
+</div>
+
+<div class="card">
+<h2>📢 Digital Marketing</h2>
+<p>Marketing</p>
+<p>Beginner</p>
+<button>View Details</button>
+</div>
+
+<div class="card">
+<h2>📈 Business Analytics</h2>
+<p>Business</p>
+<p>Intermediate</p>
+<button>View Details</button>
+</div>
+
+<div class="card">
+<h2>💬 Communication Skills</h2>
+<p>Soft Skills</p>
+<p>Beginner</p>
+<button>View Details</button>
+</div>
+
+</div>
+
+<footer>
+
+<p>© 2026 Skill Bank | Search & Filter UI</p>
+
+</footer>
+
+</body>
+</html>
