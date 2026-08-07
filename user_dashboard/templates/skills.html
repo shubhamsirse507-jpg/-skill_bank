@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-5">
+
+    <h1 class="text-primary text-center mb-4">
+        Available Skills
+    </h1>
+
+    <div class="row">
+
+        {% for skill in skills %}
+
+        <div class="col-md-4 mb-4">
+
+            <div class="card shadow">
+
+                <div class="card-body">
+
+                    <h4 class="card-title text-success">
+                        {{ skill.skill_name }}
+                    </h4>
+
+                    <p>
+                        <b>Category:</b> 
+                        {{ skill.category }}
+                    </p>
+
+                    <p>
+                        {{ skill.description }}
+                    </p>
+
+                    <button class="btn btn-primary">
+                        Request Exchange
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% empty %}
+
+        <h3 class="text-center">
+            No skills available yet.
+        </h3>
+
+        {% endfor %}
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,41 @@
+#chatbox {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 260px;
+    padding: 15px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0 10px gray;
+}
+
+#chatbox input {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+#chatbox button {
+    width: 100%;
+}
+
+.dashboard-bg{
+    min-height:100vh;
+    background: linear-gradient(135deg, #eef2ff, #2a72d1, #f5f3ff);
+    padding:30px;
+}
+
+.logout-box {
+    display: block;
+    margin: 20px;
+    padding: 12px;
+    background-color: #e74c3c;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+}
+
+.logout-box:hover {
+    background-color: #c0392b;
+}

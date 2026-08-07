@@ -1,0 +1,256 @@
+{% extends 'user_dashboard/base.html' %}
+
+{% block content %}
+
+<div class="container-fluid px-4">
+
+    <h2 class="fw-bold mb-4">
+        Explore Skills 🚀
+    </h2>
+
+    
+    <!-- Search Bar -->
+  <!-- Search Bar -->
+<div class="mb-4">
+    <input 
+        type="text" 
+        id="skillSearch"
+        class="form-control shadow-sm"
+        placeholder="🔍 Search skills..."
+        onkeyup="searchSkills()">
+</div>
+
+
+<!-- Skill Cards -->
+<div class="row g-4" id="skillContainer">
+
+    <div class="col-md-4 skill-card">
+        <div class="card shadow-sm h-100">
+            <div class="card-body d-flex flex-column">
+
+                <h4>🐍 Python Programming</h4>
+
+                <p><b>Category:</b> Programming</p>
+                <p><b>Level:</b> Beginner</p>
+
+                <p>
+                    Learn Python basics, logic building and programming concepts.
+                </p>
+
+              <a href="{% url 'request_skill' %}" class="request-btn mt-auto">
+    Request Skill
+</a>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Card 4 -->
+<div class="col-md-4 skill-card">
+    <div class="card shadow-sm h-100">
+        <div class="card-body d-flex flex-column">
+
+            <h4>📸 Photography</h4>
+
+            <p><b>Category:</b> Creative</p>
+            <p><b>Level:</b> Beginner</p>
+
+            <p>
+                Learn camera basics, photo editing and creative photography skills.
+            </p>
+
+          <a href="{% url 'request_skill' %}" class="request-btn mt-auto">
+    Request Skill
+</a>
+                </button>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Card 5 -->
+<div class="col-md-4 skill-card">
+    <div class="card shadow-sm h-100">
+        <div class="card-body d-flex flex-column">
+
+            <h4>💼 Business Skills</h4>
+
+            <p><b>Category:</b> Management</p>
+            <p><b>Level:</b> Intermediate</p>
+
+            <p>
+                Learn entrepreneurship, communication and business strategies.
+            </p>
+
+           <a href="{% url 'request_skill' %}" class="request-btn mt-auto">
+    Request Skill
+</a>
+        </div>
+    </div>
+</div>
+
+
+<!-- Card 6 -->
+<div class="col-md-4 skill-card">
+    <div class="card shadow-sm h-100">
+        <div class="card-body d-flex flex-column">
+
+            <h4>🗣️ English Speaking</h4>
+
+            <p><b>Category:</b> Language</p>
+            <p><b>Level:</b> Beginner</p>
+
+            <p>
+                Improve spoken English, vocabulary and confidence.
+            </p>
+<a href="{% url 'request_skill' %}" class="request-btn mt-auto">
+    Request Skill
+</a>
+        </div>
+    </div>
+</div>
+
+
+<!-- Card 7 -->
+<div class="col-md-4 skill-card">
+    <div class="card shadow-sm h-100">
+        <div class="card-body d-flex flex-column">
+
+            <h4>☕ Java Programming</h4>
+
+            <p><b>Category:</b> Programming</p>
+            <p><b>Level:</b> Intermediate</p>
+
+            <p>
+                Learn Java programming, OOP concepts and application development.
+            </p>
+
+          <a href="{% url 'request_skill' %}" class="request-btn mt-auto">
+    Request Skill
+</a>
+
+        </div>
+    </div>
+</div>
+
+
+<!-- Card 8 -->
+<div class="col-md-4 skill-card">
+    <div class="card shadow-sm h-100">
+        <div class="card-body d-flex flex-column">
+
+            <h4>🖌️ UI/UX Design</h4>
+
+            <p><b>Category:</b> Design</p>
+            <p><b>Level:</b> Intermediate</p>
+
+            <p>
+                Learn Figma, wireframes and user-friendly interface design.
+            </p>
+
+          <a href="{% url 'request_skill' %}" class="request-btn mt-auto">
+    Request Skill
+</a>
+        </div>
+    </div>
+</div>
+
+
+<!-- Card 9 -->
+<div class="col-md-4 skill-card">
+    <div class="card shadow-sm h-100">
+        <div class="card-body d-flex flex-column">
+
+            <h4>🤖 Artificial Intelligence</h4>
+
+            <p><b>Category:</b> Technology</p>
+            <p><b>Level:</b> Advanced</p>
+
+            <p>
+                Learn AI concepts, machine learning and automation basics.
+            </p>
+
+           <a href="{% url 'request_skill' %}" class="request-btn mt-auto">
+    Request Skill
+</a>
+        </div>
+    </div>
+</div>
+
+
+    <div class="col-md-4 skill-card">
+        <div class="card shadow-sm h-100">
+            <div class="card-body d-flex flex-column">
+
+                <h4>🌐 Web Development</h4>
+
+                <p><b>Category:</b> Development</p>
+                <p><b>Level:</b> Intermediate</p>
+
+                <p>
+                    Learn HTML, CSS, Bootstrap and Django.
+                </p>
+
+             <a href="{% url 'request_skill' %}" class="request-btn mt-auto">
+    Request Skill
+</a>
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-4 skill-card">
+        <div class="card shadow-sm h-100">
+            <div class="card-body d-flex flex-column">
+
+                <h4>🎨 Graphic Design</h4>
+
+                <p><b>Category:</b> Design</p>
+                <p><b>Level:</b> Beginner</p>
+
+                <p>
+                    Learn Canva, UI design and creativity skills.
+                </p>
+
+               <a href="{% url 'request_skill' %}" class="request-btn mt-auto">
+    Request Skill
+</a>
+
+            </div>
+        </div>
+    </div>
+
+
+</div>
+
+
+<script>
+
+function searchSkills(){
+
+    let input = document.getElementById("skillSearch");
+    let filter = input.value.toLowerCase();
+
+    let cards = document.getElementsByClassName("skill-card");
+
+    for(let i=0; i<cards.length; i++){
+
+        let text = cards[i].innerText.toLowerCase();
+
+        if(text.includes(filter)){
+            cards[i].style.display = "";
+        }
+        else{
+            cards[i].style.display = "none";
+        }
+
+    }
+
+}
+
+</script>
+
+
+{% endblock %}

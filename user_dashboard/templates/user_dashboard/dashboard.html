@@ -1,0 +1,343 @@
+{% extends 'user_dashboard/base.html' %}
+{% load static %}
+
+
+
+{% block content %}
+
+<div class="container mt-4">
+
+    <div class="hero-section">
+
+        <div class="row align-items-center">
+
+            <!-- Left Content -->
+            <div class="col-lg-6">
+
+                <h1 class="hero-title">
+                    Welcome back, User! 👋
+                </h1>
+
+                <p class="hero-text">
+                    Learn new skills, share your expertise, and connect
+                    with your community.
+                </p>
+
+                <div class="mt-4">
+
+                    <a href="{% url 'skills' %}" class="btn btn-success btn-lg me-3">
+                        🔍 Browse Skills
+                    </a>
+
+                  
+
+                </div>
+
+            </div>
+
+            <!-- Right Image -->
+            <div class="col-lg-6 text-center">
+
+                <img src="{% static '/user_dashboard/images/students.jpeg' %}"
+                     class="img-fluid hero-image"
+                     alt="Students Learning">
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="row g-3">
+
+    <div class="col-md-3 col-sm-6 col-12">
+        <div class="card stat-card">
+            <div class="card-body">
+                <div class="icon">
+        🧑‍🏫
+    </div>
+    <p class="fw-bold">Skills Offered</p>
+    <h3 class="text-success">9</h3>
+</div>
+        </div>
+    </div>
+
+
+    <div class="col-md-3 col-sm-6 col-12">
+        <div class="card stat-card">
+            <div class="card-body">
+                <div class="icon">
+        📚
+    </div>
+    <p class="fw-bold">Skills Requested</p>
+    <h3 class="text-success">7</h3>
+</div>
+        </div>
+    </div>
+
+
+    <div class="col-md-3 col-sm-6 col-12">
+        <div class="card stat-card">
+            <div class="card-body">
+                <div class="icon">
+        ⏳
+    </div>
+    <p class="fw-bold">Pending Requests</p>
+    <h3 class="text-success">6</h3>
+</div>
+        </div>
+    </div>
+
+
+    <div class="col-md-3 col-sm-6 col-12">
+        <div class="card stat-card">
+            <div class="card-body">
+                <div class="icon">
+        ⭐
+    </div>
+    <p class="fw-bold"> Completed Swaps  </p>
+    <h3 class="text-success">12</h3>
+</div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row mt-5">
+
+<h5 class="fw-bold mb-3">
+Explore Skills Category
+</h5>
+
+<div class="row g-4 mt-3">
+
+<div class="col-md-3">
+    <div class="card skill-card shadow border-0 rounded-4 p-3">
+
+        <div class="d-flex justify-content-between align-items-center">
+
+            <div>
+                <h6>Design</h6>
+                <p class="text-success mb-0" style="font-size:11px;">
+                    UI/UX, Graphic Design
+                </p>
+            </div>
+
+            <i class="bi bi-palette-fill text-warning" style="font-size:40px;"></i>
+
+        </div>
+
+    </div>
+</div>
+
+<div class="col-md-3">
+    <div class="card skill-card shadow border-0 rounded-4 p-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h6>Coding</h6>
+                <p class="text-success mb-0" style="font-size:11px;">
+                    Python, JavaScript, Java
+                </p>
+            </div>
+
+            <i class="bi bi-code-slash text-primary" style="font-size:40px;"></i>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-3">
+    <div class="card skill-card shadow border-0 rounded-4 p-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h6>Music</h6>
+                <p class="text-success mb-0" style="font-size:11px;">
+                    Piano, Guitar, Drums
+                </p>
+            </div>
+
+            <i class="bi bi-music-note-beamed text-danger" style="font-size:40px;"></i>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-3">
+    <div class="card skill-card shadow border-0 rounded-4 p-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h6>Fitness</h6>
+                <p class="text-success mb-0" style="font-size:11px;">
+                    Yoga, Running, Weight Training
+                </p>
+            </div>
+
+            <i class="bi bi-heart-pulse-fill text-success" style="font-size:40px;"></i>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-3">
+    <div class="card skill-card shadow border-0 rounded-4 p-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h6>Cooking</h6>
+                <p class="text-success mb-0" style="font-size:11px;">
+                    Desserts, Main Courses, Appetizers
+                </p>
+            </div>
+
+            <i class="bi bi-cup-hot-fill text-warning" style="font-size:40px;"></i>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-3">
+    <div class="card skill-card shadow border-0 rounded-4 p-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h6>Language</h6>
+                <p class="text-success mb-0" style="font-size:11px;">
+                    Spanish, French, German
+                </p>
+            </div>
+
+            <i class="bi bi-translate text-info" style="font-size:40px;"></i>
+        </div>
+    </div>
+</div>
+    
+<div class="col-md-3">
+    <div class="card skill-card shadow border-0 rounded-4 p-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h6>Photography</h6>
+                <p class="text-success mb-0" style="font-size:11px;">
+                    Portrait, Landscape
+                </p>
+            </div>
+
+            <i class="bi bi-camera-fill text-secondary" style="font-size:40px;"></i>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-3">
+    <div class="card skill-card shadow border-0 rounded-4 p-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h6>Business</h6>
+                <p class="text-success mb-0" style="font-size:11px;">
+                    Marketing, Finance
+                </p>
+            </div>
+
+            <i class="bi bi-bar-chart-fill text-success" style="font-size:40px;"></i>
+        </div>
+    </div>
+</div>
+</div>
+<!-- How It Works Section -->
+
+<div class="mt-5">
+
+    <h3 class="fw-bold mb-4">
+        How It Works
+    </h3>
+
+    <div class="row g-4">
+
+        <!-- Card 1 -->
+        <div class="col-md-3">
+            <div class="card shadow border-0 rounded-4 p-4 text-center h-100">
+
+                <i class="bi bi-person-plus-fill text-success"
+                   style="font-size:50px;"></i>
+
+                <h5 class="mt-3">Create Profile</h5>
+
+                <p class="text-muted small">
+                    Sign up and showcase the skills you can teach and the skills you want to learn.
+                </p>
+
+            </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="col-md-3">
+            <div class="card shadow border-0 rounded-4 p-4 text-center h-100">
+
+                <i class="bi bi-search text-primary"
+                   style="font-size:50px;"></i>
+
+                <h5 class="mt-3">Browse Skills</h5>
+
+                <p class="text-muted small">
+                    Search different skill categories and discover people with matching interests.
+                </p>
+
+            </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="col-md-3">
+            <div class="card shadow border-0 rounded-4 p-4 text-center h-100">
+
+                <i class="bi bi-arrow-left-right text-warning"
+                   style="font-size:50px;"></i>
+
+                <h5 class="mt-3">Exchange Skills</h5>
+
+                <p class="text-muted small">
+                    Send exchange requests and schedule learning sessions with other users.
+                </p>
+
+            </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="col-md-3">
+            <div class="card shadow border-0 rounded-4 p-4 text-center h-100">
+
+                <i class="bi bi-trophy-fill text-danger"
+                   style="font-size:50px;"></i>
+
+                <h5 class="mt-3">Learn & Grow</h5>
+
+                <p class="text-muted small">
+                    Complete sessions, improve your skills and earn positive reviews.
+                </p>
+
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Call To Action Section -->
+
+<div class="card border-0 shadow rounded-4 p-5 mt-5 text-center"
+     style="background: linear-gradient(135deg,#16a38b,#16a38b);">
+
+    <h2 class="fw-bold text-white">
+        Everyone is good at something.
+    </h2>
+
+    <p class="text-white mt-3 mb-4" style="font-size:18px;">
+        Start by listing one skill. Someone out there is looking for exactly what you know.
+    </p>
+
+    <a href="#" class="btn btn-light btn-lg px-3 rounded-pill fw-bold">
+        Create Your Free Account
+    </a>
+
+</div>
+
+
+
+
+
+
+
+{% endblock %}
