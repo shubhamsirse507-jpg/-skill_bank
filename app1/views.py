@@ -71,7 +71,7 @@ def create_meeting(request):
 
     return JsonResponse({
         "student": booking.student_name,
-        "mentor": booking.mentor_name,
+        "teacher_name":booking.teacher_name,
         "meeting_id": session.meeting_id,
         "meeting_link": session.meeting_link,
         "status": "Meeting Created"
