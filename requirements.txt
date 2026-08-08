@@ -2,7 +2,7 @@
 Django>=4.2.0,<5.2
 python-dotenv==1.0.1
 django-environ==0.11.2
-setuptools>=68.0.0
+setuptools>=68.0.0,<70.0.0
 
 # Database Support (SQLite default, PostgreSQL in production)
 dj-database-url==2.1.0
