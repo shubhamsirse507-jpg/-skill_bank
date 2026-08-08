@@ -27,9 +27,18 @@ SECRET_KEY = os.environ.get(
 )
 DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 'yes')
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,testserver,*').split(',')
-if DEBUG:
+ALLOWED_HOSTS = [
+    h.strip() for h in os.environ.get('ALLOWED_HOSTS', '*').split(',') if h.strip()
+] + ['.onrender.com', '.railway.app', '.vercel.app', 'localhost', '127.0.0.1']
+if DEBUG or '*' in ALLOWED_HOSTS:
     ALLOWED_HOSTS = ['*']
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.onrender.com',
+    'https://*.railway.app',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
 
 # ---------------------------------------------------------------------------
 # Application Definition
