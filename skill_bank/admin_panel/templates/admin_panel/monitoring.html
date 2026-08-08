@@ -1,0 +1,134 @@
+{% extends 'admin_panel/base_admin.html' %}
+
+{% block title %}Platform Monitoring & System Notices - Skill Bank Admin Panel{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-title">Platform Monitoring & System Announcements</h1>
+        <p class="page-subtitle">Monitor server statistics, message statistics, database storage, and post system broadcast notices.</p>
+    </div>
+</div>
+
+<!-- System Health Cards -->
+<div class="stats-grid">
+    <div class="glass-panel stat-card">
+        <div class="stat-icon-wrapper stat-icon-emerald">
+            <i class="fa-solid fa-server"></i>
+        </div>
+        <div>
+            <div class="stat-value">99.9%</div>
+            <div class="stat-label">Server Uptime</div>
+            <div class="stat-trend trend-up"><i class="fa-solid fa-circle-check"></i> Systems Operational</div>
+        </div>
+    </div>
+
+    <div class="glass-panel stat-card">
+        <div class="stat-icon-wrapper stat-icon-cyan">
+            <i class="fa-solid fa-database"></i>
+        </div>
+        <div>
+            <div class="stat-value">{{ db_size_mb }} MB</div>
+            <div class="stat-label">SQLite DB Size</div>
+            <div class="stat-trend trend-up"><i class="fa-solid fa-check"></i> Healthy Storage</div>
+        </div>
+    </div>
+
+    <div class="glass-panel stat-card">
+        <div class="stat-icon-wrapper stat-icon-indigo">
+            <i class="fa-solid fa-comments"></i>
+        </div>
+        <div>
+            <div class="stat-value">{{ total_messages }}</div>
+            <div class="stat-label">Platform Messages</div>
+            <div class="stat-trend trend-up"><i class="fa-solid fa-message"></i> {{ unread_messages }} Unread</div>
+        </div>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+    <!-- Broadcast Notice Form -->
+    <div class="glass-panel">
+        <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">
+            <i class="fa-solid fa-bullhorn" style="color: var(--accent-amber);"></i> Broadcast System Notice
+        </h3>
+        <form action="{% url 'post_notice' %}" method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label class="form-label">Notice Title</label>
+                <input type="text" name="title" class="form-control" placeholder="e.g. Scheduled System Maintenance" required>
+            </div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label class="form-label">Priority</label>
+                    <select name="priority" class="form-control" style="background: rgba(255, 255, 255, 0.9); color: #0f172a;">
+                        <option value="LOW">Low</option>
+                        <option value="MEDIUM" selected>Medium</option>
+                        <option value="HIGH">High</option>
+                        <option value="URGENT">Urgent</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Audience</label>
+                    <select name="target_group" class="form-control" style="background: rgba(255, 255, 255, 0.9); color: #0f172a;">
+                        <option value="ALL" selected>All Users</option>
+                        <option value="TEACHERS">Mentors / Teachers</option>
+                        <option value="LEARNERS">Learners</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Message Content</label>
+                <textarea name="message" rows="3" class="form-control" placeholder="Write notice broadcast text..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%; justify-content: center; background: linear-gradient(135deg, var(--accent-amber), var(--accent-rose));">
+                <i class="fa-solid fa-paper-plane"></i> Publish Announcement
+            </button>
+        </form>
+    </div>
+
+    <!-- Active Broadcasts Table -->
+    <div class="glass-panel">
+        <h3 style="font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem;">Active Announcements</h3>
+        <div class="table-responsive">
+            <table class="data-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Priority</th>
+                        <th>Target</th>
+                        <th>Date Posted</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for notice in notices %}
+                    <tr>
+                        <td>
+                            <div style="font-weight: 700; color: var(--text-primary);">{{ notice.title }}</div>
+                            <div style="font-size: 0.78rem; color: var(--text-muted);">{{ notice.message }}</div>
+                        </td>
+                        <td>
+                            {% if notice.priority == 'URGENT' or notice.priority == 'HIGH' %}
+                                <span class="badge badge-danger">{{ notice.priority }}</span>
+                            {% elif notice.priority == 'MEDIUM' %}
+                                <span class="badge badge-warning">Medium</span>
+                            {% else %}
+                                <span class="badge badge-info">Low</span>
+                            {% endif %}
+                        </td>
+                        <td><span class="badge badge-purple">{{ notice.get_target_group_display }}</span></td>
+                        <td style="font-size: 0.8rem; color: var(--text-muted);">{{ notice.created_at|date:"M d, H:i" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 2rem;">
+                            No platform notices posted yet.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

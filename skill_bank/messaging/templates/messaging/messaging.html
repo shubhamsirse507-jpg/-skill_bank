@@ -1,0 +1,171 @@
+{% extends 'messaging/base.html' %}
+{% load static %}
+
+{% block title %}Messaging UI - Skill Bank{% endblock %}
+
+{% block content %}
+<div class="messaging-grid">
+    <!-- Left Sidebar: Conversations List -->
+    <div class="glass-panel conversations-sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-title">
+                <span>Conversations</span>
+                <span class="skill-pill" style="font-size: 0.75rem;">{{ exchanges|length }} Active</span>
+            </div>
+
+            <!-- Status Filter Tabs -->
+            <div class="status-tabs">
+                <a href="?status=all" class="tab-btn {% if status_filter == 'all' %}active{% endif %}">All</a>
+                <a href="?status=accepted"
+                    class="tab-btn {% if status_filter == 'accepted' %}active{% endif %}">Accepted</a>
+                <a href="?status=requested"
+                    class="tab-btn {% if status_filter == 'requested' %}active{% endif %}">Requested</a>
+                <a href="?status=completed"
+                    class="tab-btn {% if status_filter == 'completed' %}active{% endif %}">Completed</a>
+            </div>
+        </div>
+
+        <div class="conversations-list">
+            {% for ex in exchanges %}
+            <a href="{% url 'messaging_detail' ex.id %}?status={{ status_filter }}"
+                class="conversation-card {% if active_exchange and active_exchange.id == ex.id %}active{% endif %}">
+                <div class="card-top">
+                    <div class="card-partner">
+                        <div class="avatar"
+                            style="width: 28px; height: 28px; font-size: 0.75rem; background: linear-gradient(135deg, #6366f1, #06b6d4);">
+                            {{ ex.partner.username|slice:":2"|upper }}
+                        </div>
+                        <span>
+                            {{ ex.partner.first_name|default:ex.partner.username }}
+                        </span>
+                    </div>
+                    <span class="card-time">{{ ex.updated_at|date:"M d" }}</span>
+                </div>
+
+                <div>
+                    <span class="skill-pill status-{{ ex.status|lower }}">
+                        {{ ex.requested_skill }} &rlarr; {{ ex.offered_skill }}
+                    </span>
+                </div>
+
+                <div class="last-msg">
+                    {% with ex.messages.last as last_m %}
+                    {% if last_m %}
+                    {% if last_m.sender == current_user %}You: {% endif %}{{ last_m.content }}
+                    {% else %}
+                    <em>Exchange accepted. Start conversation!</em>
+                    {% endif %}
+                    {% endwith %}
+                </div>
+            </a>
+            {% empty %}
+            <div style="padding: 2rem; text-align: center; color: var(--text-muted);">
+                <i class="fa-regular fa-comments" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                <p>No conversations found for this status filter.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Right Pane: Active Chat Window -->
+    <div class="glass-panel chat-window">
+        {% if active_exchange %}
+        <!-- Chat Header -->
+        <div class="chat-header">
+            <div class="partner-info">
+                <div class="avatar-badge">
+                    <div class="avatar" style="width: 46px; height: 46px; font-size: 1.1rem;">
+                        {% if active_exchange.provider == current_user %}
+                        {{ active_exchange.requester.username|slice:":2"|upper }}
+                        {% else %}
+                        {{ active_exchange.provider.username|slice:":2"|upper }}
+                        {% endif %}
+                    </div>
+                    <div class="status-pulse"></div>
+                </div>
+                <div class="partner-details">
+                    <h3>
+                        {% if active_exchange.provider == current_user %}
+                        {{ active_exchange.requester.first_name }} {{ active_exchange.requester.last_name }}
+                        {% else %}
+                        {{ active_exchange.provider.first_name }} {{ active_exchange.provider.last_name }}
+                        {% endif %}
+                    </h3>
+                    <p>
+                        <span class="skill-pill status-{{ active_exchange.status|lower }}" style="margin: 0 4px 0 0;">
+                            {{ active_exchange.get_status_display }}
+                        </span>
+                        Topic: {{ active_exchange.title }}
+                    </p>
+                </div>
+            </div>
+
+
+        </div>
+
+        <!-- Messages Thread -->
+        <div class="chat-body" id="chatThread">
+            <div style="text-align: center; margin: 1rem 0;">
+                <span
+                    style="background: rgba(255, 255, 255, 0.05); padding: 4px 14px; border-radius: 12px; font-size: 0.75rem; color: var(--text-muted); border: 1px solid var(--border-glass);">
+                    <i class="fa-solid fa-lock" style="margin-right: 4px;"></i> Encrypted Skill Exchange Session
+                </span>
+            </div>
+
+            {% for msg in chat_messages %}
+            <div class="message-wrapper {% if msg.sender == current_user %}sent{% else %}received{% endif %}">
+                <div class="message-meta">
+                    <span>{{ msg.sender.first_name|default:msg.sender.username }}</span>
+                    <span>&bull;</span>
+                    <span>{{ msg.created_at|date:"H:i" }}</span>
+                </div>
+                <div class="message-bubble">
+                    {{ msg.content }}
+                    {% if msg.has_attachment %}
+                    <div
+                        style="margin-top: 8px; padding: 6px 10px; background: rgba(0,0,0,0.2); border-radius: 6px; font-size: 0.8rem; display: flex; align-items: center; gap: 6px;">
+                        <i class="fa-solid fa-paperclip"></i> {{ msg.attachment_name|default:"exchange_resources.pdf" }}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% empty %}
+            <div style="text-align: center; margin: 3rem 0; color: var(--text-muted);">
+                <i class="fa-regular fa-paper-plane" style="font-size: 2.5rem; margin-bottom: 12px;"></i>
+                <p>No messages yet. Send a message to coordinate your exchange details!</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Chat Input Footer -->
+        <div class="chat-footer">
+            <form method="POST" class="chat-input-form" id="msgForm">
+                {% csrf_token %}
+                <input type="text" name="content" id="msgInput" class="chat-input"
+                    placeholder="Type a message or discuss session availability..." autocomplete="off" required>
+                <button type="submit" class="send-btn" title="Send Message">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+        {% else %}
+        <div
+            style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-muted);">
+            <i class="fa-regular fa-comments"
+                style="font-size: 3.5rem; margin-bottom: 1rem; color: var(--accent-primary);"></i>
+            <h2>Select a Conversation</h2>
+            <p>Choose an exchange from the sidebar to view discussions and exchange details.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const chatThread = document.getElementById('chatThread');
+    if (chatThread) {
+        chatThread.scrollTop = chatThread.scrollHeight;
+    }
+</script>
+{% endblock %}
