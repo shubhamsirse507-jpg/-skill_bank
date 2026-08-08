@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Schedule Booking — Skill Bank{% endblock %}
+
+{% block content %}
+<div style="max-width: 600px; margin: 40px auto; padding: 0 20px;">
+    <div class="card-theme">
+        <h2 style="color: #1E3A8A; margin-bottom: 10px;"><i class="fa-solid fa-calendar-plus" style="color: #0e7d73;"></i> Schedule Session</h2>
+        <p style="color: #6b7280; margin-bottom: 20px;">Exchange: <strong>{{ exchange.title }}</strong></p>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 5px;">Date</label>
+                <input type="date" name="scheduled_date" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div>
+                    <label style="display: block; font-weight: 600; margin-bottom: 5px;">Start Time</label>
+                    <input type="time" name="start_time" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
+                </div>
+                <div>
+                    <label style="display: block; font-weight: 600; margin-bottom: 5px;">End Time</label>
+                    <input type="time" name="end_time" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
+                </div>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 5px;">Meeting Mode</label>
+                <select name="meeting_mode" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
+                    <option value="online">Online Video Call</option>
+                    <option value="offline">Offline / In-Person</option>
+                </select>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="display: block; font-weight: 600; margin-bottom: 5px;">Meeting Link (Google Meet / Zoom / Jitsi)</label>
+                <input type="url" name="meeting_link" placeholder="https://meet.google.com/abc-defg-hij" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
+            </div>
+
+            <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; padding: 12px;">Confirm Booking</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

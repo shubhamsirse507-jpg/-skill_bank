@@ -1,0 +1,87 @@
+{% extends 'user_dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Add New Skill — Skill Bank{% endblock %}
+
+{% block content %}
+<div class="container mt-4" style="max-width: 700px;">
+
+    <div class="d-flex align-items-center mb-4">
+        <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-sm me-3">← Back</a>
+        <h2 class="fw-bold mb-0">➕ Add a New Skill</h2>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card shadow border-0 rounded-4 p-4">
+        <form method="POST" action="{% url 'add_skill' %}">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Skill Name *</label>
+                <input type="text" name="title" class="form-control rounded-3"
+                       placeholder="e.g. Python Programming, Guitar Lessons, Graphic Design"
+                       required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Category *</label>
+                <select name="category_id" class="form-select rounded-3" required>
+                    <option value="">— Select a category —</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat.id }}">{{ cat.category_name }}</option>
+                    {% empty %}
+                        <option disabled>No categories available yet</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Skill Type</label>
+                <select name="skill_type" class="form-select rounded-3">
+                    <option value="offered">📤 I can teach this skill</option>
+                    <option value="wanted">📥 I want to learn this skill</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Level</label>
+                <select name="level" class="form-select rounded-3">
+                    <option value="Beginner">🟢 Beginner</option>
+                    <option value="Intermediate">🟡 Intermediate</option>
+                    <option value="Advanced">🔴 Advanced</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-semibold">Description</label>
+                <textarea name="description" class="form-control rounded-3" rows="4"
+                          placeholder="Describe your skill, your experience level, and what you can offer or what you want to learn..."></textarea>
+            </div>
+
+            <div class="d-flex gap-3">
+                <button type="submit" class="btn btn-success px-4 fw-bold">✅ Add Skill</button>
+                <a href="{% url 'skills' %}" class="btn btn-outline-secondary px-4">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="card shadow border-0 rounded-4 p-4 mt-4 bg-light">
+        <h6 class="fw-bold mb-2">💡 Tips for a great skill listing</h6>
+        <ul class="text-muted small mb-0">
+            <li>Be specific — "React.js Development" is better than "Coding"</li>
+            <li>Mention your experience level honestly</li>
+            <li>Describe what you'd like to exchange in return</li>
+            <li>Keep the description under 300 words for clarity</li>
+        </ul>
+    </div>
+
+</div>
+{% endblock %}

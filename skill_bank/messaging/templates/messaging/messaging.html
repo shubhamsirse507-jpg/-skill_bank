@@ -1,138 +1,210 @@
-{% extends 'messaging/base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Messaging UI - Skill Bank{% endblock %}
+{% block title %}Messaging & Exchanges — Skill Bank{% endblock %}
+
+{% block extra_css %}
+<style>
+.messaging-grid {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+    min-height: 600px;
+}
+
+.conversations-sidebar {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.sidebar-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+.status-tabs {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+.tab-btn {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    text-decoration: none;
+    background: #f3f4f6;
+    color: #4b5563;
+}
+
+.tab-btn.active {
+    background: #0e7d73;
+    color: white;
+}
+
+.conversation-card {
+    display: block;
+    padding: 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: inherit;
+    border: 1px solid #e5e7eb;
+    margin-bottom: 10px;
+    transition: 0.2s;
+}
+
+.conversation-card:hover, .conversation-card.active {
+    border-color: #0e7d73;
+    background: #f0fdfa;
+}
+
+.chat-window {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-header {
+    padding-bottom: 15px;
+    border-bottom: 1px solid #e5e7eb;
+    margin-bottom: 15px;
+}
+
+.chat-body {
+    flex-grow: 1;
+    overflow-y: auto;
+    max-height: 400px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.message-wrapper {
+    max-width: 70%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.message-wrapper.sent {
+    align-self: flex-end;
+    background: #0e7d73;
+    color: white;
+}
+
+.message-wrapper.received {
+    align-self: flex-start;
+    background: #f3f4f6;
+    color: #1f2937;
+}
+
+.chat-footer {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.chat-input-form {
+    display: flex;
+    gap: 10px;
+}
+
+.chat-input {
+    flex-grow: 1;
+    padding: 10px 14px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="messaging-grid">
     <!-- Left Sidebar: Conversations List -->
-    <div class="glass-panel conversations-sidebar">
-        <div class="sidebar-header">
-            <div class="sidebar-title">
-                <span>Conversations</span>
-                <span class="skill-pill" style="font-size: 0.75rem;">{{ exchanges|length }} Active</span>
-            </div>
+    <div class="conversations-sidebar">
+        <div class="sidebar-title">
+            <span>Conversations</span>
+            <span class="badge-status accepted" style="font-size: 11px;">{{ exchanges|length }} Active</span>
+        </div>
 
-            <!-- Status Filter Tabs -->
-            <div class="status-tabs">
-                <a href="?status=all" class="tab-btn {% if status_filter == 'all' %}active{% endif %}">All</a>
-                <a href="?status=accepted"
-                    class="tab-btn {% if status_filter == 'accepted' %}active{% endif %}">Accepted</a>
-                <a href="?status=requested"
-                    class="tab-btn {% if status_filter == 'requested' %}active{% endif %}">Requested</a>
-                <a href="?status=completed"
-                    class="tab-btn {% if status_filter == 'completed' %}active{% endif %}">Completed</a>
-            </div>
+        <div class="status-tabs">
+            <a href="?status=all" class="tab-btn {% if status_filter == 'all' %}active{% endif %}">All</a>
+            <a href="?status=pending" class="tab-btn {% if status_filter == 'pending' %}active{% endif %}">Pending</a>
+            <a href="?status=accepted" class="tab-btn {% if status_filter == 'accepted' %}active{% endif %}">Accepted</a>
+            <a href="?status=completed" class="tab-btn {% if status_filter == 'completed' %}active{% endif %}">Completed</a>
         </div>
 
         <div class="conversations-list">
             {% for ex in exchanges %}
             <a href="{% url 'messaging_detail' ex.id %}?status={{ status_filter }}"
                 class="conversation-card {% if active_exchange and active_exchange.id == ex.id %}active{% endif %}">
-                <div class="card-top">
-                    <div class="card-partner">
-                        <div class="avatar"
-                            style="width: 28px; height: 28px; font-size: 0.75rem; background: linear-gradient(135deg, #6366f1, #06b6d4);">
-                            {{ ex.partner.username|slice:":2"|upper }}
-                        </div>
-                        <span>
-                            {{ ex.partner.first_name|default:ex.partner.username }}
-                        </span>
-                    </div>
-                    <span class="card-time">{{ ex.updated_at|date:"M d" }}</span>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                    <strong>{{ ex.partner.first_name|default:ex.partner.username }}</strong>
+                    <span style="font-size: 11px; color: #9ca3af;">{{ ex.updated_at|date:"M d" }}</span>
                 </div>
-
                 <div>
-                    <span class="skill-pill status-{{ ex.status|lower }}">
-                        {{ ex.requested_skill }} &rlarr; {{ ex.offered_skill }}
+                    <span class="badge-status {{ ex.status }}">
+                        {{ ex.skill.title }}
                     </span>
-                </div>
-
-                <div class="last-msg">
-                    {% with ex.messages.last as last_m %}
-                    {% if last_m %}
-                    {% if last_m.sender == current_user %}You: {% endif %}{{ last_m.content }}
-                    {% else %}
-                    <em>Exchange accepted. Start conversation!</em>
-                    {% endif %}
-                    {% endwith %}
                 </div>
             </a>
             {% empty %}
-            <div style="padding: 2rem; text-align: center; color: var(--text-muted);">
+            <div style="padding: 2rem; text-align: center; color: #9ca3af;">
                 <i class="fa-regular fa-comments" style="font-size: 2rem; margin-bottom: 10px;"></i>
-                <p>No conversations found for this status filter.</p>
+                <p>No exchange conversations found.</p>
             </div>
             {% endfor %}
         </div>
     </div>
 
     <!-- Right Pane: Active Chat Window -->
-    <div class="glass-panel chat-window">
+    <div class="chat-window">
         {% if active_exchange %}
-        <!-- Chat Header -->
-        <div class="chat-header">
-            <div class="partner-info">
-                <div class="avatar-badge">
-                    <div class="avatar" style="width: 46px; height: 46px; font-size: 1.1rem;">
-                        {% if active_exchange.provider == current_user %}
-                        {{ active_exchange.requester.username|slice:":2"|upper }}
-                        {% else %}
-                        {{ active_exchange.provider.username|slice:":2"|upper }}
-                        {% endif %}
-                    </div>
-                    <div class="status-pulse"></div>
-                </div>
-                <div class="partner-details">
-                    <h3>
-                        {% if active_exchange.provider == current_user %}
-                        {{ active_exchange.requester.first_name }} {{ active_exchange.requester.last_name }}
-                        {% else %}
-                        {{ active_exchange.provider.first_name }} {{ active_exchange.provider.last_name }}
-                        {% endif %}
-                    </h3>
-                    <p>
-                        <span class="skill-pill status-{{ active_exchange.status|lower }}" style="margin: 0 4px 0 0;">
-                            {{ active_exchange.get_status_display }}
-                        </span>
-                        Topic: {{ active_exchange.title }}
-                    </p>
-                </div>
+        <div class="chat-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <h3 style="color: #1E3A8A; margin-bottom: 4px;">{{ active_exchange.title }}</h3>
+                <p style="font-size: 13px; color: #6b7280;">
+                    Partner: <strong>{{ partner.first_name|default:partner.username }}</strong> |
+                    Skill: <strong>{{ active_exchange.skill.title }}</strong>
+                </p>
             </div>
-
-
+            <div>
+                <span class="badge-status {{ active_exchange.status }}">{{ active_exchange.get_status_display }}</span>
+                {% if active_exchange.status == 'accepted' %}
+                    <a href="/bookings/create/{{ active_exchange.id }}/" class="btn-primary" style="font-size: 12px; padding: 6px 12px; margin-left: 10px;">
+                        <i class="fa-solid fa-calendar-plus"></i> Schedule Booking
+                    </a>
+                {% endif %}
+            </div>
         </div>
 
         <!-- Messages Thread -->
         <div class="chat-body" id="chatThread">
-            <div style="text-align: center; margin: 1rem 0;">
-                <span
-                    style="background: rgba(255, 255, 255, 0.05); padding: 4px 14px; border-radius: 12px; font-size: 0.75rem; color: var(--text-muted); border: 1px solid var(--border-glass);">
-                    <i class="fa-solid fa-lock" style="margin-right: 4px;"></i> Encrypted Skill Exchange Session
-                </span>
-            </div>
-
             {% for msg in chat_messages %}
             <div class="message-wrapper {% if msg.sender == current_user %}sent{% else %}received{% endif %}">
-                <div class="message-meta">
-                    <span>{{ msg.sender.first_name|default:msg.sender.username }}</span>
-                    <span>&bull;</span>
-                    <span>{{ msg.created_at|date:"H:i" }}</span>
+                <div style="font-size: 11px; opacity: 0.8; margin-bottom: 3px;">
+                    {{ msg.sender.first_name|default:msg.sender.username }} &bull; {{ msg.created_at|date:"H:i" }}
                 </div>
-                <div class="message-bubble">
-                    {{ msg.content }}
-                    {% if msg.has_attachment %}
-                    <div
-                        style="margin-top: 8px; padding: 6px 10px; background: rgba(0,0,0,0.2); border-radius: 6px; font-size: 0.8rem; display: flex; align-items: center; gap: 6px;">
-                        <i class="fa-solid fa-paperclip"></i> {{ msg.attachment_name|default:"exchange_resources.pdf" }}
-                    </div>
-                    {% endif %}
-                </div>
+                <div>{{ msg.message_text }}</div>
             </div>
             {% empty %}
-            <div style="text-align: center; margin: 3rem 0; color: var(--text-muted);">
+            <div style="text-align: center; margin: 3rem 0; color: #9ca3af;">
                 <i class="fa-regular fa-paper-plane" style="font-size: 2.5rem; margin-bottom: 12px;"></i>
-                <p>No messages yet. Send a message to coordinate your exchange details!</p>
+                <p>No messages yet. Send a message to coordinate your exchange!</p>
             </div>
             {% endfor %}
         </div>
@@ -142,19 +214,17 @@
             <form method="POST" class="chat-input-form" id="msgForm">
                 {% csrf_token %}
                 <input type="text" name="content" id="msgInput" class="chat-input"
-                    placeholder="Type a message or discuss session availability..." autocomplete="off" required>
-                <button type="submit" class="send-btn" title="Send Message">
-                    <i class="fa-solid fa-paper-plane"></i>
+                    placeholder="Type a message..." autocomplete="off" required>
+                <button type="submit" class="btn-primary" style="padding: 10px 20px;">
+                    <i class="fa-solid fa-paper-plane"></i> Send
                 </button>
             </form>
         </div>
         {% else %}
-        <div
-            style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: var(--text-muted);">
-            <i class="fa-regular fa-comments"
-                style="font-size: 3.5rem; margin-bottom: 1rem; color: var(--accent-primary);"></i>
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #9ca3af;">
+            <i class="fa-regular fa-comments" style="font-size: 3.5rem; margin-bottom: 1rem; color: #0e7d73;"></i>
             <h2>Select a Conversation</h2>
-            <p>Choose an exchange from the sidebar to view discussions and exchange details.</p>
+            <p>Choose an exchange from the left sidebar to start messaging.</p>
         </div>
         {% endif %}
     </div>

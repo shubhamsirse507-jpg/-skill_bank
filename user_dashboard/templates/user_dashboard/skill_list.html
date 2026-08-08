@@ -4,253 +4,122 @@
 
 <div class="container-fluid px-4">
 
-    <h2 class="fw-bold mb-4">
-        Explore Skills 🚀
-    </h2>
+    <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+        <h2 class="fw-bold mb-0">Explore Skills 🚀</h2>
+        <a href="{% url 'add_skill' %}" class="btn btn-success fw-bold rounded-pill">➕ Add Your Skill</a>
+    </div>
 
-    
     <!-- Search Bar -->
-  <!-- Search Bar -->
-<div class="mb-4">
-    <input 
-        type="text" 
-        id="skillSearch"
-        class="form-control shadow-sm"
-        placeholder="🔍 Search skills..."
-        onkeyup="searchSkills()">
-</div>
+    <div class="mb-4">
+        <input 
+            type="text" 
+            id="skillSearch"
+            class="form-control form-control-lg shadow-sm rounded-pill"
+            placeholder="🔍 Search skills, categories, or teacher names..."
+            value="{{ query }}"
+            onkeyup="searchSkills()">
+    </div>
 
+    <!-- Skill Cards -->
+    <div class="row g-4" id="skillContainer">
 
-<!-- Skill Cards -->
-<div class="row g-4" id="skillContainer">
+        {% for skill in skills %}
+        <div class="col-md-4 skill-card">
+            <div class="card shadow-sm border-0 rounded-4 h-100 p-2">
+                <div class="card-body d-flex flex-column">
 
-    <div class="col-md-4 skill-card">
-        <div class="card shadow-sm h-100">
-            <div class="card-body d-flex flex-column">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h4 class="fw-bold mb-0 text-success">{{ skill.title }}</h4>
+                        <span class="badge bg-light text-dark border">{{ skill.skill_type|title }}</span>
+                    </div>
 
-                <h4>🐍 Python Programming</h4>
+                    <p class="mb-1 text-muted small"><b>Category:</b> {{ skill.category.category_name }}</p>
+                    <p class="mb-1 text-muted small"><b>Level:</b> {{ skill.level }}</p>
+                    <p class="mb-2 text-muted small"><b>Teacher:</b> <a href="{% url 'public_profile' skill.user.username %}" class="text-decoration-none fw-semibold text-primary">@{{ skill.user.username }}</a></p>
 
-                <p><b>Category:</b> Programming</p>
-                <p><b>Level:</b> Beginner</p>
+                    <p class="card-text text-secondary mb-4 flex-grow-1" style="font-size:14px;">
+                        {{ skill.description|default:"No detailed description provided."|truncatechars:120 }}
+                    </p>
 
-                <p>
-                    Learn Python basics, logic building and programming concepts.
-                </p>
+                    {% if skill.user != user %}
+                    <a href="{% url 'request_skill' %}?skill_id={{ skill.id }}" class="btn btn-success w-100 rounded-pill fw-bold mt-auto">
+                        🤝 Request Skill Exchange
+                    </a>
+                    {% else %}
+                    <span class="badge bg-light text-secondary p-2 text-center">Your Skill Listing</span>
+                    {% endif %}
 
-              <a href="{% url 'request_skill' %}" class="request-btn mt-auto">
-    Request Skill
-</a>
-
+                </div>
             </div>
         </div>
-    </div>
+        {% empty %}
 
-    <!-- Card 4 -->
-<div class="col-md-4 skill-card">
-    <div class="card shadow-sm h-100">
-        <div class="card-body d-flex flex-column">
-
-            <h4>📸 Photography</h4>
-
-            <p><b>Category:</b> Creative</p>
-            <p><b>Level:</b> Beginner</p>
-
-            <p>
-                Learn camera basics, photo editing and creative photography skills.
-            </p>
-
-          <a href="{% url 'request_skill' %}" class="request-btn mt-auto">
-    Request Skill
-</a>
-                </button>
-
-        </div>
-    </div>
-</div>
-
-
-<!-- Card 5 -->
-<div class="col-md-4 skill-card">
-    <div class="card shadow-sm h-100">
-        <div class="card-body d-flex flex-column">
-
-            <h4>💼 Business Skills</h4>
-
-            <p><b>Category:</b> Management</p>
-            <p><b>Level:</b> Intermediate</p>
-
-            <p>
-                Learn entrepreneurship, communication and business strategies.
-            </p>
-
-           <a href="{% url 'request_skill' %}" class="request-btn mt-auto">
-    Request Skill
-</a>
-        </div>
-    </div>
-</div>
-
-
-<!-- Card 6 -->
-<div class="col-md-4 skill-card">
-    <div class="card shadow-sm h-100">
-        <div class="card-body d-flex flex-column">
-
-            <h4>🗣️ English Speaking</h4>
-
-            <p><b>Category:</b> Language</p>
-            <p><b>Level:</b> Beginner</p>
-
-            <p>
-                Improve spoken English, vocabulary and confidence.
-            </p>
-<a href="{% url 'request_skill' %}" class="request-btn mt-auto">
-    Request Skill
-</a>
-        </div>
-    </div>
-</div>
-
-
-<!-- Card 7 -->
-<div class="col-md-4 skill-card">
-    <div class="card shadow-sm h-100">
-        <div class="card-body d-flex flex-column">
-
-            <h4>☕ Java Programming</h4>
-
-            <p><b>Category:</b> Programming</p>
-            <p><b>Level:</b> Intermediate</p>
-
-            <p>
-                Learn Java programming, OOP concepts and application development.
-            </p>
-
-          <a href="{% url 'request_skill' %}" class="request-btn mt-auto">
-    Request Skill
-</a>
-
-        </div>
-    </div>
-</div>
-
-
-<!-- Card 8 -->
-<div class="col-md-4 skill-card">
-    <div class="card shadow-sm h-100">
-        <div class="card-body d-flex flex-column">
-
-            <h4>🖌️ UI/UX Design</h4>
-
-            <p><b>Category:</b> Design</p>
-            <p><b>Level:</b> Intermediate</p>
-
-            <p>
-                Learn Figma, wireframes and user-friendly interface design.
-            </p>
-
-          <a href="{% url 'request_skill' %}" class="request-btn mt-auto">
-    Request Skill
-</a>
-        </div>
-    </div>
-</div>
-
-
-<!-- Card 9 -->
-<div class="col-md-4 skill-card">
-    <div class="card shadow-sm h-100">
-        <div class="card-body d-flex flex-column">
-
-            <h4>🤖 Artificial Intelligence</h4>
-
-            <p><b>Category:</b> Technology</p>
-            <p><b>Level:</b> Advanced</p>
-
-            <p>
-                Learn AI concepts, machine learning and automation basics.
-            </p>
-
-           <a href="{% url 'request_skill' %}" class="request-btn mt-auto">
-    Request Skill
-</a>
-        </div>
-    </div>
-</div>
-
-
-    <div class="col-md-4 skill-card">
-        <div class="card shadow-sm h-100">
-            <div class="card-body d-flex flex-column">
-
-                <h4>🌐 Web Development</h4>
-
-                <p><b>Category:</b> Development</p>
-                <p><b>Level:</b> Intermediate</p>
-
-                <p>
-                    Learn HTML, CSS, Bootstrap and Django.
-                </p>
-
-             <a href="{% url 'request_skill' %}" class="request-btn mt-auto">
-    Request Skill
-</a>
-
+        <!-- Stock/Fallback Skills -->
+        <div class="col-md-4 skill-card">
+            <div class="card shadow-sm border-0 rounded-4 h-100 p-2">
+                <div class="card-body d-flex flex-column">
+                    <h4 class="fw-bold mb-0 text-success">🐍 Python Programming</h4>
+                    <p class="mb-1 text-muted small"><b>Category:</b> Coding & IT</p>
+                    <p class="mb-1 text-muted small"><b>Level:</b> Beginner</p>
+                    <p class="card-text text-secondary mb-4 flex-grow-1" style="font-size:14px;">
+                        Learn Python basics, logic building, data structures and web development.
+                    </p>
+                    <a href="{% url 'request_skill' %}" class="btn btn-success w-100 rounded-pill fw-bold mt-auto">
+                        🤝 Request Skill Exchange
+                    </a>
+                </div>
             </div>
         </div>
-    </div>
 
-
-    <div class="col-md-4 skill-card">
-        <div class="card shadow-sm h-100">
-            <div class="card-body d-flex flex-column">
-
-                <h4>🎨 Graphic Design</h4>
-
-                <p><b>Category:</b> Design</p>
-                <p><b>Level:</b> Beginner</p>
-
-                <p>
-                    Learn Canva, UI design and creativity skills.
-                </p>
-
-               <a href="{% url 'request_skill' %}" class="request-btn mt-auto">
-    Request Skill
-</a>
-
+        <div class="col-md-4 skill-card">
+            <div class="card shadow-sm border-0 rounded-4 h-100 p-2">
+                <div class="card-body d-flex flex-column">
+                    <h4 class="fw-bold mb-0 text-success">🎨 UI/UX Design</h4>
+                    <p class="mb-1 text-muted small"><b>Category:</b> Design & Arts</p>
+                    <p class="mb-1 text-muted small"><b>Level:</b> Intermediate</p>
+                    <p class="card-text text-secondary mb-4 flex-grow-1" style="font-size:14px;">
+                        Master Figma wireframing, component design systems, and user research.
+                    </p>
+                    <a href="{% url 'request_skill' %}" class="btn btn-success w-100 rounded-pill fw-bold mt-auto">
+                        🤝 Request Skill Exchange
+                    </a>
+                </div>
             </div>
         </div>
+
+        <div class="col-md-4 skill-card">
+            <div class="card shadow-sm border-0 rounded-4 h-100 p-2">
+                <div class="card-body d-flex flex-column">
+                    <h4 class="fw-bold mb-0 text-success">🎸 Acoustic Guitar</h4>
+                    <p class="mb-1 text-muted small"><b>Category:</b> Music & Audio</p>
+                    <p class="mb-1 text-muted small"><b>Level:</b> Beginner</p>
+                    <p class="card-text text-secondary mb-4 flex-grow-1" style="font-size:14px;">
+                        Learn basic chords, fingerpicking patterns, and song practice.
+                    </p>
+                    <a href="{% url 'request_skill' %}" class="btn btn-success w-100 rounded-pill fw-bold mt-auto">
+                        🤝 Request Skill Exchange
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        {% endfor %}
+
     </div>
 
-
 </div>
-
 
 <script>
-
 function searchSkills(){
-
     let input = document.getElementById("skillSearch");
     let filter = input.value.toLowerCase();
-
     let cards = document.getElementsByClassName("skill-card");
 
     for(let i=0; i<cards.length; i++){
-
         let text = cards[i].innerText.toLowerCase();
-
-        if(text.includes(filter)){
-            cards[i].style.display = "";
-        }
-        else{
-            cards[i].style.display = "none";
-        }
-
+        cards[i].style.display = text.includes(filter) ? "" : "none";
     }
-
 }
-
 </script>
-
 
 {% endblock %}

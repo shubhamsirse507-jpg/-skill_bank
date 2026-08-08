@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Skill Exchange Platform{% endblock %}</title>
+    <link rel="stylesheet" href="/static/theme/base.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="page-bg">
+
+    <!-- Global Navigation Bar -->
+    <nav style="background: #ecedf0; color: #353536; display: flex; justify-content: space-between; align-items: center; padding: 15px 50px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+        <h2><a href="/" style="font-size: 28px; color: #353536; text-decoration: none; font-weight: bold;">Skill Bank</a></h2>
+        <ul style="display: flex; list-style: none; align-items: center; margin: 0;">
+            <li style="margin-left: 25px;"><a href="/dashboard/" style="color: #353536; text-decoration: none; font-weight: bold;">Home</a></li>
+            <li style="margin-left: 25px;"><a href="/search/" style="color: #353536; text-decoration: none; font-weight: bold;">Search Skills</a></li>
+            <li style="margin-left: 25px;"><a href="/messaging/" style="color: #353536; text-decoration: none; font-weight: bold;">Exchanges</a></li>
+            <li style="margin-left: 25px;"><a href="/bookings/" style="color: #353536; text-decoration: none; font-weight: bold;">Bookings</a></li>
+            <li style="margin-left: 25px;"><a href="/ratings/" style="color: #353536; text-decoration: none; font-weight: bold;">Ratings</a></li>
+            <li style="margin-left: 25px;"><a href="/profile/" style="color: #353536; text-decoration: none; font-weight: bold;">Profile</a></li>
+            {% if user.is_authenticated %}
+                {% if user.is_staff or user.profile.role == 'admin' %}
+                    <li style="margin-left: 25px;"><a href="/admin-panel/" style="color: #0e7d73; text-decoration: none; font-weight: bold;">Admin Panel</a></li>
+                {% endif %}
+                <li style="margin-left: 25px;"><a href="/auth/logout/" class="btn-ghost" style="padding: 6px 14px; font-size: 14px;">Logout ({{ user.username }})</a></li>
+            {% else %}
+                <li style="margin-left: 25px;"><a href="/auth/login/" class="btn-primary" style="padding: 6px 14px; font-size: 14px;">Login</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+
+    <!-- Messages Banner -->
+    {% if messages %}
+        <div style="max-width: 1000px; margin: 15px auto; padding: 0 20px;">
+            {% for message in messages %}
+                <div style="padding: 12px 20px; border-radius: 8px; margin-bottom: 10px; font-weight: 500;
+                    {% if message.tags == 'error' %}background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5;
+                    {% elif message.tags == 'success' %}background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7;
+                    {% else %}background: #dbeafe; color: #1e40af; border: 1px solid #93c5fd;{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Main Page Content -->
+    <main style="min-height: 80vh;">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer style="background: #1E3A8A; color: white; text-align: center; padding: 20px; margin-top: 40px;">
+        <p>© 2026 Skill Bank | Skill Exchange Platform</p>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

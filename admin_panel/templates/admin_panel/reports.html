@@ -1,0 +1,125 @@
+{% extends 'base.html' %}
+{% block title %}Moderation Queue — Admin Panel{% endblock %}
+{% block content %}
+<div style="max-width:1200px;margin:40px auto;padding:0 20px;">
+    <div style="margin-bottom:24px;">
+        <a href="{% url 'admin_panel:dashboard' %}" style="color:#6b7280;text-decoration:none;font-size:14px;">← Back to Admin</a>
+        <h1 style="color:#1f2937;margin:8px 0 0;"><i class="fa-solid fa-triangle-exclamation" style="color:#ef4444;"></i> Moderation Queue</h1>
+    </div>
+
+    <!-- Status Summary -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:16px;margin-bottom:24px;">
+        <div class="card-theme" style="text-align:center;">
+            <i class="fa-solid fa-clock fa-2x" style="color:#f59e0b;margin-bottom:8px;"></i>
+            <h2 style="color:#1E3A8A;">{{ pending_count }}</h2>
+            <p style="color:#6b7280;font-size:14px;">Pending</p>
+        </div>
+        <div class="card-theme" style="text-align:center;">
+            <i class="fa-solid fa-magnifying-glass fa-2x" style="color:#3b82f6;margin-bottom:8px;"></i>
+            <h2 style="color:#1E3A8A;">{{ in_review_count }}</h2>
+            <p style="color:#6b7280;font-size:14px;">In Review</p>
+        </div>
+        <div class="card-theme" style="text-align:center;">
+            <i class="fa-solid fa-check fa-2x" style="color:#10b981;margin-bottom:8px;"></i>
+            <h2 style="color:#1E3A8A;">{{ resolved_count }}</h2>
+            <p style="color:#6b7280;font-size:14px;">Resolved</p>
+        </div>
+        <div class="card-theme" style="text-align:center;">
+            <i class="fa-solid fa-ban fa-2x" style="color:#6b7280;margin-bottom:8px;"></i>
+            <h2 style="color:#1E3A8A;">{{ dismissed_count }}</h2>
+            <p style="color:#6b7280;font-size:14px;">Dismissed</p>
+        </div>
+    </div>
+
+    <!-- Filter Bar -->
+    <form method="GET" style="display:flex;gap:12px;margin-bottom:20px;">
+        {% for s in 'all,PENDING,IN_REVIEW,RESOLVED,DISMISSED'|split:',' %}
+        {% endfor %}
+        <a href="?status=all" class="btn-ghost" style="text-decoration:none;{% if status_filter == 'all' %}background:#0e7d73;color:white;{% endif %}">All</a>
+        <a href="?status=pending" class="btn-ghost" style="text-decoration:none;{% if status_filter == 'pending' %}background:#f59e0b;color:white;{% endif %}">Pending</a>
+        <a href="?status=in_review" class="btn-ghost" style="text-decoration:none;{% if status_filter == 'in_review' %}background:#3b82f6;color:white;{% endif %}">In Review</a>
+        <a href="?status=resolved" class="btn-ghost" style="text-decoration:none;{% if status_filter == 'resolved' %}background:#10b981;color:white;{% endif %}">Resolved</a>
+        <a href="?status=dismissed" class="btn-ghost" style="text-decoration:none;">Dismissed</a>
+    </form>
+
+    <!-- Reports Table -->
+    <div class="card-theme">
+        <table style="width:100%;border-collapse:collapse;font-size:14px;">
+            <thead>
+                <tr style="border-bottom:2px solid #e5e7eb;text-align:left;color:#6b7280;font-size:12px;text-transform:uppercase;">
+                    <th style="padding:12px;">#ID</th>
+                    <th style="padding:12px;">Reported User</th>
+                    <th style="padding:12px;">Reported By</th>
+                    <th style="padding:12px;">Reason</th>
+                    <th style="padding:12px;">Status</th>
+                    <th style="padding:12px;">Date</th>
+                    <th style="padding:12px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in reports %}
+                <tr style="border-bottom:1px solid #f3f4f6;" id="report-{{ report.id }}">
+                    <td style="padding:12px;color:#9ca3af;">#{{ report.id }}</td>
+                    <td style="padding:12px;"><strong>{{ report.reported_user.username|default:"N/A" }}</strong></td>
+                    <td style="padding:12px;color:#6b7280;">{{ report.reported_by.username|default:"Anonymous" }}</td>
+                    <td style="padding:12px;">{{ report.reason|truncatechars:60 }}</td>
+                    <td style="padding:12px;">
+                        {% if report.status == 'PENDING' %}
+                            <span class="badge-status pending">Pending</span>
+                        {% elif report.status == 'IN_REVIEW' %}
+                            <span class="badge-status" style="background:#dbeafe;color:#1e40af;">In Review</span>
+                        {% elif report.status == 'RESOLVED' %}
+                            <span class="badge-status accepted">Resolved</span>
+                        {% else %}
+                            <span class="badge-status cancelled">Dismissed</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding:12px;color:#9ca3af;font-size:12px;">{{ report.created_at|date:"M d, Y" }}</td>
+                    <td style="padding:12px;">
+                        <button onclick="document.getElementById('modal-{{ report.id }}').style.display='flex'" class="btn-ghost" style="padding:4px 10px;font-size:12px;">Update</button>
+                    </td>
+                </tr>
+
+                <!-- Modal for updating report status -->
+                <tr>
+                    <td colspan="7" style="padding:0;">
+                        <div id="modal-{{ report.id }}" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center;">
+                            <div style="background:white;border-radius:16px;padding:30px;max-width:500px;width:90%;">
+                                <h3 style="margin:0 0 16px;">Update Report #{{ report.id }}</h3>
+                                <p style="color:#6b7280;font-size:14px;margin-bottom:16px;">Reported user: <strong>{{ report.reported_user.username|default:"N/A" }}</strong></p>
+                                <form method="POST" action="{% url 'admin_panel:manage_reports' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="report_id" value="{{ report.id }}">
+                                    <div style="margin-bottom:12px;">
+                                        <label style="display:block;font-size:13px;font-weight:600;margin-bottom:4px;">New Status</label>
+                                        <select name="status" style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:8px;">
+                                            <option value="PENDING">Pending</option>
+                                            <option value="IN_REVIEW">In Review</option>
+                                            <option value="RESOLVED">Resolved</option>
+                                            <option value="DISMISSED">Dismissed</option>
+                                        </select>
+                                    </div>
+                                    <div style="margin-bottom:16px;">
+                                        <label style="display:block;font-size:13px;font-weight:600;margin-bottom:4px;">Action Taken Note</label>
+                                        <textarea name="action_taken" rows="3" placeholder="Describe action taken..."
+                                                  style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:8px;resize:vertical;box-sizing:border-box;"></textarea>
+                                    </div>
+                                    <div style="display:flex;gap:10px;">
+                                        <button type="submit" class="btn-primary">Save Changes</button>
+                                        <button type="button" onclick="document.getElementById('modal-{{ report.id }}').style.display='none'" class="btn-ghost">Cancel</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="padding:30px;text-align:center;color:#9ca3af;">No reports found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

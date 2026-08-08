@@ -248,6 +248,16 @@
 
       <button type="submit" class="submit-btn" id="loginBtn">Log in as Student</button>
 
+      <!-- DEMO CREDENTIALS QUICK FILL -->
+      <div style="margin-top: 18px; padding: 14px; background: #f0fdfa; border: 1.5px dashed #0c6c63; border-radius: 14px; text-align: center;">
+        <p style="font-size: 12px; font-weight: 700; color: #0c6c63; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">⚡ Quick Demo Login Credentials</p>
+        <div style="display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;">
+          <button type="button" onclick="fillDemo('demouser', 'DemoPassword123!')" style="padding: 6px 12px; background: #0c6c63; color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer;">👤 User (demouser)</button>
+          <button type="button" onclick="fillDemo('demoteacher', 'TeacherPassword123!')" style="padding: 6px 12px; background: #0284c7; color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer;">🎓 Teacher (demoteacher)</button>
+          <button type="button" onclick="fillDemo('admin', 'AdminPassword123!')" style="padding: 6px 12px; background: #7c3aed; color: white; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer;">🛡️ Admin (admin)</button>
+        </div>
+      </div>
+
       <div class="footer-links">
         <a href="{% url 'forgot_password' %}">Forgot password?</a>
         <a href="{% url 'register' %}">Create account</a>
@@ -291,6 +301,12 @@
 <script>
   let currentRole = 'student';
   let currentTab  = 'login';
+
+  function fillDemo(username, password) {
+    switchTab('login');
+    document.getElementById('username').value = username;
+    document.getElementById('password').value = password;
+  }
 
   function selectRole(role) {
     currentRole = role;

@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Review & Rating Hub — Skill Bank{% endblock %}
+
+{% block extra_css %}
+<style>
+.rating-grid {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+.summary-card {
+    background: white;
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.score-number {
+    font-size: 48px;
+    font-weight: 800;
+    color: #1E3A8A;
+}
+
+.stars-row {
+    color: #f59e0b;
+    font-size: 18px;
+    margin: 8px 0;
+}
+
+.reviews-section {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.review-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.star-picker i {
+    font-size: 24px;
+    color: #d1d5db;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.star-picker i.selected {
+    color: #f59e0b;
+}
+
+.tag-chip {
+    display: inline-block;
+    padding: 4px 10px;
+    background: #f3f4f6;
+    border-radius: 12px;
+    font-size: 12px;
+    color: #4b5563;
+    margin-right: 6px;
+    margin-top: 6px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 1200px; margin: 30px auto 10px auto; padding: 0 20px;">
+    <h1 style="font-size: 28px; font-weight: 800; color: #1f2937;">
+        Platform Trust & Quality Ratings
+    </h1>
+    <p style="color: #6b7280; margin-top: 4px;">
+        Community ratings and verified feedback after completed skill exchange sessions.
+    </p>
+</div>
+
+<div class="rating-grid">
+    <!-- Left Column: Summary Stats -->
+    <div class="summary-card">
+        <h3 style="font-size: 18px; font-weight: 700; color: #1E3A8A;">Overall Rating</h3>
+        <div style="text-align: center; margin: 20px 0;">
+            <div class="score-number">{{ avg_rating }}</div>
+            <div class="stars-row">
+                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            </div>
+            <div style="font-size: 13px; color: #6b7280;">Based on {{ total_reviews }} verified reviews</div>
+        </div>
+
+        <div style="border-top: 1px solid #e5e7eb; padding-top: 15px;">
+            <h4 style="font-size: 14px; font-weight: 700; color: #4b5563; margin-bottom: 10px;">Sub-metrics</h4>
+            <p style="font-size: 13px; margin: 6px 0;">Communication: <strong>{{ avg_comm }} / 5</strong></p>
+            <p style="font-size: 13px; margin: 6px 0;">Clarity: <strong>{{ avg_clarity }} / 5</strong></p>
+            <p style="font-size: 13px; margin: 6px 0;">Punctuality: <strong>{{ avg_punc }} / 5</strong></p>
+            <p style="font-size: 13px; margin: 6px 0;">Recommendation Rate: <strong>{{ recommend_pct }}%</strong></p>
+        </div>
+    </div>
+
+    <!-- Right Column: Submit Form & Feed -->
+    <div class="reviews-section">
+        {% if unreviewed_bookings %}
+        <div class="card-theme" id="reviewFormContainer">
+            <h3 style="font-size: 18px; font-weight: 700; color: #1E3A8A; margin-bottom: 15px;">
+                <i class="fa-solid fa-pen-to-square" style="color: #0e7d73;"></i> Leave a Review
+            </h3>
+
+            <form method="POST" action="{% url 'rating_dashboard' %}">
+                {% csrf_token %}
+
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 5px;">Select Completed Session</label>
+                    <select name="booking_id" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
+                        {% for bk in unreviewed_bookings %}
+                        <option value="{{ bk.id }}">
+                            {{ bk.request.title }} ({{ bk.scheduled_date }})
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                    <div>
+                        <label style="display: block; font-weight: 600; margin-bottom: 5px;">Overall Rating (1 to 5 Stars)</label>
+                        <div class="star-picker" id="starPicker">
+                            <i class="fa-solid fa-star selected" data-val="1"></i>
+                            <i class="fa-solid fa-star selected" data-val="2"></i>
+                            <i class="fa-solid fa-star selected" data-val="3"></i>
+                            <i class="fa-solid fa-star selected" data-val="4"></i>
+                            <i class="fa-solid fa-star selected" data-val="5"></i>
+                        </div>
+                        <input type="hidden" name="rating" id="ratingInput" value="5">
+                    </div>
+
+                    <div>
+                        <label style="display: block; font-weight: 600; margin-bottom: 5px;">Tags / Highlights</label>
+                        <input type="text" name="tags" placeholder="e.g. Great Communicator, Patient" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
+                    </div>
+                </div>
+
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; font-weight: 600; margin-bottom: 5px;">Detailed Feedback</label>
+                    <textarea name="comment" rows="3" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;" placeholder="Share your experience..."></textarea>
+                </div>
+
+                <button type="submit" class="btn-primary">Submit Feedback</button>
+            </form>
+        </div>
+        {% endif %}
+
+        <!-- Reviews List -->
+        {% for review in reviews %}
+        <div class="review-card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                <div>
+                    <strong style="font-size: 16px; color: #1f2937;">{{ review.reviewer.username }}</strong>
+                    <span style="font-size: 13px; color: #6b7280;">reviewed <strong>{{ review.reviewed_user.username }}</strong></span>
+                    <div style="font-size: 12px; color: #9ca3af;">{{ review.created_at|date:"F d, Y" }}</div>
+                </div>
+                <div style="color: #f59e0b; font-weight: bold; font-size: 18px;">
+                    {{ review.rating }} ★
+                </div>
+            </div>
+
+            <p style="color: #374151; font-size: 14px; margin-bottom: 10px;">"{{ review.comment }}"</p>
+
+            {% if review.tag_list %}
+                <div>
+                    {% for tag in review.tag_list %}
+                        <span class="tag-chip"><i class="fa-solid fa-check"></i> {{ tag }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        {% empty %}
+        <div class="review-card" style="text-align: center; padding: 40px; color: #9ca3af;">
+            <i class="fa-regular fa-star fa-3x" style="margin-bottom: 10px;"></i>
+            <p>No ratings published yet.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const stars = document.querySelectorAll('#starPicker i');
+    const ratingInput = document.getElementById('ratingInput');
+
+    stars.forEach(star => {
+        star.addEventListener('click', function () {
+            const val = parseInt(this.getAttribute('data-val'));
+            ratingInput.value = val;
+
+            stars.forEach((s, idx) => {
+                if (idx < val) {
+                    s.classList.add('selected');
+                } else {
+                    s.classList.remove('selected');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}

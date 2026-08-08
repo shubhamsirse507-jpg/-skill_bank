@@ -1,10 +1,8 @@
-from django.http import JsonResponse
-from .models import Dashboard
+from django.shortcuts import redirect
+from django.contrib.auth.decorators import login_required
 
+
+@login_required
 def dashboard_view(request):
-    data = Dashboard.objects.all().values()
-
-    return JsonResponse({
-        "status": "success",
-        "data": list(data)
-    })
+    """Redirect /dashboard/ to the main user dashboard UI."""
+    return redirect('home')

@@ -1,0 +1,80 @@
+{% extends 'user_dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Create Skill — Skill Bank{% endblock %}
+
+{% block content %}
+<div class="container mt-4" style="max-width:700px;">
+    <div class="d-flex align-items-center mb-4">
+        <a href="{% url 'profile' %}" class="btn btn-outline-secondary btn-sm me-3">← Back to Profile</a>
+        <h2 class="fw-bold mb-0">📝 Post a New Skill</h2>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card shadow border-0 rounded-4 p-4">
+        <form method="POST" action="{% url 'create_skill' %}">
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Skill Title *</label>
+                <input type="text" name="title" class="form-control rounded-3" required
+                       placeholder="e.g. Python for Beginners, Guitar Lessons, Graphic Design">
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Category *</label>
+                <select name="category_id" class="form-select rounded-3" required>
+                    <option value="">— Select Category —</option>
+                    {% for cat in categories %}
+                        <option value="{{ cat.id }}">{{ cat.category_name }}</option>
+                    {% empty %}
+                        <option disabled>No categories available. Ask an admin to add categories first.</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Skill Type</label>
+                <div class="d-flex gap-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="skill_type" value="offered" id="typeOffered" checked>
+                        <label class="form-check-label" for="typeOffered">📤 I can teach this</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="skill_type" value="wanted" id="typeWanted">
+                        <label class="form-check-label" for="typeWanted">📥 I want to learn this</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-semibold">Level</label>
+                <select name="level" class="form-select rounded-3">
+                    <option value="Beginner">🟢 Beginner</option>
+                    <option value="Intermediate">🟡 Intermediate</option>
+                    <option value="Advanced">🔴 Advanced</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-semibold">Description</label>
+                <textarea name="description" rows="4" class="form-control rounded-3"
+                          placeholder="Describe what you'll teach or what you want to learn, your experience, etc."></textarea>
+            </div>
+
+            <div class="d-flex gap-3">
+                <button type="submit" class="btn btn-success px-5 fw-bold rounded-pill">Post Skill</button>
+                <a href="{% url 'profile' %}" class="btn btn-outline-secondary px-4 rounded-pill">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

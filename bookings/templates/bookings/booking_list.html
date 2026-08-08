@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}My Bookings — Skill Bank{% endblock %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 40px auto; padding: 0 20px;">
+    <h1 style="color: #1f2937; margin-bottom: 20px;"><i class="fa-solid fa-calendar-check" style="color: #0e7d73;"></i> Scheduled Sessions & Bookings</h1>
+
+    {% if bookings %}
+        <div style="display: grid; gap: 20px;">
+            {% for booking in bookings %}
+                <div class="card-theme" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                    <div>
+                        <h3 style="color: #1E3A8A; margin-bottom: 6px;">{{ booking.request.title }}</h3>
+                        <p style="margin: 4px 0; color: #4b5563;">
+                            <strong>Skill:</strong> {{ booking.request.skill.title }} |
+                            <strong>Partner:</strong>
+                            {% if request.user == booking.request.requester %}
+                                {{ booking.request.receiver.username }}
+                            {% else %}
+                                {{ booking.request.requester.username }}
+                            {% endif %}
+                        </p>
+                        <p style="margin: 4px 0; color: #4b5563;">
+                            <i class="fa-solid fa-calendar"></i> {{ booking.scheduled_date }} |
+                            <i class="fa-solid fa-clock"></i> {{ booking.start_time }} - {{ booking.end_time }}
+                        </p>
+                        <p style="margin: 4px 0; color: #4b5563;">
+                            <i class="fa-solid fa-video"></i> Mode: <strong>{{ booking.get_meeting_mode_display }}</strong>
+                        </p>
+                        {% if booking.meeting_link %}
+                            <a href="{{ booking.meeting_link }}" target="_blank" class="btn-primary" style="margin-top: 10px; font-size: 13px; padding: 6px 12px;">
+                                <i class="fa-solid fa-video"></i> Join Meeting
+                            </a>
+                        {% endif %}
+                    </div>
+
+                    <div>
+                        <span class="badge-status {{ booking.status }}">{{ booking.get_status_display }}</span>
+                        {% if booking.status == 'completed' %}
+                            <div style="margin-top: 10px;">
+                                <a href="/ratings/" class="btn-ghost" style="font-size: 13px; padding: 6px 12px;">
+                                    <i class="fa-solid fa-star"></i> Leave Review
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="card-theme" style="text-align: center; padding: 50px; color: #6b7280;">
+            <i class="fa-solid fa-calendar-xmark fa-3x" style="color: #d1d5db; margin-bottom: 15px;"></i>
+            <h2>No bookings found</h2>
+            <p style="margin-top: 8px;">Accept a skill exchange request to schedule a booking session!</p>
+            <a href="/messaging/" class="btn-primary" style="margin-top: 15px;">View Exchange Requests</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

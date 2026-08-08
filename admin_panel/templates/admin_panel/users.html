@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %}Manage Users — Admin Panel{% endblock %}
+{% block content %}
+<div style="max-width:1200px;margin:40px auto;padding:0 20px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px;">
+        <div>
+            <a href="{% url 'admin_panel:dashboard' %}" style="color:#6b7280;text-decoration:none;font-size:14px;">← Back to Admin</a>
+            <h1 style="color:#1f2937;margin:8px 0 0;"><i class="fa-solid fa-users-gear" style="color:#0e7d73;"></i> User Management</h1>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <form method="GET" style="display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap;">
+        <input type="text" name="q" value="{{ query }}" placeholder="Search by name, email or username..."
+               style="flex:1;min-width:200px;padding:10px 16px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;">
+        <select name="status" style="padding:10px 16px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;">
+            <option value="all" {% if status_filter == 'all' %}selected{% endif %}>All Users</option>
+            <option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option>
+            <option value="suspended" {% if status_filter == 'suspended' %}selected{% endif %}>Suspended</option>
+            <option value="staff" {% if status_filter == 'staff' %}selected{% endif %}>Staff/Admin</option>
+        </select>
+        <button type="submit" class="btn-primary">Filter</button>
+    </form>
+
+    <!-- Users Table -->
+    <div class="card-theme">
+        <table style="width:100%;border-collapse:collapse;font-size:14px;">
+            <thead>
+                <tr style="border-bottom:2px solid #e5e7eb;text-align:left;color:#6b7280;font-size:12px;text-transform:uppercase;">
+                    <th style="padding:12px;">User</th>
+                    <th style="padding:12px;">Email</th>
+                    <th style="padding:12px;">Joined</th>
+                    <th style="padding:12px;">Exchanges</th>
+                    <th style="padding:12px;">Status</th>
+                    <th style="padding:12px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users %}
+                <tr style="border-bottom:1px solid #f3f4f6;">
+                    <td style="padding:12px;">
+                        <strong>{{ u.get_full_name|default:u.username }}</strong>
+                        <div style="font-size:12px;color:#9ca3af;">@{{ u.username }}</div>
+                    </td>
+                    <td style="padding:12px;color:#6b7280;">{{ u.email }}</td>
+                    <td style="padding:12px;color:#6b7280;">{{ u.date_joined|date:"M d, Y" }}</td>
+                    <td style="padding:12px;">
+                        <span style="color:#10b981;">{{ u.requested_count }}</span> / <span style="color:#3b82f6;">{{ u.provided_count }}</span>
+                    </td>
+                    <td style="padding:12px;">
+                        {% if u.is_staff %}
+                            <span class="badge-status accepted">Staff</span>
+                        {% elif u.is_active %}
+                            <span class="badge-status accepted">Active</span>
+                        {% else %}
+                            <span class="badge-status cancelled">Suspended</span>
+                        {% endif %}
+                    </td>
+                    <td style="padding:12px;">
+                        <form method="POST" action="{% url 'admin_panel:toggle_user_status' u.id %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn-ghost" style="padding:4px 12px;font-size:12px;"
+                                    onclick="return confirm('Are you sure you want to {% if u.is_active %}suspend{% else %}activate{% endif %} {{ u.username }}?')">
+                                {% if u.is_active %}Suspend{% else %}Activate{% endif %}
+                            </button>
+                        </form>
+                        <a href="{% url 'public_profile' u.username %}" class="btn-ghost"
+                           style="padding:4px 12px;font-size:12px;text-decoration:none;" target="_blank">View</a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="padding:30px;text-align:center;color:#9ca3af;">No users found matching your filters.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

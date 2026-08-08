@@ -1,0 +1,154 @@
+{% extends 'user_dashboard/base.html' %}
+{% load static %}
+
+{% block title %}Live Session — Skill Bank{% endblock %}
+
+{% block content %}
+<div class="container mt-4" style="max-width: 900px;">
+
+    <div class="d-flex align-items-center mb-4">
+        <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-sm me-3">← Back</a>
+        <h2 class="fw-bold mb-0">🎥 Live Session</h2>
+    </div>
+
+    <!-- Session Status Banner -->
+    <div class="card border-0 shadow rounded-4 p-4 mb-4" style="background: linear-gradient(135deg, #1e3a8a, #1d4ed8); color: white;">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div>
+                <h4 class="fw-bold mb-1">Ready to Start a Live Skill Session?</h4>
+                <p class="mb-0" style="opacity:.9;">Connect with your exchange partners via video call or join a scheduled session.</p>
+            </div>
+            <button class="btn btn-light fw-bold px-4 rounded-pill" onclick="startSession()">
+                <i class="bi bi-camera-video-fill me-2"></i> Start Session
+            </button>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Join a Session -->
+        <div class="col-md-6">
+            <div class="card shadow border-0 rounded-4 h-100 p-4">
+                <div class="d-flex align-items-center mb-3">
+                    <span style="font-size:32px;" class="me-3">🔗</span>
+                    <h5 class="fw-bold mb-0">Join with a Link</h5>
+                </div>
+                <p class="text-muted small">Enter a session link shared by your exchange partner to join their session.</p>
+                <div class="input-group mt-2">
+                    <input type="text" class="form-control rounded-start" id="joinLink"
+                           placeholder="Paste your session link here...">
+                    <button class="btn btn-success" onclick="joinSession()">Join</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upcoming Sessions -->
+        <div class="col-md-6">
+            <div class="card shadow border-0 rounded-4 h-100 p-4">
+                <div class="d-flex align-items-center mb-3">
+                    <span style="font-size:32px;" class="me-3">📅</span>
+                    <h5 class="fw-bold mb-0">Upcoming Sessions</h5>
+                </div>
+                <p class="text-muted small mb-3">Your scheduled skill sessions from your bookings.</p>
+                <a href="{% url 'booking_list' %}" class="btn btn-outline-primary rounded-pill w-100">
+                    <i class="bi bi-calendar-check me-2"></i>View My Bookings
+                </a>
+            </div>
+        </div>
+
+        <!-- Video Preview -->
+        <div class="col-12">
+            <div class="card shadow border-0 rounded-4 overflow-hidden">
+                <div class="card-header bg-dark text-white d-flex align-items-center justify-content-between p-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="rounded-circle bg-danger" style="width:12px;height:12px;"></div>
+                        <div class="rounded-circle bg-warning" style="width:12px;height:12px;"></div>
+                        <div class="rounded-circle bg-success" style="width:12px;height:12px;"></div>
+                        <span class="ms-2 text-white-50 small">Session Room</span>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-light rounded-pill" onclick="toggleMic()" id="micBtn">
+                            <i class="bi bi-mic-fill"></i> Mic
+                        </button>
+                        <button class="btn btn-sm btn-outline-light rounded-pill" onclick="toggleCam()" id="camBtn">
+                            <i class="bi bi-camera-video-fill"></i> Camera
+                        </button>
+                    </div>
+                </div>
+                <div id="sessionArea" class="d-flex align-items-center justify-content-center text-center"
+                     style="height:360px; background: #0f172a; color: #94a3b8;">
+                    <div>
+                        <div style="font-size:64px; margin-bottom:16px;">📷</div>
+                        <h5 style="color:#cbd5e1;">No active session</h5>
+                        <p class="small" style="color:#64748b;">Click "Start Session" to begin or join with a meeting link.</p>
+                        <button class="btn btn-success rounded-pill px-4 mt-2 fw-bold" onclick="startSession()">
+                            <i class="bi bi-camera-video-fill me-2"></i>Start Now
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tips -->
+        <div class="col-12">
+            <div class="card shadow border-0 rounded-4 p-4 bg-light">
+                <h6 class="fw-bold mb-3">💡 Tips for a Successful Session</h6>
+                <div class="row g-3">
+                    <div class="col-md-3 text-center">
+                        <div style="font-size:28px;">🎙️</div>
+                        <div class="small fw-semibold mt-1">Test your mic</div>
+                        <div class="small text-muted">Before starting, check your audio is working</div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div style="font-size:28px;">💡</div>
+                        <div class="small fw-semibold mt-1">Good lighting</div>
+                        <div class="small text-muted">Make sure your face is well-lit</div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div style="font-size:28px;">📋</div>
+                        <div class="small fw-semibold mt-1">Prepare materials</div>
+                        <div class="small text-muted">Have your resources ready beforehand</div>
+                    </div>
+                    <div class="col-md-3 text-center">
+                        <div style="font-size:28px;">⭐</div>
+                        <div class="small fw-semibold mt-1">Leave a review</div>
+                        <div class="small text-muted">Rate your partner after the session</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+function startSession() {
+    // In production this would open a WebRTC room or redirect to Google Meet/Jitsi
+    const roomId = 'skillbank-' + Math.random().toString(36).substr(2, 8);
+    const link = `https://meet.jit.si/${roomId}`;
+    if (confirm(`Your session room is ready!\n\nRoom Link: ${link}\n\nShare this link with your exchange partner.\nClick OK to open the session.`)) {
+        window.open(link, '_blank');
+    }
+}
+
+function joinSession() {
+    const link = document.getElementById('joinLink').value.trim();
+    if (!link) { alert('Please paste a session link first.'); return; }
+    window.open(link, '_blank');
+}
+
+let micOn = true, camOn = true;
+function toggleMic() {
+    micOn = !micOn;
+    const btn = document.getElementById('micBtn');
+    btn.innerHTML = micOn ? '<i class="bi bi-mic-fill"></i> Mic' : '<i class="bi bi-mic-mute-fill"></i> Muted';
+    btn.className = micOn ? 'btn btn-sm btn-outline-light rounded-pill' : 'btn btn-sm btn-danger rounded-pill';
+}
+function toggleCam() {
+    camOn = !camOn;
+    const btn = document.getElementById('camBtn');
+    btn.innerHTML = camOn ? '<i class="bi bi-camera-video-fill"></i> Camera' : '<i class="bi bi-camera-video-off-fill"></i> Camera Off';
+    btn.className = camOn ? 'btn btn-sm btn-outline-light rounded-pill' : 'btn btn-sm btn-danger rounded-pill';
+}
+</script>
+{% endblock %}
+{% endblock %}

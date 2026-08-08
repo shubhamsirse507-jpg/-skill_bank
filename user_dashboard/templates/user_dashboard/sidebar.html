@@ -2,39 +2,54 @@
 
 <div class="sidebar-horizontal" id="sidebar">
 
-   
-
-
-    <!-- Navigation -->
-
-    <a href="{% url 'dashboard' %}">
+    <a href="{% url 'home' %}" {% if request.resolver_match.url_name == 'home' %}class="active"{% endif %}>
         🏠 Dashboard
     </a>
 
-
-    <a href="{% url 'skills' %}">
+    <a href="{% url 'search_skills' %}" {% if request.resolver_match.url_name == 'search_skills' %}class="active"{% endif %}>
         🔍 Browse Skills
     </a>
 
-
-    <a href="{% url 'add_skill' %}">
+    <a href="{% url 'add_skill' %}" {% if request.resolver_match.url_name == 'add_skill' %}class="active"{% endif %}>
         ➕ Add Skill
     </a>
 
+    <a href="{% url 'messaging_index' %}" {% if request.resolver_match.url_name == 'messaging_index' %}class="active"{% endif %}>
+        💬 Messages
+    </a>
 
-    <a href="{% url 'live_session' %}">
+    <a href="{% url 'booking_list' %}" {% if request.resolver_match.url_name == 'booking_list' %}class="active"{% endif %}>
+        📅 Bookings
+    </a>
+
+    <a href="{% url 'ratings:rating_dashboard' %}" {% if request.resolver_match.url_name == 'rating_dashboard' %}class="active"{% endif %}>
+        ⭐ Ratings
+    </a>
+
+    <a href="{% url 'profile' %}" {% if request.resolver_match.url_name == 'profile' %}class="active"{% endif %}>
+        👤 Profile
+    </a>
+
+    <a href="{% url 'notifications' %}" {% if request.resolver_match.url_name == 'notifications' %}class="active"{% endif %}>
+        🔔 Notifications
+    </a>
+
+    <a href="{% url 'live_session' %}" {% if request.resolver_match.url_name == 'live_session' %}class="active"{% endif %}>
         🎥 Live Session
     </a>
 
-
-    <a href="{% url 'chatbot' %}">
-        🤖 Chatbot
+    <a href="{% url 'chatbot' %}" {% if request.resolver_match.url_name == 'chatbot' %}class="active"{% endif %}>
+        🤖 AI Chatbot
     </a>
 
+    {% if user.is_staff %}
+    <a href="{% url 'admin_panel:dashboard' %}" style="color: #10b981;">
+        🛡️ Admin Panel
+    </a>
+    {% endif %}
 
-    <a href="{% url 'logout' %}">
+    <a href="{% url 'logout' %}" style="color: #ef4444;">
         🚪 Logout
     </a>
-
 
 </div>

@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+{% block title %}Manage Skills & Categories — Admin Panel{% endblock %}
+{% block content %}
+<div style="max-width:1200px;margin:40px auto;padding:0 20px;">
+    <div style="margin-bottom:24px;">
+        <a href="{% url 'admin_panel:dashboard' %}" style="color:#6b7280;text-decoration:none;font-size:14px;">← Back to Admin</a>
+        <h1 style="color:#1f2937;margin:8px 0 0;"><i class="fa-solid fa-tags" style="color:#0e7d73;"></i> Skills & Categories</h1>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:start;">
+
+        <!-- Add Category -->
+        <div class="card-theme">
+            <h3 style="color:#1E3A8A;margin-bottom:16px;"><i class="fa-solid fa-layer-group"></i> Add Category</h3>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add_category">
+                <div style="margin-bottom:12px;">
+                    <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:4px;">Category Name *</label>
+                    <input type="text" name="category_name" required placeholder="e.g. Programming, Music, Cooking..."
+                           style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;">
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:4px;">Icon Class</label>
+                    <input type="text" name="icon_class" placeholder="fa-solid fa-code" value="fa-solid fa-layer-group"
+                           style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;">
+                </div>
+                <div style="margin-bottom:16px;">
+                    <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:4px;">Description</label>
+                    <textarea name="description" rows="2" placeholder="Brief description..."
+                              style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;resize:vertical;"></textarea>
+                </div>
+                <button type="submit" class="btn-primary">Add Category</button>
+            </form>
+        </div>
+
+        <!-- Add Skill -->
+        <div class="card-theme">
+            <h3 style="color:#1E3A8A;margin-bottom:16px;"><i class="fa-solid fa-plus"></i> Add Skill</h3>
+            <form method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="add_skill">
+                <div style="margin-bottom:12px;">
+                    <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:4px;">Skill Name *</label>
+                    <input type="text" name="skill_name" required placeholder="e.g. Python, Guitar, Yoga..."
+                           style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;">
+                </div>
+                <div style="margin-bottom:12px;">
+                    <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:4px;">Category *</label>
+                    <select name="category_id" required style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;">
+                        <option value="">— Select a category —</option>
+                        {% for cat in categories %}
+                            <option value="{{ cat.id }}">{{ cat.category_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div style="margin-bottom:16px;">
+                    <label style="display:block;font-size:13px;font-weight:600;color:#374151;margin-bottom:4px;">Demand Level</label>
+                    <select name="demand_level" style="width:100%;padding:10px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;box-sizing:border-box;">
+                        <option value="LOW">Low</option>
+                        <option value="MEDIUM" selected>Medium</option>
+                        <option value="HIGH">High</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary">Add Skill</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Existing Categories -->
+    <div class="card-theme" style="margin-top:30px;">
+        <h3 style="color:#1E3A8A;margin-bottom:16px;"><i class="fa-solid fa-list"></i> Existing Categories ({{ categories|length }})</h3>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;">
+            {% for cat in categories %}
+            <div style="padding:14px;border:1px solid #e5e7eb;border-radius:10px;display:flex;align-items:center;gap:10px;">
+                <i class="{{ cat.icon_class }}" style="color:#0e7d73;font-size:18px;"></i>
+                <div>
+                    <div style="font-weight:600;font-size:14px;">{{ cat.category_name }}</div>
+                    <div style="font-size:12px;color:#9ca3af;">{{ cat.skill_count }} skills</div>
+                </div>
+            </div>
+            {% empty %}
+            <p style="color:#9ca3af;grid-column:1/-1;">No categories yet. Add one above!</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- All Skills -->
+    <div class="card-theme" style="margin-top:24px;">
+        <h3 style="color:#1E3A8A;margin-bottom:16px;"><i class="fa-solid fa-bolt"></i> All Skills ({{ skills|length }})</h3>
+        <table style="width:100%;border-collapse:collapse;font-size:14px;">
+            <thead>
+                <tr style="border-bottom:2px solid #e5e7eb;text-align:left;color:#6b7280;font-size:12px;text-transform:uppercase;">
+                    <th style="padding:10px;">Skill</th>
+                    <th style="padding:10px;">Category</th>
+                    <th style="padding:10px;">Posted by</th>
+                    <th style="padding:10px;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for skill in skills %}
+                <tr style="border-bottom:1px solid #f3f4f6;">
+                    <td style="padding:10px;font-weight:600;">{{ skill.title }}</td>
+                    <td style="padding:10px;color:#6b7280;">{{ skill.category.category_name }}</td>
+                    <td style="padding:10px;color:#6b7280;">{{ skill.user.username }}</td>
+                    <td style="padding:10px;"><span class="badge-status accepted">{{ skill.status }}</span></td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="4" style="padding:20px;text-align:center;color:#9ca3af;">No skills posted yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

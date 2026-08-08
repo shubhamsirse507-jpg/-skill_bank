@@ -1,81 +1,37 @@
-from rest_framework import status
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
-
-from .models import Skill
-from .serializers import SkillSerializer
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from .models import Skill, SkillCategory
 
 
-# ----------------------------
-# Get all skills / Create skill
-# ----------------------------
-@api_view(['GET', 'POST'])
-def skill_list(request):
+@login_required
+def create_skill_view(request):
+    """Web UI endpoint for a user to post a skill listing (offered or wanted)."""
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        category_id = request.POST.get('category_id')
+        description = request.POST.get('description', '').strip()
+        level = request.POST.get('level', 'Beginner')
+        skill_type = request.POST.get('skill_type', 'offered')
 
-    if request.method == 'GET':
-        skills = Skill.objects.all()
-        serializer = SkillSerializer(skills, many=True)
-        return Response(serializer.data)
+        if not title or not category_id:
+            messages.error(request, 'Title and category are required.')
+            return redirect('search_skills')
 
-    elif request.method == 'POST':
-        serializer = SkillSerializer(data=request.data)
+        category = get_object_or_404(SkillCategory, id=category_id)
 
-        if serializer.is_valid():
-            serializer.save()
-            return Response(
-                {
-                    "message": "Skill created successfully",
-                    "data": serializer.data
-                },
-                status=status.HTTP_201_CREATED
-            )
-
-        return Response(serializer.errors,
-                        status=status.HTTP_400_BAD_REQUEST)
-
-
-# --------------------------------------
-# Get, Update and Delete a single skill
-# --------------------------------------
-@api_view(['GET', 'PUT', 'DELETE'])
-def skill_detail(request, pk):
-
-    try:
-        skill = Skill.objects.get(pk=pk)
-
-    except Skill.DoesNotExist:
-        return Response(
-            {
-                "error": "Skill not found"
-            },
-            status=status.HTTP_404_NOT_FOUND
+        skill = Skill.objects.create(
+            user=request.user,
+            category=category,
+            title=title,
+            description=description,
+            level=level,
+            skill_type=skill_type,
+            status='approved'
         )
 
-    if request.method == 'GET':
-        serializer = SkillSerializer(skill)
-        return Response(serializer.data)
+        messages.success(request, f"Skill '{skill.title}' posted successfully!")
+        return redirect('profile')
 
-    elif request.method == 'PUT':
-        serializer = SkillSerializer(skill, data=request.data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(
-                {
-                    "message": "Skill updated successfully",
-                    "data": serializer.data
-                }
-            )
-
-        return Response(serializer.errors,
-                        status=status.HTTP_400_BAD_REQUEST)
-
-    elif request.method == 'DELETE':
-        skill.delete()
-
-        return Response(
-            {
-                "message": "Skill deleted successfully"
-            },
-            status=status.HTTP_204_NO_CONTENT
-        )
+    categories = SkillCategory.objects.filter(is_active=True)
+    return render(request, 'skill_management/create_skill.html', {'categories': categories})
