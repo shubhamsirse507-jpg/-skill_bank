@@ -301,12 +301,14 @@ def join_batch(request, batch_id):
     )
 
     # 7. Notify Batch Teacher
+    rec_num = str(receipt.receipt_number)[:8]
+    rec_url = f"/payments/receipt/{receipt.receipt_number}/"
     Notification.objects.create(
         user=batch.instructor,
         title=f"💳 Payment Received: ₹{price:.2f} from {request.user.username}",
-        message=f"{request.user.username} enrolled in your batch '{batch.title}' and paid ₹{price:.2f}. Receipt #{receipt.receipt_number[:8]} generated.",
+        message=f"{request.user.username} enrolled in your batch '{batch.title}' and paid ₹{price:.2f}. Receipt #{rec_num} generated.",
         type="system",
-        action_url=f"/payments/receipt/{receipt.receipt_number}/",
+        action_url=rec_url,
         action_text="View Payment Receipt",
         sender_name=request.user.username
     )
@@ -317,8 +319,8 @@ def join_batch(request, batch_id):
         title=f"💳 Payment Receipt: ₹{price:.2f} for {batch.title}",
         message=f"You successfully joined '{batch.title}'. Payment of ₹{price:.2f} was deducted from your wallet.",
         type="booking",
-        action_url=f"/payments/receipt/{receipt.receipt_number}/",
-        action_text="View Payment Receipt",
+        action_url=rec_url,
+        action_text="View Receipt",
         sender_name="SkillBank System"
     )
 
