@@ -1,0 +1,280 @@
+{% extends "base.html" %}
+{% block title %}My Certificates — SkillBank{% endblock %}
+
+{% block extra_css %}
+<style>
+  .certs-hero {
+    background: linear-gradient(135deg, #1E3A8A 0%, #0e7d73 100%);
+    color: white; padding: 48px 40px 38px; position: relative; overflow: hidden;
+  }
+  .certs-hero::before {
+    content: ''; position: absolute; top: -50px; right: -50px;
+    width: 220px; height: 220px; border-radius: 50%; background: rgba(255,255,255,0.06);
+  }
+  .certs-hero h1 { font-family: 'Outfit', sans-serif; font-size: 2rem; font-weight: 900; margin: 0 0 6px; }
+  .certs-hero p  { font-size: 0.95rem; opacity: 0.82; margin: 0; }
+
+  .certs-wrap { max-width: 1060px; margin: 36px auto; padding: 0 24px; }
+
+  .tabs {
+    display: flex; gap: 4px; background: white; border-radius: 12px;
+    padding: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    margin-bottom: 30px; width: fit-content;
+  }
+  .tab-btn {
+    padding: 9px 22px; border-radius: 9px; border: none; cursor: pointer;
+    font-size: 0.88rem; font-weight: 700; color: #6b7280; background: transparent;
+    transition: all 0.2s; display: flex; align-items: center; gap: 7px;
+  }
+  .tab-btn.active { background: linear-gradient(135deg, #0e7d73, #14b8a6); color: white; box-shadow: 0 3px 10px rgba(14,125,115,0.3); }
+
+  .cert-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+  }
+
+  .cert-card {
+    background: white; border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    overflow: hidden; transition: all 0.2s;
+    position: relative;
+  }
+  .cert-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(14,125,115,0.15); }
+
+  .cert-card-top {
+    background: linear-gradient(135deg, #1E3A8A, #0e7d73);
+    padding: 26px 22px 20px;
+    position: relative; overflow: hidden;
+  }
+  .cert-card-top::after {
+    content: 'S';
+    position: absolute; right: 16px; top: 12px;
+    font-family: 'Outfit', sans-serif; font-size: 4rem; font-weight: 900;
+    color: rgba(255,255,255,0.07); line-height: 1;
+  }
+  .cert-card-top .cert-icon {
+    width: 46px; height: 46px; border-radius: 12px;
+    background: rgba(255,255,255,0.18);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.3rem; color: white; margin-bottom: 12px;
+  }
+  .cert-card-top .skill-title {
+    font-family: 'Outfit', sans-serif; font-size: 1.05rem; font-weight: 800;
+    color: white; margin-bottom: 4px;
+  }
+  .cert-card-top .category { font-size: 0.78rem; color: rgba(255,255,255,0.72); }
+
+  .cert-card-body { padding: 18px 20px 20px; }
+
+  .cert-meta { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 14px; }
+  .cert-meta-item { font-size: 0.78rem; color: #6b7280; display: flex; align-items: center; gap: 5px; }
+  .cert-meta-item strong { color: #374151; }
+
+  .cert-grade {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #fef3c7; border: 1px solid #fde68a;
+    padding: 4px 12px; border-radius: 99px;
+    font-size: 0.75rem; font-weight: 700; color: #92400e;
+    margin-bottom: 14px;
+  }
+
+  .cert-actions { display: flex; gap: 8px; }
+  .btn-view-cert {
+    flex: 1; background: linear-gradient(135deg, #0e7d73, #14b8a6);
+    color: white; border: none; border-radius: 8px; padding: 9px 14px;
+    font-size: 0.83rem; font-weight: 700; cursor: pointer; text-decoration: none;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+    transition: all 0.2s;
+  }
+  .btn-view-cert:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-share {
+    background: #f3f4f6; color: #374151; border: none; border-radius: 8px;
+    padding: 9px 14px; font-size: 0.83rem; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .btn-share:hover { background: #e5e7eb; }
+
+  /* Issue certificate CTA */
+  .issue-cta {
+    background: linear-gradient(135deg, #0e7d73, #14b8a6);
+    border-radius: 16px; padding: 28px 32px; color: white;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 16px; margin-bottom: 32px;
+  }
+  .issue-cta h2 { font-family: 'Outfit', sans-serif; font-size: 1.15rem; font-weight: 800; margin: 0 0 4px; }
+  .issue-cta p  { margin: 0; font-size: 0.88rem; opacity: 0.9; }
+  .btn-issue {
+    background: white; color: #0e7d73; padding: 10px 22px;
+    border-radius: 9px; font-size: 0.88rem; font-weight: 700;
+    text-decoration: none; white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 7px;
+    transition: all 0.2s; border: none; cursor: pointer;
+  }
+  .btn-issue:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,0.12); }
+
+  .empty-state { text-align: center; padding: 60px 20px; }
+  .empty-state i { font-size: 3.5rem; color: #d1d5db; margin-bottom: 16px; display: block; }
+  .empty-state h3 { font-family: 'Outfit', sans-serif; font-size: 1.2rem; color: #374151; margin: 0 0 8px; }
+  .empty-state p  { font-size: 0.88rem; color: #9ca3af; margin: 0 0 20px; }
+
+  .section-head {
+    font-family: 'Outfit', sans-serif; font-size: 1rem; font-weight: 700;
+    color: #1f2937; margin: 0 0 18px; display: flex; align-items: center; gap: 8px;
+  }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="certs-hero">
+  <h1><i class="fa-solid fa-certificate" style="margin-right:10px;opacity:0.85;"></i>My Certificates</h1>
+  <p>View, download, and share your skill completion certificates earned on SkillBank.</p>
+</div>
+
+<div class="certs-wrap">
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('earned', this)">
+      <i class="fa-solid fa-graduation-cap"></i> Earned ({{ earned|length }})
+    </button>
+    <button class="tab-btn" onclick="switchTab('issued', this)">
+      <i class="fa-solid fa-file-circle-check"></i> Issued by Me ({{ issued|length }})
+    </button>
+  </div>
+
+  <!-- Earned Certificates -->
+  <div class="tab-panel active" id="tab-earned">
+    {% if earned %}
+      <div class="cert-grid">
+        {% for cert in earned %}
+        <div class="cert-card">
+          <div class="cert-card-top">
+            <div class="cert-icon"><i class="fa-solid fa-award"></i></div>
+            <div class="skill-title">{{ cert.skill_title }}</div>
+            <div class="category">{{ cert.category_name }}</div>
+          </div>
+          <div class="cert-card-body">
+            <div class="cert-meta">
+              <div class="cert-meta-item">
+                <i class="fa-solid fa-chalkboard-teacher"></i>
+                Teacher: <strong>{{ cert.teacher.get_full_name|default:cert.teacher.username }}</strong>
+              </div>
+              <div class="cert-meta-item">
+                <i class="fa-solid fa-calendar"></i>
+                <strong>{{ cert.issue_date|date:"M d, Y" }}</strong>
+              </div>
+            </div>
+            <div class="cert-grade"><i class="fa-solid fa-star"></i> {{ cert.grade_performance }}</div>
+            <div class="cert-actions">
+              <a href="/skills/certificate/{{ cert.certificate_id }}/" class="btn-view-cert">
+                <i class="fa-solid fa-eye"></i> View Certificate
+              </a>
+              <button class="btn-share" onclick="shareCert('{{ cert.certificate_id }}')">
+                <i class="fa-solid fa-share-nodes"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <i class="fa-solid fa-graduation-cap"></i>
+        <h3>No Certificates Yet</h3>
+        <p>Complete skill sessions with teachers to earn certificates. Start by booking a session!</p>
+        <a href="/browse/" class="btn-view-cert" style="display:inline-flex;width:auto;">
+          <i class="fa-solid fa-search"></i> Browse Teachers
+        </a>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Issued Certificates (Teacher) -->
+  <div class="tab-panel" id="tab-issued">
+
+    <!-- Issue CTA for Teachers -->
+    <div class="issue-cta">
+      <div>
+        <h2><i class="fa-solid fa-file-signature"></i> Issue a New Certificate</h2>
+        <p>Recognize a student's achievement by issuing them a Skill Completion Certificate.</p>
+      </div>
+      <a href="/skills/issue-certificate/" class="btn-issue">
+        <i class="fa-solid fa-plus"></i> Issue Certificate
+      </a>
+    </div>
+
+    {% if issued %}
+      <p class="section-head"><i class="fa-solid fa-list-check" style="color:#0e7d73;"></i> Certificates You've Issued</p>
+      <div class="cert-grid">
+        {% for cert in issued %}
+        <div class="cert-card">
+          <div class="cert-card-top" style="background: linear-gradient(135deg, #374151, #4b5563);">
+            <div class="cert-icon"><i class="fa-solid fa-file-certificate"></i></div>
+            <div class="skill-title">{{ cert.skill_title }}</div>
+            <div class="category">Issued to: {{ cert.student.get_full_name|default:cert.student.username }}</div>
+          </div>
+          <div class="cert-card-body">
+            <div class="cert-meta">
+              <div class="cert-meta-item">
+                <i class="fa-solid fa-user"></i>
+                Student: <strong>{{ cert.student.username }}</strong>
+              </div>
+              <div class="cert-meta-item">
+                <i class="fa-solid fa-calendar"></i>
+                <strong>{{ cert.issue_date|date:"M d, Y" }}</strong>
+              </div>
+            </div>
+            <div class="cert-grade"><i class="fa-solid fa-star"></i> {{ cert.grade_performance }}</div>
+            <div class="cert-actions">
+              <a href="/skills/certificate/{{ cert.certificate_id }}/" class="btn-view-cert">
+                <i class="fa-solid fa-eye"></i> View Certificate
+              </a>
+              <button class="btn-share" onclick="shareCert('{{ cert.certificate_id }}')">
+                <i class="fa-solid fa-share-nodes"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <i class="fa-solid fa-file-circle-plus"></i>
+        <h3>No Certificates Issued</h3>
+        <p>Issue skill completion certificates to your students after successful sessions.</p>
+        <a href="/skills/issue-certificate/" class="btn-issue" style="display:inline-flex;">
+          <i class="fa-solid fa-plus"></i> Issue First Certificate
+        </a>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  btn.classList.add('active');
+}
+
+function shareCert(certId) {
+  const url = window.location.origin + '/skills/certificate/' + certId + '/';
+  if (navigator.share) {
+    navigator.share({ title: 'SkillBank Certificate', url: url });
+  } else {
+    navigator.clipboard.writeText(url).then(() => {
+      alert('Certificate link copied to clipboard!');
+    });
+  }
+}
+</script>
+{% endblock %}

@@ -9,13 +9,15 @@ from django.contrib.auth.models import User
 from skill_management.models import Skill
 
 
+from decimal import Decimal
+
 class SkillExchange(models.Model):
     """
     Spec table: exchange_requests
     Renamed fields: requester→requester_id, provider→receiver_id.
     requested_skill/offered_skill (free-text) → skill_id FK to canonical Skill.
     Status vocab changed to match spec: pending/accepted/rejected/cancelled/completed.
-    Added: message field.
+    Added: message field and user-configurable price (0 to 100 max).
     """
 
     STATUS_CHOICES = [
@@ -43,6 +45,8 @@ class SkillExchange(models.Model):
     title = models.CharField(max_length=200, help_text='Topic or goal of the skill exchange')
     # Spec: message — was MISSING
     message = models.TextField(blank=True, default='', help_text='Initial message from requester')
+    # Custom price for Skill Swap (0 free to max ₹100)
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('0.00'), help_text='Swap price (₹0 - ₹100 max)')
     # Spec: status (new vocabulary)
     status = models.CharField(max_length=12, choices=STATUS_CHOICES, default='pending')
 
@@ -54,7 +58,8 @@ class SkillExchange(models.Model):
         ordering = ['-updated_at']
 
     def __str__(self):
-        return f"{self.title} ({self.requester.username} → {self.receiver.username}) [{self.status}]"
+        return f"{self.title} (₹{self.price}) ({self.requester.username} → {self.receiver.username}) [{self.status}]"
+
 
 
 class Conversation(models.Model):

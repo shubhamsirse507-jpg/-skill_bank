@@ -7,6 +7,10 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+import search.views
+import bookings.views
+import payments.views
+
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -50,7 +54,18 @@ urlpatterns = [
     path('skills/', include('skill_management.urls')),
     path('search/', include('search.urls')),
     path('bookings/', include('bookings.urls')),
+    path('payments/', include('payments.urls')),
     path('chat/', include('chatboat.urls')),
+
+    # Direct top-level shortcuts matching Lovable app URL structure
+    path('browse/', search.views.search_view, name='browse'),
+    path('batches/', bookings.views.batches_view, name='batches_direct'),
+    path('live/', bookings.views.live_sessions_view, name='live_direct'),
+    path('doubt/', bookings.views.doubt_view, name='doubt_direct'),
+    path('wallet/', payments.views.wallet_view, name='wallet_direct'),
+    path('receipts/', payments.views.my_receipts, name='receipts_direct'),
+
+
 
     # -----------------------------------------------------------------------
     # REST API v1

@@ -1,4 +1,5 @@
-{% extends 'user_dashboard/base.html' %}
+{% extends 'base.html' %}
+
 {% load static %}
 
 {% block title %}Search & Filter Skills — Skill Bank{% endblock %}
@@ -195,11 +196,16 @@
                     {% endif %}
                 </div>
                 {% if user.is_authenticated and user != skill.user %}
-                    <form method="POST" action="{% url 'create_exchange_request' %}">
+                    <form method="POST" action="{% url 'create_exchange_request' %}" style="margin-top:12px;">
                         {% csrf_token %}
                         <input type="hidden" name="skill_id" value="{{ skill.id }}">
                         <input type="hidden" name="receiver_id" value="{{ skill.user.id }}">
-                        <button type="submit" class="btn-request-swap"><i class="bi bi-send-fill me-1"></i> Request Swap</button>
+                        <div style="display:flex; gap:8px; align-items:center; margin-bottom:8px;">
+                            <label style="font-size:0.78rem; font-weight:700; color:#4b5563; white-space:nowrap;">Offer Price (₹0-100 max):</label>
+                            <input type="number" name="price" value="0" min="0" max="100" step="1" 
+                                   style="width:80px; padding:4px 8px; border-radius:6px; border:1px solid #d1d5db; font-size:0.85rem; font-weight:700;">
+                        </div>
+                        <button type="submit" class="btn-request-swap" style="width:100%;"><i class="bi bi-send-fill me-1"></i> Request Swap</button>
                     </form>
                 {% endif %}
             </div>

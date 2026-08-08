@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block title %}Payment Receipts — SkillBank{% endblock %}
+
+{% block extra_css %}
+<style>
+  .receipts-hero {
+    background: linear-gradient(135deg, #1E3A8A 0%, #0e7d73 100%);
+    color: white; padding: 48px 40px 38px; position: relative; overflow: hidden;
+  }
+  .receipts-hero::before {
+    content: ''; position: absolute; top: -50px; right: -50px;
+    width: 220px; height: 220px; border-radius: 50%; background: rgba(255,255,255,0.06);
+  }
+  .receipts-hero h1 { font-family: 'Outfit', sans-serif; font-size: 2rem; font-weight: 900; margin: 0 0 6px; }
+  .receipts-hero p  { font-size: 0.95rem; opacity: 0.82; margin: 0; }
+
+  .receipts-wrap { max-width: 1040px; margin: 36px auto; padding: 0 24px; }
+
+  /* Tabs */
+  .tabs {
+    display: flex; gap: 6px; background: white; border-radius: 12px;
+    padding: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+    margin-bottom: 30px; width: fit-content;
+  }
+  .tab-btn {
+    padding: 10px 24px; border-radius: 99px; border: none; cursor: pointer;
+    font-size: 0.88rem; font-weight: 700; color: #6b7280; background: transparent;
+    transition: all 0.2s; display: flex; align-items: center; gap: 8px;
+  }
+  .tab-btn.active {
+    background: linear-gradient(135deg, #0e7d73, #14b8a6); color: white;
+    box-shadow: 0 3px 10px rgba(14,125,115,0.3);
+  }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Receipt Card List */
+  .receipt-item {
+    background: white; border-radius: 14px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    padding: 20px 24px; margin-bottom: 14px;
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 16px; border-left: 5px solid #0e7d73;
+    transition: all 0.2s;
+  }
+  .receipt-item:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(14,125,115,0.12); }
+
+  .receipt-info h3 {
+    font-family: 'Outfit', sans-serif; font-size: 1.05rem; font-weight: 800;
+    color: #1f2937; margin: 0 0 4px;
+  }
+  .receipt-meta { display: flex; gap: 16px; flex-wrap: wrap; font-size: 0.8rem; color: #6b7280; }
+  .receipt-meta span { display: flex; align-items: center; gap: 5px; }
+
+  .receipt-amount-box { text-align: right; }
+  .receipt-amount { font-family: 'Outfit', sans-serif; font-size: 1.35rem; font-weight: 900; color: #0e7d73; }
+  .btn-view-receipt {
+    background: #f0fdfa; color: #0e7d73; border: 1.5px solid #6ddfd5;
+    padding: 7px 16px; border-radius: 8px; font-size: 0.82rem; font-weight: 700;
+    text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 6px; transition: all 0.2s;
+  }
+  .btn-view-receipt:hover { background: #0e7d73; color: white; border-color: #0e7d73; }
+
+  .empty-state { text-align: center; padding: 60px 20px; background: white; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
+  .empty-state i { font-size: 3.5rem; color: #d1d5db; margin-bottom: 14px; display: block; }
+  .empty-state h3 { font-family: 'Outfit', sans-serif; font-size: 1.2rem; color: #374151; margin: 0 0 6px; }
+  .empty-state p  { font-size: 0.88rem; color: #9ca3af; margin: 0 0 18px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="receipts-hero">
+  <h1><i class="fa-solid fa-receipt" style="margin-right:10px;opacity:0.85;"></i>Payment Receipts</h1>
+  <p>Track your batch payments and received payments from enrolled students.</p>
+</div>
+
+<div class="receipts-wrap">
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('sent', this)">
+      <i class="fa-solid fa-arrow-up-right-from-square"></i> Sent Payments ({{ sent_receipts|length }})
+    </button>
+    <button class="tab-btn" onclick="switchTab('received', this)">
+      <i class="fa-solid fa-arrow-down-left-and-arrow-up-right-to-center"></i> Received Payments ({{ received_receipts|length }})
+    </button>
+  </div>
+
+  <!-- Sent Payments Tab (Student) -->
+  <div class="tab-panel active" id="tab-sent">
+    {% if sent_receipts %}
+      {% for r in sent_receipts %}
+      <div class="receipt-item">
+        <div class="receipt-info">
+          <h3>{{ r.item_title }}</h3>
+          <div class="receipt-meta">
+            <span><i class="fa-solid fa-chalkboard-teacher" style="color:#0e7d73;"></i> Instructor: <strong>{{ r.teacher.get_full_name|default:r.teacher.username }}</strong></span>
+            <span><i class="fa-solid fa-calendar"></i> {{ r.created_at|date:"M d, Y" }}</span>
+            <span><i class="fa-solid fa-barcode"></i> #{{ r.receipt_number|slice:":8" }}</span>
+          </div>
+        </div>
+        <div class="receipt-amount-box">
+          <div class="receipt-amount">₹{{ r.amount|floatformat:2 }}</div>
+          <a href="/payments/receipt/{{ r.receipt_number }}/" class="btn-view-receipt">
+            <i class="fa-solid fa-file-invoice"></i> View Receipt
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">
+        <i class="fa-solid fa-receipt"></i>
+        <h3>No Sent Payment Receipts</h3>
+        <p>When you join a batch, your payment receipt will automatically appear here.</p>
+        <a href="/batches/" class="btn-view-receipt" style="background:#0e7d73;color:white;display:inline-flex;">
+          <i class="fa-solid fa-users"></i> Browse Batches
+        </a>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Received Payments Tab (Teacher) -->
+  <div class="tab-panel" id="tab-received">
+    {% if received_receipts %}
+      {% for r in received_receipts %}
+      <div class="receipt-item" style="border-left-color:#10b981;">
+        <div class="receipt-info">
+          <h3>{{ r.item_title }}</h3>
+          <div class="receipt-meta">
+            <span><i class="fa-solid fa-user-graduate" style="color:#10b981;"></i> Student: <strong>{{ r.student.get_full_name|default:r.student.username }}</strong> (@{{ r.student.username }})</span>
+            <span><i class="fa-solid fa-calendar"></i> {{ r.created_at|date:"M d, Y" }}</span>
+            <span><i class="fa-solid fa-barcode"></i> #{{ r.receipt_number|slice:":8" }}</span>
+          </div>
+        </div>
+        <div class="receipt-amount-box">
+          <div class="receipt-amount" style="color:#10b981;">+₹{{ r.amount|floatformat:2 }}</div>
+          <a href="/payments/receipt/{{ r.receipt_number }}/" class="btn-view-receipt" style="border-color:#10b981;color:#065f46;">
+            <i class="fa-solid fa-file-invoice"></i> View Receipt
+          </a>
+        </div>
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-state">
+        <i class="fa-solid fa-hand-holding-dollar"></i>
+        <h3>No Received Payments Yet</h3>
+        <p>Payments received from students enrolling in your batches will appear here.</p>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function switchTab(tab, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  btn.classList.add('active');
+}
+</script>
+{% endblock %}

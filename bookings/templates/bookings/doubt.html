@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Instant Doubt Call — SkillBank{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 1000px; margin: 40px auto; padding: 0 20px;">
+
+    <!-- Header Section -->
+    <div style="text-align: center; margin-bottom: 40px;">
+        <span style="background: rgba(14, 125, 115, 0.1); color: var(--teal-primary); font-size: 0.8rem; font-weight: 700; padding: 6px 16px; border-radius: 100px; text-transform: uppercase; letter-spacing: 1px;">
+            ⚡ 15-Min Live Video Call
+        </span>
+        <h1 style="font-size: 2.8rem; font-weight: 900; margin-top: 15px; color: #1f2937;">Instant Doubt Call</h1>
+        <p style="color: #6b7280; font-size: 1.1rem; max-width: 620px; margin: 10px auto 0;">
+            Stuck on a bug, equation, or design problem? Connect instantly with verified SkillBank teachers for a 15-minute 1-on-1 live video resolution call.
+        </p>
+    </div>
+
+    <!-- Create Doubt Request Card -->
+    <div class="card-theme" style="margin-bottom: 40px; border-radius: 20px; padding: 30px; border: 1px solid rgba(14, 125, 115, 0.2); background: #ffffff;">
+        <h2 style="font-size: 1.4rem; font-weight: 800; color: #111827; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
+            <i class="fa-solid fa-headset" style="color: var(--teal-primary);"></i> Ask Your Doubt Live Now
+        </h2>
+        
+        <form method="POST" action="{% url 'create_doubt' %}">
+            {% csrf_token %}
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                <div>
+                    <label style="font-size: 0.9rem; font-weight: 700; color: #374151; display: block; margin-bottom: 6px;">Subject / Topic</label>
+                    <input type="text" name="subject" required placeholder="e.g. Python Django ORM error / React State bug" 
+                           style="width: 100%; padding: 12px 15px; border-radius: 10px; border: 1px solid #d1d5db; font-size: 0.95rem; font-family: inherit;">
+                </div>
+                <div>
+                    <label style="font-size: 0.9rem; font-weight: 700; color: #374151; display: block; margin-bottom: 6px;">Preferred Mode</label>
+                    <div style="padding: 12px 15px; border-radius: 10px; background: #f0fdfa; border: 1px solid #ccfbf1; font-weight: 700; color: var(--teal-primary); font-size: 0.9rem; display: flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-video"></i> Live In-App Video & Screen Share Room
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-bottom: 20px;">
+                <label style="font-size: 0.9rem; font-weight: 700; color: #374151; display: block; margin-bottom: 6px;">Describe your question or issue</label>
+                <textarea name="question" rows="3" required placeholder="Explain what you are trying to solve so the mentor can help you right away..." 
+                          style="width: 100%; padding: 12px 15px; border-radius: 10px; border: 1px solid #d1d5db; font-size: 0.95rem; font-family: inherit;"></textarea>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 0.85rem; color: #6b7280;">
+                    <i class="fa-solid fa-bolt" style="color: #f59e0b;"></i> Response time: &lt; 2 minutes
+                </span>
+                <button type="submit" class="btn-primary" style="padding: 12px 30px; font-size: 1rem;">
+                    <i class="fa-solid fa-phone-arrow-up-right"></i> Start Instant Doubt Call
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Active / Recent Doubt Calls -->
+    <h3 style="font-size: 1.3rem; font-weight: 800; color: #1f2937; margin-bottom: 20px;">Active Doubt Sessions</h3>
+
+    {% if doubts %}
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+            {% for doubt in doubts %}
+                <div class="card-theme" style="display: flex; justify-content: space-between; align-items: center; border-radius: 14px; padding: 20px; background: #ffffff;">
+                    <div>
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px;">
+                            <span style="font-weight: 800; font-size: 1.1rem; color: #111827;">{{ doubt.subject }}</span>
+                            <span class="badge-status {% if doubt.status == 'searching' %}pending{% else %}accepted{% endif %}">
+                                {{ doubt.status|title }}
+                            </span>
+                        </div>
+                        <p style="color: #4b5563; font-size: 0.9rem; margin-bottom: 8px;">{{ doubt.question }}</p>
+                        <div style="font-size: 0.8rem; color: #6b7280; display: flex; gap: 15px;">
+                            <span><i class="fa-solid fa-user"></i> Learner: <strong>{{ doubt.learner.username }}</strong></span>
+                            <span><i class="fa-regular fa-clock"></i> {{ doubt.created_at|timesince }} ago</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <a href="{% url 'live_room' room_id=doubt.id %}" class="btn-primary" style="padding: 10px 20px;">
+                            <i class="fa-solid fa-video"></i> Join Video Call
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 40px 20px; background: #ffffff; border-radius: 14px; border: 1px dashed #d1d5db;">
+            <p style="color: #6b7280;">No active doubt calls at this moment. Ask a doubt above to launch a call!</p>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

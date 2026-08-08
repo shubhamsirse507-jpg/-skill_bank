@@ -1,26 +1,25 @@
 # Core Django
-Django>=4.2.0
+Django>=4.2.0,<5.2
+python-dotenv==1.0.1
 django-environ==0.11.2
-setuptools>=68.0.0,<70.0.0
+setuptools>=68.0.0
 
-# SQLite is built into Python — no extra DB driver required
+# Database Support (SQLite default, PostgreSQL in production)
+dj-database-url==2.1.0
+psycopg2-binary>=2.9.9
 
-# REST Framework
+# WSGI Server & Static Files for Production
+gunicorn==22.0.0
+whitenoise==6.7.0
+
+# Django REST Framework & Auth
 djangorestframework==3.15.2
 djangorestframework-simplejwt==5.3.1
 drf-yasg==1.21.7
+PyJWT==2.8.0
 
 # CORS
 django-cors-headers==4.4.0
 
-# Environment
-python-dotenv==1.0.1
-
-# Auth helpers
-PyJWT==2.8.0
-
-# Image handling (for profile_image)
+# Utilities & Media
 Pillow>=10.4.0
-
-# Utilities
-whitenoise==6.7.0

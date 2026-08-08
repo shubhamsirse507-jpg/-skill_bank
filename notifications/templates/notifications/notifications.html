@@ -1,426 +1,539 @@
-{% extends 'user_dashboard/base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Notification Center | Skill Bank{% endblock %}
+{% block title %}Notifications Center — SkillBank{% endblock %}
 
 {% block extra_css %}
 <style>
 * { box-sizing: border-box; }
 
-/* ── Container ── */
-.notif-container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 20px;
+.nc-page { max-width: 960px; margin: 0 auto; padding: 32px 20px 60px; }
+
+/* ── Hero Header ── */
+.nc-hero {
+  background: linear-gradient(135deg, #1E3A8A 0%, #0e7d73 100%);
+  border-radius: 22px; padding: 28px 32px;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-wrap: wrap; gap: 16px; margin-bottom: 28px;
+  box-shadow: 0 8px 32px rgba(14,125,115,0.2);
+}
+.nc-hero-left { display: flex; align-items: center; gap: 16px; }
+.nc-hero-icon {
+  width: 52px; height: 52px; background: rgba(255,255,255,0.18);
+  border-radius: 14px; display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem;
+}
+.nc-hero h1 { font-size: 1.4rem; font-weight: 800; color: #fff; margin: 0 0 3px; font-family:'Outfit',sans-serif; }
+.nc-hero p  { color: rgba(255,255,255,0.8); font-size: 0.85rem; margin: 0; }
+.nc-hero-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+.badge-pill {
+  background: rgba(255,255,255,0.18); color: #fff;
+  font-size: 0.75rem; font-weight: 700; padding: 4px 12px;
+  border-radius: 99px; border: 1px solid rgba(255,255,255,0.3);
+}
+.badge-pill.red { background: rgba(239,68,68,0.35); border-color: rgba(239,68,68,0.5); }
+
+.hero-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.hero-btn {
+  background: rgba(255,255,255,0.15); color: #fff;
+  border: 1px solid rgba(255,255,255,0.3); padding: 8px 16px;
+  border-radius: 10px; font-size: 0.82rem; font-weight: 600;
+  text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+  transition: background 0.2s;
+}
+.hero-btn:hover { background: rgba(255,255,255,0.28); color: #fff; }
+.hero-btn.danger { background: rgba(239,68,68,0.25); border-color: rgba(239,68,68,0.5); }
+.hero-btn.danger:hover { background: rgba(239,68,68,0.45); }
+
+/* ── Main Tab Nav ── */
+.main-tabs {
+  display: flex; gap: 4px; background: #fff;
+  border-radius: 14px; padding: 5px; box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  margin-bottom: 24px; flex-wrap: wrap;
+}
+.main-tab-btn {
+  flex: 1; min-width: 140px; padding: 11px 18px; border-radius: 10px;
+  border: none; cursor: pointer; font-size: 0.88rem; font-weight: 700;
+  color: #64748b; background: transparent; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.main-tab-btn.active {
+  background: linear-gradient(135deg, #1E3A8A, #0e7d73); color: #fff;
+  box-shadow: 0 3px 12px rgba(14,125,115,0.3);
+}
+.tab-count-badge {
+  background: rgba(0,0,0,0.15); border-radius: 99px;
+  font-size: 0.72rem; padding: 1px 8px; font-weight: 800;
+}
+.main-tab-btn.active .tab-count-badge { background: rgba(255,255,255,0.25); }
+
+/* ── Sub Tabs (for notifications) ── */
+.sub-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; }
+.sub-tab-btn {
+  padding: 7px 14px; border-radius: 99px; border: 1.5px solid #e5e7eb;
+  background: #fff; color: #64748b; font-size: 0.82rem; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+}
+.sub-tab-btn.active, .sub-tab-btn:hover {
+  background: #0e7d73; color: #fff; border-color: #0e7d73;
 }
 
-/* ── Header Card ── */
-.header-card {
-    background: linear-gradient(135deg, #0e7d73, #0d9488);
-    border-radius: 20px;
-    padding: 28px 32px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-    flex-wrap: wrap;
-    gap: 16px;
-    box-shadow: 0 8px 32px rgba(14, 125, 115, 0.25);
-}
-
-.header-info { display: flex; align-items: center; gap: 16px; }
-
-.header-icon-box {
-    width: 52px; height: 52px; background: rgba(255,255,255,0.2);
-    border-radius: 14px; display: flex; align-items: center;
-    justify-content: center; flex-shrink: 0;
-}
-
-.header-icon-box svg {
-    width: 26px; height: 26px; stroke: #fff;
-    fill: none; stroke-width: 2;
-}
-
-.header-text h1 {
-    font-size: 22px; font-weight: 800; color: #fff;
-    display: flex; align-items: center; gap: 10px; margin: 0 0 4px;
-}
-
-.header-text p { color: rgba(255,255,255,0.85); font-size: 13px; margin: 0; }
-
-.unread-pill {
-    background: #ef4444; color: #fff;
-    font-size: 11px; font-weight: 700;
-    padding: 2px 9px; border-radius: 20px;
-}
-
-.header-actions { display: flex; gap: 10px; flex-wrap: wrap; }
-
-.action-btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 8px 16px; border-radius: 10px; font-size: 13px;
-    font-weight: 600; text-decoration: none; cursor: pointer;
-    background: rgba(255,255,255,0.15); color: #fff;
-    border: 1px solid rgba(255,255,255,0.25);
-    transition: background 0.2s;
-}
-
-.action-btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 2; }
-.action-btn:hover { background: rgba(255,255,255,0.28); color: #fff; }
-.action-btn-danger { background: rgba(239,68,68,0.25); border-color: rgba(239,68,68,0.4); }
-.action-btn-danger:hover { background: rgba(239,68,68,0.45); }
-
-/* ── Tabs ── */
-.tabs-row {
-    display: flex; gap: 8px; flex-wrap: wrap;
-    margin-bottom: 20px;
-}
-
-.tab-btn {
-    padding: 8px 16px; border-radius: 10px; font-size: 13px;
-    font-weight: 600; border: 1px solid #e5e7eb;
-    background: #fff; color: #64748b; cursor: pointer;
-    transition: all 0.2s;
-}
-
-.tab-btn.active, .tab-btn:hover {
-    background: #0e7d73; color: #fff; border-color: #0e7d73;
-}
-
-.tab-badge {
-    display: inline-block; background: rgba(0,0,0,0.12);
-    border-radius: 10px; font-size: 11px; padding: 1px 7px;
-    margin-left: 5px;
-}
+/* ── Section Panels ── */
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
 
 /* ── Notification Cards ── */
-.notifications-list { display: flex; flex-direction: column; gap: 12px; }
-
-.notification-card {
-    display: flex; align-items: flex-start; gap: 14px;
-    background: #fff; border: 1px solid #e5e7eb;
-    border-radius: 16px; padding: 18px 20px;
-    transition: all 0.25s; position: relative;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+.notif-list { display: flex; flex-direction: column; gap: 10px; }
+.notif-card {
+  display: flex; align-items: flex-start; gap: 14px;
+  background: #fff; border: 1px solid #e5e7eb; border-radius: 16px;
+  padding: 16px 20px; transition: all 0.22s; position: relative;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.04);
 }
-
-.notification-card:hover {
-    border-color: #0e7d73; box-shadow: 0 6px 20px rgba(14,125,115,0.12);
-    transform: translateY(-2px);
+.notif-card:hover { border-color: #0e7d73; box-shadow: 0 6px 20px rgba(14,125,115,0.1); transform: translateY(-2px); }
+.notif-card.unread { border-left: 4px solid #0e7d73; background: #f0fdfa; }
+.unread-dot { width: 9px; height: 9px; background: #0e7d73; border-radius: 50%; position: absolute; top: 18px; right: 18px; }
+.avatar-wrap { position: relative; flex-shrink: 0; }
+.notif-avatar { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; border: 2px solid #e5e7eb; background: #f3f4f6; }
+.type-icon {
+  position: absolute; bottom: -4px; right: -4px;
+  width: 20px; height: 20px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  border: 2px solid #fff; font-size: 0.6rem; font-weight: 800;
 }
-
-.notification-card.unread {
-    border-left: 4px solid #0e7d73;
-    background: #f0fdfa;
+.type-icon.skill_request { background: #2563eb; color: #fff; }
+.type-icon.message        { background: #7c3aed; color: #fff; }
+.type-icon.achievement    { background: #d97706; color: #fff; }
+.type-icon.system         { background: #dc2626; color: #fff; }
+.type-icon.booking        { background: #0e7d73; color: #fff; }
+.type-icon.rating         { background: #f59e0b; color: #fff; }
+.notif-body { flex: 1; min-width: 0; }
+.notif-top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 4px; }
+.notif-title { font-size: 0.92rem; font-weight: 700; color: #1e293b; }
+.type-pill {
+  font-size: 0.7rem; font-weight: 800; padding: 2px 8px;
+  border-radius: 99px; text-transform: uppercase; letter-spacing: 0.5px;
 }
-
-.unread-dot {
-    width: 9px; height: 9px; background: #0e7d73;
-    border-radius: 50%; position: absolute;
-    top: 18px; right: 18px; flex-shrink: 0;
-}
-
-.avatar-box { position: relative; flex-shrink: 0; }
-
-.user-avatar {
-    width: 46px; height: 46px; border-radius: 50%;
-    object-fit: cover; border: 2px solid #e5e7eb;
-    background: #f3f4f6;
-}
-
-.type-badge-icon {
-    position: absolute; bottom: -4px; right: -4px;
-    width: 20px; height: 20px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    border: 2px solid #fff;
-}
-
-.type-badge-icon svg { width: 10px; height: 10px; stroke: #fff; fill: none; stroke-width: 2.5; }
-.type-badge-icon.skill_request { background: #2563eb; }
-.type-badge-icon.message { background: #7c3aed; }
-.type-badge-icon.achievement { background: #d97706; }
-.type-badge-icon.system { background: #dc2626; }
-
-.content-box { flex-grow: 1; min-width: 0; }
-
-.top-row {
-    display: flex; flex-wrap: wrap; align-items: center;
-    gap: 8px; margin-bottom: 6px;
-}
-
-.notif-title { font-size: 15px; font-weight: 700; color: #1e293b; }
-
-.category-pill {
-    font-size: 10px; font-weight: 700;
-    padding: 2px 9px; border-radius: 10px; text-transform: uppercase;
-}
-
-.category-pill.skill_request { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
-.category-pill.message { background: #f3e8ff; color: #7c3aed; border: 1px solid #ddd6fe; }
-.category-pill.achievement { background: #fefce8; color: #ca8a04; border: 1px solid #fef08a; }
-.category-pill.system { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
-
-.timestamp { font-size: 11px; color: #94a3b8; display: flex; align-items: center; gap: 4px; margin-left: auto; }
-.timestamp svg { width: 11px; height: 11px; stroke: currentColor; fill: none; stroke-width: 2; }
-
-.notif-message { font-size: 14px; color: #475569; margin: 0 0 12px; }
-
-.item-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-
+.type-pill.skill_request { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+.type-pill.message        { background: #f3e8ff; color: #7c3aed; border: 1px solid #ddd6fe; }
+.type-pill.achievement    { background: #fefce8; color: #ca8a04; border: 1px solid #fef08a; }
+.type-pill.system         { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
+.type-pill.booking        { background: #f0fdfa; color: #0e7d73; border: 1px solid #6ee7b7; }
+.type-pill.rating         { background: #fef9ee; color: #d97706; border: 1px solid #fcd34d; }
+.notif-ts { font-size: 0.75rem; color: #94a3b8; margin-left: auto; }
+.notif-msg { font-size: 0.85rem; color: #475569; margin: 0 0 10px; }
+.notif-actions { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .cta-btn {
-    display: inline-flex; align-items: center; gap: 6px;
-    padding: 6px 14px; background: #0e7d73; color: #fff;
-    border-radius: 8px; font-size: 12px; font-weight: 600;
-    text-decoration: none; transition: background 0.2s;
+  background: linear-gradient(135deg, #1E3A8A, #0e7d73); color: #fff;
+  padding: 5px 14px; border-radius: 7px; font-size: 0.78rem; font-weight: 700;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 5px; transition: all 0.2s;
+}
+.cta-btn:hover { opacity: 0.9; color: #fff; }
+.icon-btn {
+  width: 30px; height: 30px; border-radius: 7px; background: #f8fafc;
+  border: 1px solid #e2e8f0; color: #64748b; display: flex; align-items: center;
+  justify-content: center; cursor: pointer; text-decoration: none; transition: all 0.2s; font-size: 0.75rem;
+}
+.icon-btn:hover { background: #e2e8f0; color: #1e293b; }
+
+/* ── Message Cards ── */
+.msg-card {
+  display: flex; align-items: center; gap: 14px;
+  background: #fff; border: 1px solid #e5e7eb; border-radius: 16px;
+  padding: 16px 20px; margin-bottom: 10px; transition: all 0.22s;
+  text-decoration: none; color: inherit; position: relative;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.04);
+}
+.msg-card:hover { border-color: #7c3aed; box-shadow: 0 6px 20px rgba(124,58,237,0.1); transform: translateY(-2px); }
+.msg-card.has-unread { border-left: 4px solid #7c3aed; background: #faf5ff; }
+.msg-avatar {
+  width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, #7c3aed, #a78bfa);
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; font-weight: 800; flex-shrink: 0; font-family: 'Outfit', sans-serif;
+}
+.msg-body { flex: 1; min-width: 0; }
+.msg-name { font-weight: 800; font-size: 0.95rem; color: #1e293b; margin-bottom: 3px; }
+.msg-exchange { font-size: 0.75rem; color: #7c3aed; font-weight: 700; margin-bottom: 4px; }
+.msg-preview { font-size: 0.84rem; color: #64748b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.msg-meta { text-align: right; flex-shrink: 0; }
+.msg-time { font-size: 0.75rem; color: #94a3b8; display: block; margin-bottom: 6px; }
+.msg-unread-badge {
+  background: #7c3aed; color: #fff; border-radius: 99px;
+  font-size: 0.7rem; font-weight: 800; padding: 2px 8px; display: inline-block;
 }
 
-.cta-btn:hover { background: #0a6961; color: #fff; }
-.cta-btn svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; }
-
-.icon-action-btn {
-    width: 32px; height: 32px; border-radius: 8px;
-    background: #f8fafc; border: 1px solid #e2e8f0;
-    color: #64748b; display: flex; align-items: center;
-    justify-content: center; cursor: pointer;
-    transition: all 0.2s; text-decoration: none;
+/* ── Rating Cards ── */
+.rating-card {
+  background: #fff; border: 1px solid #e5e7eb; border-radius: 16px;
+  padding: 20px 24px; margin-bottom: 10px; transition: all 0.22s;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.04);
 }
-
-.icon-action-btn:hover { background: #e2e8f0; color: #1e293b; border-color: #94a3b8; }
-.icon-action-btn svg { width: 15px; height: 15px; stroke: currentColor; fill: none; stroke-width: 2; }
+.rating-card:hover { border-color: #f59e0b; box-shadow: 0 6px 20px rgba(245,158,11,0.12); transform: translateY(-2px); }
+.rating-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
+.rating-reviewer { display: flex; align-items: center; gap: 10px; }
+.reviewer-avatar {
+  width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #f59e0b, #fcd34d);
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font-size: 0.95rem; font-weight: 800; flex-shrink: 0; font-family: 'Outfit', sans-serif;
+}
+.reviewer-name { font-weight: 700; font-size: 0.9rem; color: #1e293b; }
+.reviewer-time { font-size: 0.75rem; color: #94a3b8; }
+.stars { display: flex; gap: 2px; }
+.star { font-size: 1.1rem; }
+.star.filled { color: #f59e0b; }
+.star.empty  { color: #e5e7eb; }
+.rating-comment { font-size: 0.88rem; color: #475569; line-height: 1.6; margin: 8px 0 12px; border-left: 3px solid #fcd34d; padding-left: 12px; font-style: italic; }
+.rating-sub-scores { display: flex; gap: 12px; flex-wrap: wrap; }
+.sub-score {
+  font-size: 0.75rem; font-weight: 700; padding: 3px 10px;
+  border-radius: 99px; background: #fef9ee; color: #d97706; border: 1px solid #fde68a;
+}
+.rating-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px; }
+.rating-tag {
+  background: #f0fdfa; color: #0e7d73; border: 1px solid #6ee7b7;
+  padding: 2px 10px; border-radius: 99px; font-size: 0.72rem; font-weight: 700;
+}
+.recommend-badge {
+  background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7;
+  padding: 3px 10px; border-radius: 99px; font-size: 0.72rem; font-weight: 800;
+}
 
 /* ── Empty State ── */
-.empty-state {
-    background: #fff; border: 1px dashed #cbd5e1;
-    border-radius: 20px; padding: 50px 20px;
-    text-align: center; display: none;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+.empty-box {
+  text-align: center; padding: 56px 20px; background: #fff;
+  border: 1.5px dashed #cbd5e1; border-radius: 20px;
 }
-
-.empty-icon-box {
-    width: 70px; height: 70px; border-radius: 20px;
-    background: #f1f5f9; display: inline-flex;
-    align-items: center; justify-content: center; margin-bottom: 16px;
-}
-
-.empty-icon-box svg { width: 32px; height: 32px; stroke: #64748b; fill: none; stroke-width: 2; }
-.empty-state h3 { font-size: 20px; color: #1e293b; margin-bottom: 6px; }
-.empty-state p { color: #64748b; font-size: 14px; }
+.empty-box .ei { font-size: 3rem; margin-bottom: 14px; display: block; }
+.empty-box h3 { font-size: 1.1rem; color: #374151; margin: 0 0 6px; font-family: 'Outfit', sans-serif; }
+.empty-box p  { font-size: 0.85rem; color: #9ca3af; margin: 0; }
 
 /* ── Toast ── */
 .toast-notif {
-    position: fixed; bottom: 30px; right: 30px;
-    background: #1e293b; border: 1px solid #4f46e5;
-    color: #fff; padding: 14px 22px; border-radius: 14px;
-    font-size: 14px; font-weight: 600;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    display: flex; align-items: center; gap: 10px;
-    transform: translateY(100px); opacity: 0;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    z-index: 9999;
+  position: fixed; bottom: 30px; right: 30px;
+  background: #1e293b; border: 1px solid #4f46e5;
+  color: #fff; padding: 12px 20px; border-radius: 12px;
+  font-size: 0.85rem; font-weight: 600; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  display: flex; align-items: center; gap: 10px;
+  transform: translateY(100px); opacity: 0;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 9999;
 }
-
 .toast-notif.show { transform: translateY(0); opacity: 1; }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="notif-container">
+<div class="nc-page">
 
-    <!-- Header -->
-    <div class="header-card">
-        <div class="header-info">
-            <div class="header-icon-box">
-                <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-            </div>
-            <div class="header-text">
-                <h1>
-                    Notifications
-                    {% if unread_count > 0 %}
-                    <span class="unread-pill" id="unreadPill">{{ unread_count }} New</span>
-                    {% endif %}
-                </h1>
-                <p>Stay updated on skill swap requests, messages, and platform alerts.</p>
-            </div>
-        </div>
+  <!-- Hero Header -->
+  <div class="nc-hero">
+    <div class="nc-hero-left">
+      <div class="nc-hero-icon">🔔</div>
+      <div>
+        <h1>Notification Center
+          {% if unread_count > 0 %}
+          <span class="badge-pill red" style="font-size:0.7rem;vertical-align:middle;">{{ unread_count }} Unread</span>
+          {% endif %}
+        </h1>
+        <p>Messages, skill requests, payment receipts and your reviews — all in one place.</p>
+      </div>
+    </div>
+    <div class="nc-hero-badges">
+      <span class="badge-pill">🔔 {{ total_count }} Alerts</span>
+      {% if unread_messages_count > 0 %}
+      <span class="badge-pill red">💬 {{ unread_messages_count }} Unread Msgs</span>
+      {% endif %}
+      <span class="badge-pill">⭐ {{ received_ratings|length }} Reviews</span>
+    </div>
+    <div class="hero-actions">
+      <a href="{% url 'mark_all_read' %}" class="hero-btn">✔ Mark All Read</a>
+      <a href="{% url 'clear_all_notifications' %}" class="hero-btn danger">🗑 Clear All</a>
+    </div>
+  </div>
 
-        <div class="header-actions">
-            <a href="{% url 'mark_all_read' %}" class="action-btn" id="markAllBtn">
-                <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-                Mark All as Read
-            </a>
-            <a href="{% url 'clear_all_notifications' %}" class="action-btn action-btn-danger" id="clearAllBtn">
-                <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                Clear All
-            </a>
-        </div>
+  <!-- Main 3-Tab Navigation -->
+  <div class="main-tabs">
+    <button class="main-tab-btn active" onclick="switchMainTab('notifications', this)">
+      🔔 Notifications
+      <span class="tab-count-badge">{{ total_count }}</span>
+    </button>
+    <button class="main-tab-btn" onclick="switchMainTab('messages', this)">
+      💬 Messages
+      {% if unread_messages_count > 0 %}
+      <span class="tab-count-badge" style="background:rgba(239,68,68,0.35);">{{ unread_messages_count }}</span>
+      {% else %}
+      <span class="tab-count-badge">{{ recent_messages|length }}</span>
+      {% endif %}
+    </button>
+    <button class="main-tab-btn" onclick="switchMainTab('ratings', this)">
+      ⭐ Ratings & Reviews
+      <span class="tab-count-badge">{{ received_ratings|length }}</span>
+    </button>
+  </div>
+
+  <!-- ═══════════════════════════════════════ TAB 1: NOTIFICATIONS ═══ -->
+  <div class="tab-panel active" id="panel-notifications">
+
+    <!-- Sub Filter Tabs -->
+    <div class="sub-tabs">
+      <button class="sub-tab-btn active" data-filter="all">All ({{ total_count }})</button>
+      <button class="sub-tab-btn" data-filter="unread">🔴 Unread ({{ unread_count }})</button>
+      <button class="sub-tab-btn" data-filter="skill_request">⚡ Skill Swaps</button>
+      <button class="sub-tab-btn" data-filter="message">💬 System Messages</button>
+      <button class="sub-tab-btn" data-filter="booking">📅 Bookings</button>
+      <button class="sub-tab-btn" data-filter="system">🛡 System</button>
+      <button class="sub-tab-btn" data-filter="achievement">🏆 Achievements</button>
     </div>
 
-    <!-- Filter Tabs -->
-    <div class="tabs-row">
-        <button class="tab-btn active" data-filter="all">
-            All Notifications <span class="tab-badge" id="badgeAll">{{ total_count }}</span>
-        </button>
-        <button class="tab-btn" data-filter="unread">
-            Unread <span class="tab-badge" id="badgeUnread">{{ unread_count }}</span>
-        </button>
-        <button class="tab-btn" data-filter="skill_request">⚡ Skill Swaps</button>
-        <button class="tab-btn" data-filter="message">💬 Messages</button>
-        <button class="tab-btn" data-filter="system">🛡️ System &amp; Security</button>
-    </div>
+    <div class="notif-list" id="notifList">
+      {% for item in notifications %}
+      <div class="notif-card {% if not item.is_read %}unread{% endif %}"
+           data-id="{{ item.id }}" data-type="{{ item.type }}"
+           data-read="{{ item.is_read|yesno:'true,false' }}">
 
-    <!-- Notification List -->
-    <div class="notifications-list" id="notifList">
-        {% for item in notifications %}
-        <div class="notification-card {% if not item.is_read %}unread{% endif %}"
-             data-id="{{ item.id }}"
-             data-type="{{ item.notification_type }}"
-             data-read="{{ item.is_read|yesno:'true,false' }}">
+        {% if not item.is_read %}<div class="unread-dot"></div>{% endif %}
 
-            {% if not item.is_read %}
-            <div class="unread-dot" title="Unread"></div>
+        <div class="avatar-wrap">
+          <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ item.sender_name|default:item.id }}"
+               alt="notification" class="notif-avatar">
+          <div class="type-icon {{ item.type }}">
+            {% if item.type == 'skill_request' %}⚡
+            {% elif item.type == 'message' %}💬
+            {% elif item.type == 'achievement' %}🏆
+            {% elif item.type == 'booking' %}📅
+            {% elif item.type == 'rating' %}⭐
+            {% else %}🔔{% endif %}
+          </div>
+        </div>
+
+        <div class="notif-body">
+          <div class="notif-top">
+            <span class="notif-title">{{ item.title }}</span>
+            <span class="type-pill {{ item.type }}">
+              {% if item.type == 'skill_request' %}Skill Swap
+              {% elif item.type == 'message' %}Message
+              {% elif item.type == 'achievement' %}Achievement
+              {% elif item.type == 'booking' %}Booking
+              {% elif item.type == 'rating' %}Rating
+              {% else %}System{% endif %}
+            </span>
+            {% if item.sender_name %}
+            <span style="font-size:0.75rem;color:#0e7d73;font-weight:700;">from {{ item.sender_name }}</span>
             {% endif %}
+            <span class="notif-ts">{{ item.created_at|timesince }} ago</span>
+          </div>
 
-            <div class="avatar-box">
-                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed={{ item.id }}" alt="notification" class="user-avatar">
-                <div class="type-badge-icon {{ item.notification_type }}">
-                    {% if item.notification_type == 'skill_request' %}
-                    <svg viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                    {% elif item.notification_type == 'message' %}
-                    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-                    {% elif item.notification_type == 'achievement' %}
-                    <svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                    {% else %}
-                    <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                    {% endif %}
-                </div>
-            </div>
+          <p class="notif-msg">{{ item.message }}</p>
 
-            <div class="content-box">
-                <div class="top-row">
-                    <span class="notif-title">{{ item.title }}</span>
-                    <span class="category-pill {{ item.notification_type }}">
-                        {% if item.notification_type == 'skill_request' %}Skill Swap
-                        {% elif item.notification_type == 'message' %}Message
-                        {% elif item.notification_type == 'achievement' %}Milestone
-                        {% else %}System{% endif %}
-                    </span>
-                    <span class="timestamp">
-                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        {{ item.created_at|timesince }} ago
-                    </span>
-                </div>
-
-                <p class="notif-message">{{ item.message }}</p>
-
-                <div class="item-actions">
-                    {% if item.action_url and item.action_text %}
-                    <a href="{{ item.action_url }}" class="cta-btn">
-                        {{ item.action_text }}
-                        <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-                    </a>
-                    {% endif %}
-
-                    {% if not item.is_read %}
-                    <a href="{% url 'mark_as_read' item.id %}" class="icon-action-btn btn-mark-read" title="Mark as Read" data-id="{{ item.id }}">
-                        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
-                    </a>
-                    {% endif %}
-
-                    <a href="{% url 'delete_notification' item.id %}" class="icon-action-btn btn-delete" title="Delete" data-id="{{ item.id }}">
-                        <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                    </a>
-                </div>
-            </div>
+          <div class="notif-actions">
+            {% if item.action_url and item.action_text %}
+            <a href="{{ item.action_url }}" class="cta-btn">
+              {{ item.action_text }} →
+            </a>
+            {% endif %}
+            {% if not item.is_read %}
+            <a href="{% url 'mark_as_read' item.id %}" class="icon-btn btn-mark-read" title="Mark as Read" data-id="{{ item.id }}">✔</a>
+            {% endif %}
+            <a href="{% url 'delete_notification' item.id %}" class="icon-btn btn-delete" title="Delete" data-id="{{ item.id }}">🗑</a>
+          </div>
         </div>
-        {% empty %}
-        {% endfor %}
+      </div>
+      {% empty %}
+      <div class="empty-box">
+        <span class="ei">🔔</span>
+        <h3>No Notifications</h3>
+        <p>You're all caught up! New notifications will appear here.</p>
+      </div>
+      {% endfor %}
     </div>
 
-    <!-- Empty State -->
-    <div class="empty-state" id="emptyState" {% if not notifications %}style="display: block;"{% endif %}>
-        <div class="empty-icon-box">
-            <svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+  </div>
+
+  <!-- ═══════════════════════════════════════ TAB 2: MESSAGES ═══════ -->
+  <div class="tab-panel" id="panel-messages">
+
+    {% if recent_messages %}
+      {% for m in recent_messages %}
+      <a href="/messaging/messages/{{ m.conversation.request.id }}/" class="msg-card {% if m.unread_count > 0 %}has-unread{% endif %}">
+        <div class="msg-avatar">{{ m.other_user.username|slice:":1"|upper }}</div>
+        <div class="msg-body">
+          <div class="msg-name">{{ m.other_user.get_full_name|default:m.other_user.username }}
+            <span style="font-weight:500;font-size:0.8rem;color:#6b7280;">@{{ m.other_user.username }}</span>
+          </div>
+          <div class="msg-exchange">📌 {{ m.exchange_title }}</div>
+          <div class="msg-preview">
+            {% if m.latest_message.sender == request.user %}
+            <span style="color:#9ca3af;">You: </span>
+            {% endif %}
+            {{ m.latest_message.message_text|truncatechars:80 }}
+          </div>
         </div>
-        <h3>No Notifications Found</h3>
-        <p>You're all caught up! Check back later for new skill swap requests or messages.</p>
-    </div>
+        <div class="msg-meta">
+          <span class="msg-time">{{ m.latest_message.created_at|timesince }} ago</span>
+          {% if m.unread_count > 0 %}
+          <span class="msg-unread-badge">{{ m.unread_count }} new</span>
+          {% else %}
+          <span style="font-size:1rem;color:#10b981;">✔</span>
+          {% endif %}
+        </div>
+      </a>
+      {% endfor %}
+    {% else %}
+      <div class="empty-box">
+        <span class="ei">💬</span>
+        <h3>No Messages Yet</h3>
+        <p>When you exchange skills and start conversations, they'll appear here.</p>
+        <a href="/browse/" style="display:inline-flex;align-items:center;gap:6px;background:#7c3aed;color:#fff;padding:9px 20px;border-radius:9px;font-size:0.85rem;font-weight:700;text-decoration:none;margin-top:14px;">⚡ Browse Skills & Connect</a>
+      </div>
+    {% endif %}
+
+  </div>
+
+  <!-- ═══════════════════════════════════════ TAB 3: RATINGS ════════ -->
+  <div class="tab-panel" id="panel-ratings">
+
+    {% if received_ratings %}
+      {% for r in received_ratings %}
+      <div class="rating-card">
+        <div class="rating-top">
+          <div class="rating-reviewer">
+            <div class="reviewer-avatar">{{ r.reviewer.username|slice:":1"|upper }}</div>
+            <div>
+              <div class="reviewer-name">{{ r.reviewer.get_full_name|default:r.reviewer.username }}
+                <span style="font-weight:500;font-size:0.78rem;color:#6b7280;">@{{ r.reviewer.username }}</span>
+              </div>
+              <div class="reviewer-time">{{ r.created_at|timesince }} ago · Session: {{ r.booking.scheduled_date|default:"N/A" }}</div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+            <!-- Overall Stars -->
+            <div class="stars">
+              {% for i in "12345" %}
+              <span class="star {% if forloop.counter <= r.rating %}filled{% else %}empty{% endif %}">★</span>
+              {% endfor %}
+            </div>
+            <span style="font-family:'Outfit',sans-serif;font-size:1.1rem;font-weight:900;color:#f59e0b;">{{ r.rating }}.0</span>
+            {% if r.would_recommend %}
+            <span class="recommend-badge">✅ Recommends</span>
+            {% endif %}
+          </div>
+        </div>
+
+        {% if r.comment %}
+        <div class="rating-comment">{{ r.comment }}</div>
+        {% endif %}
+
+        <div class="rating-sub-scores">
+          <span class="sub-score">💬 Communication: {{ r.communication_rating }}/5</span>
+          <span class="sub-score">💡 Clarity: {{ r.clarity_rating }}/5</span>
+          <span class="sub-score">⏱ Punctuality: {{ r.punctuality_rating }}/5</span>
+        </div>
+
+        {% if r.tags %}
+        <div class="rating-tags">
+          {% for tag in r.tag_list %}
+          <span class="rating-tag">{{ tag }}</span>
+          {% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      {% endfor %}
+    {% else %}
+      <div class="empty-box">
+        <span class="ei">⭐</span>
+        <h3>No Ratings Yet</h3>
+        <p>Complete skill sessions to receive ratings from your students and peers.</p>
+        <a href="/batches/" style="display:inline-flex;align-items:center;gap:6px;background:#f59e0b;color:#fff;padding:9px 20px;border-radius:9px;font-size:0.85rem;font-weight:700;text-decoration:none;margin-top:14px;">📅 View Upcoming Batches</a>
+      </div>
+    {% endif %}
+
+  </div>
 
 </div>
 
 <!-- Toast -->
 <div class="toast-notif" id="toast">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#818cf8" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
-    <span id="toastMsg">Action completed</span>
+  <span>✔</span>
+  <span id="toastMsg">Action completed</span>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
+// Main tab switching
+function switchMainTab(tabName, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.main-tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + tabName).classList.add('active');
+  btn.classList.add('active');
+}
+
 document.addEventListener('DOMContentLoaded', function () {
-    const tabs = document.querySelectorAll('.tab-btn');
-    const cards = document.querySelectorAll('.notification-card');
-    const emptyState = document.getElementById('emptyState');
-    const toast = document.getElementById('toast');
-    const toastMsg = document.getElementById('toastMsg');
+  const toast = document.getElementById('toast');
+  const toastMsg = document.getElementById('toastMsg');
 
-    function showToast(msg) {
-        toastMsg.textContent = msg;
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 3000);
-    }
+  function showToast(msg) {
+    toastMsg.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+  }
 
-    tabs.forEach(tab => {
-        tab.addEventListener('click', function () {
-            tabs.forEach(t => t.classList.remove('active'));
-            this.classList.add('active');
-            const filter = this.dataset.filter;
-            let visibleCount = 0;
-            cards.forEach(card => {
-                const type = card.dataset.type;
-                const isRead = card.dataset.read === 'true';
-                if (filter === 'all') { card.style.display = 'flex'; visibleCount++; }
-                else if (filter === 'unread' && !isRead) { card.style.display = 'flex'; visibleCount++; }
-                else if (filter === type) { card.style.display = 'flex'; visibleCount++; }
-                else { card.style.display = 'none'; }
-            });
-            emptyState.style.display = visibleCount === 0 ? 'block' : 'none';
-        });
+  // Sub-tab filtering for notifications
+  document.querySelectorAll('.sub-tab-btn').forEach(tab => {
+    tab.addEventListener('click', function () {
+      document.querySelectorAll('.sub-tab-btn').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+      const filter = this.dataset.filter;
+      let count = 0;
+      document.querySelectorAll('.notif-card').forEach(card => {
+        const type = card.dataset.type;
+        const isUnread = card.dataset.read === 'false';
+        let show = false;
+        if (filter === 'all') show = true;
+        else if (filter === 'unread') show = isUnread;
+        else show = (type === filter);
+        card.style.display = show ? 'flex' : 'none';
+        if (show) count++;
+      });
     });
+  });
 
-    document.querySelectorAll('.btn-mark-read').forEach(btn => {
-        btn.addEventListener('click', function (e) {
-            e.preventDefault();
-            const url = this.getAttribute('href');
-            const card = this.closest('.notification-card');
-            fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-                .then(res => res.json()).then(data => {
-                    if (data.status === 'success') {
-                        card.classList.remove('unread');
-                        card.dataset.read = 'true';
-                        const dot = card.querySelector('.unread-dot');
-                        if (dot) dot.remove();
-                        this.remove();
-                        showToast('Notification marked as read.');
-                    }
-                }).catch(() => { window.location.href = url; });
-        });
+  // Mark as read (AJAX)
+  document.querySelectorAll('.btn-mark-read').forEach(btn => {
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      const url = this.getAttribute('href');
+      const card = this.closest('.notif-card');
+      fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(r => r.json()).then(d => {
+          if (d.status === 'success') {
+            card.classList.remove('unread');
+            card.dataset.read = 'true';
+            const dot = card.querySelector('.unread-dot');
+            if (dot) dot.remove();
+            this.remove();
+            showToast('Marked as read ✔');
+          }
+        }).catch(() => { window.location.href = url; });
     });
+  });
 
-    document.querySelectorAll('.btn-delete').forEach(btn => {
-        btn.addEventListener('click', function (e) {
-            e.preventDefault();
-            const url = this.getAttribute('href');
-            const card = this.closest('.notification-card');
-            fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-                .then(res => res.json()).then(data => {
-                    if (data.status === 'success') {
-                        card.style.transform = 'translateX(100px)';
-                        card.style.opacity = '0';
-                        setTimeout(() => { card.remove(); showToast('Notification removed.'); }, 300);
-                    }
-                }).catch(() => { window.location.href = url; });
-        });
+  // Delete notification (AJAX)
+  document.querySelectorAll('.btn-delete').forEach(btn => {
+    btn.addEventListener('click', function (e) {
+      e.preventDefault();
+      const url = this.getAttribute('href');
+      const card = this.closest('.notif-card');
+      fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(r => r.json()).then(d => {
+          if (d.status === 'success') {
+            card.style.transform = 'translateX(100px)';
+            card.style.opacity = '0';
+            setTimeout(() => { card.remove(); showToast('Notification removed 🗑'); }, 300);
+          }
+        }).catch(() => { window.location.href = url; });
     });
+  });
 });
 </script>
 {% endblock %}

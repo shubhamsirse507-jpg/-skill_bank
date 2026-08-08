@@ -156,10 +156,19 @@
                     <strong>{{ ex.partner.first_name|default:ex.partner.username }}</strong>
                     <span style="font-size: 11px; color: #9ca3af;">{{ ex.updated_at|date:"M d" }}</span>
                 </div>
-                <div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
                     <span class="badge-status {{ ex.status }}">
                         {{ ex.skill.title }}
                     </span>
+                    {% if ex.price > 0 %}
+                        <span style="background: #f0fdfa; border: 1px solid #99f6e4; color: #0d9488; font-size: 11px; font-weight: 800; padding: 2px 8px; border-radius: 99px;">
+                            ₹{{ ex.price }}
+                        </span>
+                    {% else %}
+                        <span style="background: #f3f4f6; color: #6b7280; font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px;">
+                            Free
+                        </span>
+                    {% endif %}
                 </div>
             </a>
             {% empty %}
@@ -176,7 +185,18 @@
         {% if active_exchange %}
         <div class="chat-header" style="display: flex; justify-content: space-between; align-items: center;">
             <div>
-                <h3 style="color: #1E3A8A; margin-bottom: 4px;">{{ active_exchange.title }}</h3>
+                <h3 style="color: #1E3A8A; margin-bottom: 4px; display: flex; align-items: center; gap: 8px;">
+                    {{ active_exchange.title }}
+                    {% if active_exchange.price > 0 %}
+                        <span style="background: #f0fdfa; border: 1px solid #99f6e4; color: #0d9488; font-size: 0.8rem; font-weight: 800; padding: 3px 10px; border-radius: 99px;">
+                            💰 Price: ₹{{ active_exchange.price }} (90% Teacher / 10% Platform)
+                        </span>
+                    {% else %}
+                        <span style="background: #f3f4f6; color: #6b7280; font-size: 0.8rem; font-weight: 700; padding: 3px 10px; border-radius: 99px;">
+                            ⚡ Free Swap
+                        </span>
+                    {% endif %}
+                </h3>
                 <p style="font-size: 13px; color: #6b7280;">
                     Partner: <strong>{{ partner.first_name|default:partner.username }}</strong> |
                     Skill: <strong>{{ active_exchange.skill.title }}</strong>

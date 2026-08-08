@@ -44,6 +44,16 @@
             </div>
 
             <div class="mb-3">
+                <label class="form-label fw-semibold">Offer Price (₹0 to max ₹100)</label>
+                <div class="input-group">
+                    <span class="input-group-text fw-bold">₹</span>
+                    <input type="number" name="price" value="0" min="0" max="100" step="1" class="form-control fw-bold" placeholder="0 to 100">
+                    <span class="input-group-text text-muted" style="font-size:0.82rem;">Max ₹100</span>
+                </div>
+                <small class="text-muted">Set ₹0 for a free skill swap, or offer up to ₹100 per session.</small>
+            </div>
+
+            <div class="mb-3">
                 <label class="form-label fw-semibold">Message for the Teacher *</label>
                 <textarea name="message" class="form-control rounded-3" rows="4" required
                     placeholder="Hi! I'm interested in learning this skill. Here is what I can offer in exchange..."></textarea>

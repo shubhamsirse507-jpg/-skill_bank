@@ -13,7 +13,14 @@ urlpatterns = [
     path('monitoring/', views.platform_monitoring, name='platform_monitoring'),
     path('notice/post/', views.post_notice, name='post_notice'),
 
+    # AI Teacher Qualification Mock Test & Hiring
+    path('hiring/', views.admin_teacher_hiring, name='hiring'),
+    path('mock-test/', views.take_mock_test, name='start_mock_test'),
+    path('mock-test/<int:test_id>/', views.take_mock_test, name='take_mock_test'),
+    path('mock-test/<int:test_id>/approve/', views.approve_hire_teacher, name='approve_hire_teacher'),
+
     # REST API Routes
+
     path('api/reports/', views.ReportListCreateView.as_view(), name='report-list'),
     path('api/reports/<int:pk>/', views.ReportDetailView.as_view(), name='report-detail'),
     path('api/notices/', views.NoticeListCreateView.as_view(), name='notice-list'),

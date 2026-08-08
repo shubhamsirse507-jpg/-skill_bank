@@ -118,14 +118,29 @@ def send_message_ajax(request, exchange_id):
     return JsonResponse({'status': 'error', 'message': 'Invalid request method.'}, status=405)
 
 
+from decimal import Decimal
+import uuid
+
+
 @login_required
 def create_exchange_request(request):
-    """View to initiate a skill exchange request."""
+    """View to initiate a skill exchange request with user-defined price (max ₹100)."""
     if request.method == 'POST':
         skill_id = request.POST.get('skill_id')
         receiver_id = request.POST.get('receiver_id')
         title = request.POST.get('title', '').strip()
         message = request.POST.get('message', '').strip()
+        price_val = request.POST.get('price', '0.00').strip()
+
+        # Validate and cap price between ₹0 and ₹100
+        try:
+            price = Decimal(price_val)
+            if price < Decimal('0.00'):
+                price = Decimal('0.00')
+            elif price > Decimal('100.00'):
+                price = Decimal('100.00')
+        except Exception:
+            price = Decimal('0.00')
 
         if not skill_id or not receiver_id:
             messages.error(request, 'Invalid skill or receiver selected.')
@@ -144,6 +159,7 @@ def create_exchange_request(request):
             skill=skill,
             title=title or f"Skill Swap: {skill.title}",
             message=message,
+            price=price,
             status='pending'
         )
 
@@ -157,18 +173,19 @@ def create_exchange_request(request):
         # Notify receiver
         try:
             from notifications.models import Notification
+            price_text = f" (Price: ₹{price:.2f})" if price > 0 else " (Free Swap)"
             Notification.objects.create(
                 user=receiver,
                 title="New Skill Exchange Request",
-                message=f"{request.user.first_name or request.user.username} requested a swap for {skill.title}.",
-                notification_type="skill_request",
+                message=f"{request.user.first_name or request.user.username} requested a swap for {skill.title}{price_text}.",
+                type="skill_request",
                 action_url=f"/messaging/messages/{exchange.id}/",
                 action_text="View Request"
             )
         except Exception:
             pass
 
-        messages.success(request, 'Exchange request sent successfully!')
+        messages.success(request, f'Exchange request sent successfully! (Price: ₹{price:.2f})')
         return redirect('messaging_detail', exchange_id=exchange.id)
 
     return redirect('search_skills')
@@ -176,7 +193,7 @@ def create_exchange_request(request):
 
 @login_required
 def update_exchange_status(request, exchange_id, action):
-    """Accept, reject, complete, or cancel a skill exchange request."""
+    """Accept, reject, complete, or cancel a skill exchange request with wallet payment on accept."""
     exchange = get_object_or_404(
         SkillExchange.objects.filter(Q(requester=request.user) | Q(receiver=request.user)),
         id=exchange_id
@@ -184,8 +201,82 @@ def update_exchange_status(request, exchange_id, action):
 
     action = action.lower()
     if action == 'accept':
+        # Process Payment if price > 0
+        if exchange.price > Decimal('0.00'):
+            from payments.models import Wallet, WalletTransaction, PaymentReceipt
+
+            requester_wallet, _ = Wallet.objects.get_or_create(user=exchange.requester)
+            if requester_wallet.balance < exchange.price:
+                messages.error(
+                    request,
+                    f'Cannot accept: Requester @{exchange.requester.username} has insufficient wallet balance (₹{exchange.price:.2f} required).'
+                )
+                return redirect('messaging_detail', exchange_id=exchange.id)
+
+            # Deduct full price from requester
+            requester_wallet.balance = Decimal(str(requester_wallet.balance)) - exchange.price
+            requester_wallet.save()
+
+            WalletTransaction.objects.create(
+                wallet=requester_wallet,
+                amount=exchange.price,
+                transaction_type='debit',
+                description=f"Skill Swap Payment: '{exchange.title}'"
+            )
+
+            # Splits: 10% Admin, 90% Provider
+            admin_fee = (exchange.price * Decimal('0.10')).quantize(Decimal('0.01'))
+            provider_earning = exchange.price - admin_fee
+
+            admin_user = User.objects.filter(is_superuser=True).first() or User.objects.filter(is_staff=True).first()
+            if admin_user:
+                admin_wallet, _ = Wallet.objects.get_or_create(user=admin_user)
+                admin_wallet.balance = Decimal(str(admin_wallet.balance)) + admin_fee
+                admin_wallet.earned_total = Decimal(str(admin_wallet.earned_total)) + admin_fee
+                admin_wallet.save()
+
+                WalletTransaction.objects.create(
+                    wallet=admin_wallet,
+                    amount=admin_fee,
+                    transaction_type='credit',
+                    description=f"Admin 10% Fee from Skill Swap #{exchange.id}"
+                )
+
+            provider_wallet, _ = Wallet.objects.get_or_create(user=exchange.receiver)
+            provider_wallet.balance = Decimal(str(provider_wallet.balance)) + provider_earning
+            provider_wallet.earned_total = Decimal(str(provider_wallet.earned_total)) + provider_earning
+            provider_wallet.save()
+
+            WalletTransaction.objects.create(
+                wallet=provider_wallet,
+                amount=provider_earning,
+                transaction_type='credit',
+                description=f"Earned 90% (₹{provider_earning:.2f}) from Skill Swap: '{exchange.title}'"
+            )
+
+            # Create Payment Receipt
+            tx_id = f"TXN-SWP-{uuid.uuid4().hex[:8].upper()}"
+            receipt = PaymentReceipt.objects.create(
+                student=exchange.requester,
+                teacher=exchange.receiver,
+                item_title=f"Skill Swap: {exchange.title}",
+                category_name='Skill Exchange',
+                amount=exchange.price,
+                payment_method='SkillBank Wallet',
+                transaction_id=tx_id,
+                status='PAID'
+            )
+            rec_num = str(receipt.receipt_number)[:8]
+
+            messages.success(
+                request,
+                f'Skill exchange accepted! ₹{exchange.price:.2f} payment processed (₹{provider_earning:.2f} credited to provider wallet, receipt #{rec_num}).'
+            )
+        else:
+            messages.success(request, 'Skill exchange accepted!')
+
         exchange.status = 'accepted'
-        messages.success(request, 'Skill exchange accepted!')
+
         # Auto-create initial scheduled booking if none exists
         try:
             from bookings.models import Booking
@@ -215,4 +306,5 @@ def update_exchange_status(request, exchange_id, action):
 
     exchange.save()
     return redirect('messaging_detail', exchange_id=exchange.id)
+
 

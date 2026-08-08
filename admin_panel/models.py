@@ -105,3 +105,35 @@ class AuditLog(models.Model):
 
     def __str__(self):
         return f"{self.created_at.strftime('%Y-%m-%d %H:%M')}: {self.admin} - {self.action}"
+
+
+class TeacherMockTest(models.Model):
+    """
+    AI-Generated Qualification Mock Test for Teacher Hiring (Admin Only).
+    """
+    STATUS_CHOICES = [
+        ('PENDING', 'Pending Test'),
+        ('TAKEN', 'Test Taken - Awaiting Admin Review'),
+        ('APPROVED', 'Approved & Hired'),
+        ('REJECTED', 'Rejected'),
+    ]
+
+    teacher = models.ForeignKey(User, on_delete=models.CASCADE, related_name='mock_tests')
+    skill_name = models.CharField(max_length=150)
+    skill_level = models.CharField(max_length=50, default='Intermediate')
+    questions_json = models.JSONField(default=dict)
+    answers_json = models.JSONField(default=dict)
+    score = models.IntegerField(default=0)
+    total_questions = models.IntegerField(default=5)
+    percentage = models.FloatField(default=0.0)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
+    admin_notes = models.TextField(blank=True, default='')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'teacher_mock_tests'
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Mock Test for {self.teacher.username} - {self.skill_name} [{self.status}]"
+

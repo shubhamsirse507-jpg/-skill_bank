@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+{% block title %}AI Mock Test — SkillBank Teacher Qualification{% endblock %}
+
+{% block extra_css %}
+<style>
+  .test-hero {
+    background: linear-gradient(135deg, #1E3A8A 0%, #0e7d73 100%);
+    color: white;
+    padding: 48px 40px 42px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .test-hero::before, .test-hero::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+  }
+  .test-hero::before { width: 200px; height: 200px; top: -60px; left: -60px; }
+  .test-hero::after  { width: 160px; height: 160px; bottom: -40px; right: -40px; }
+  .test-hero h1 { font-family: 'Outfit', sans-serif; font-size: 2rem; font-weight: 900; margin: 0 0 8px; }
+  .test-hero p  { font-size: 0.95rem; opacity: 0.85; max-width: 540px; margin: 0 auto; }
+  .test-hero .skill-tag {
+    display: inline-block; margin-top: 14px;
+    background: rgba(255,255,255,0.18); backdrop-filter: blur(8px);
+    padding: 6px 18px; border-radius: 99px; font-size: 0.85rem; font-weight: 700;
+    border: 1px solid rgba(255,255,255,0.3);
+  }
+
+  .test-wrap { max-width: 780px; margin: 36px auto; padding: 0 24px; }
+
+  /* Progress bar */
+  .progress-wrap {
+    background: white; border-radius: 12px; padding: 20px 24px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.07); margin-bottom: 28px;
+    display: flex; align-items: center; gap: 16px;
+  }
+  .progress-bar { flex: 1; height: 8px; background: #e5e7eb; border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #0e7d73, #14b8a6); border-radius: 99px; transition: width 0.3s; }
+  .progress-text { font-size: 0.82rem; font-weight: 700; color: #0e7d73; white-space: nowrap; }
+
+  /* Result card */
+  .result-card {
+    background: white;
+    border-radius: 18px;
+    box-shadow: 0 6px 30px rgba(0,0,0,0.1);
+    padding: 40px 36px;
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .score-circle {
+    width: 130px; height: 130px; border-radius: 50%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    margin: 0 auto 20px;
+    font-family: 'Outfit', sans-serif;
+  }
+  .score-circle.pass { background: linear-gradient(135deg, #d1fae5, #6ee7b7); border: 4px solid #10b981; }
+  .score-circle.fail { background: linear-gradient(135deg, #fee2e2, #fca5a5); border: 4px solid #ef4444; }
+  .score-circle .pct  { font-size: 2.4rem; font-weight: 900; color: #1f2937; line-height: 1; }
+  .score-circle .lbl  { font-size: 0.7rem; font-weight: 700; color: #6b7280; margin-top: 2px; }
+  .result-card h2 { font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 800; margin: 0 0 8px; color: #1f2937; }
+  .result-card p  { font-size: 0.9rem; color: #6b7280; max-width: 400px; margin: 0 auto 22px; }
+  .result-meta {
+    display: flex; justify-content: center; gap: 28px; flex-wrap: wrap;
+    padding: 18px; background: #f9fafb; border-radius: 12px; margin-bottom: 24px;
+  }
+  .result-meta-item { text-align: center; }
+  .result-meta-item .num { font-size: 1.4rem; font-weight: 800; color: #1f2937; font-family: 'Outfit', sans-serif; }
+  .result-meta-item .lbl { font-size: 0.75rem; color: #9ca3af; }
+
+  /* Question card */
+  .question-card {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    padding: 28px 30px;
+    margin-bottom: 20px;
+    transition: box-shadow 0.2s;
+  }
+  .question-card:hover { box-shadow: 0 6px 22px rgba(14,125,115,0.1); }
+
+  .q-number {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 28px; height: 28px; border-radius: 8px;
+    background: linear-gradient(135deg, #0e7d73, #14b8a6);
+    color: white; font-size: 0.82rem; font-weight: 800;
+    margin-right: 10px; flex-shrink: 0;
+  }
+  .q-text {
+    font-size: 1rem; font-weight: 700; color: #1f2937;
+    line-height: 1.55; display: flex; align-items: flex-start; margin-bottom: 20px;
+  }
+
+  .options-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+  .option-label {
+    display: flex; align-items: center; gap: 12px;
+    padding: 13px 16px;
+    border: 2px solid #e5e7eb; border-radius: 10px;
+    cursor: pointer; transition: all 0.18s;
+    font-size: 0.9rem; color: #374151; font-weight: 500;
+  }
+  .option-label:hover { border-color: #0e7d73; background: #f0fdfa; }
+  .option-label input[type="radio"] { display: none; }
+  .option-label:has(input:checked) { border-color: #0e7d73; background: #f0fdfa; color: #0e7d73; font-weight: 700; }
+
+  .option-key {
+    width: 30px; height: 30px; border-radius: 7px;
+    background: #f3f4f6; display: flex; align-items: center; justify-content: center;
+    font-size: 0.8rem; font-weight: 800; color: #6b7280; flex-shrink: 0; transition: all 0.18s;
+  }
+  .option-label:has(input:checked) .option-key {
+    background: #0e7d73; color: white;
+  }
+
+  /* Review answers */
+  .review-option {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; border-radius: 9px; margin-bottom: 8px;
+    font-size: 0.88rem; font-weight: 500;
+  }
+  .review-option.correct  { background: #d1fae5; color: #065f46; }
+  .review-option.wrong    { background: #fee2e2; color: #991b1b; }
+  .review-option.neutral  { background: #f9fafb; color: #374151; }
+  .review-option.user-ans { border: 2px solid #3b82f6; background: #eff6ff; color: #1e40af; }
+
+  .explanation-box {
+    background: #f0fdfa; border-left: 4px solid #0e7d73;
+    border-radius: 0 9px 9px 0; padding: 12px 16px;
+    font-size: 0.83rem; color: #065f46; margin-top: 14px;
+    display: flex; gap: 8px;
+  }
+
+  /* Submit button */
+  .submit-wrap { text-align: center; padding: 24px 0; }
+  .btn-submit {
+    background: linear-gradient(135deg, #0e7d73, #14b8a6);
+    color: white; border: none; border-radius: 12px;
+    padding: 14px 40px; font-size: 1rem; font-weight: 800;
+    cursor: pointer; transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 10px;
+    box-shadow: 0 4px 16px rgba(14,125,115,0.35);
+  }
+  .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(14,125,115,0.4); }
+
+  .ai-badge {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+    padding: 5px 14px; border-radius: 99px; font-size: 0.78rem; font-weight: 700;
+    margin-bottom: 14px; backdrop-filter: blur(6px);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<div class="test-hero">
+  <div class="ai-badge"><i class="fa-solid fa-robot"></i> AI-Generated Test</div>
+  <h1>Teacher Qualification Mock Test</h1>
+  <p>Answer all questions carefully. Your result will be reviewed by the SkillBank Admin team.</p>
+  <div class="skill-tag"><i class="fa-solid fa-code"></i> {{ mock_test.skill_name }} · {{ mock_test.skill_level }}</div>
+</div>
+
+<div class="test-wrap">
+
+  {% if mock_test.status == 'PENDING' %}
+  <!-- ACTIVE TEST — Show Questions -->
+  <div class="progress-wrap">
+    <span style="font-size:0.82rem;color:#6b7280;font-weight:600;">Progress</span>
+    <div class="progress-bar"><div class="progress-fill" id="prog" style="width:0%;"></div></div>
+    <span class="progress-text" id="prog-text">0 / {{ mock_test.total_questions }}</span>
+  </div>
+
+  <form method="post" id="test-form">
+    {% csrf_token %}
+    {% for q in mock_test.questions_json %}
+    <div class="question-card" data-qid="{{ q.id }}">
+      <div class="q-text">
+        <span class="q-number">{{ forloop.counter }}</span>
+        {{ q.question }}
+      </div>
+      <ul class="options-list">
+        {% for opt in q.options %}
+        {% with letter=opt|slice:":1" %}
+        <li>
+          <label class="option-label">
+            <input type="radio" name="q_{{ q.id }}" value="{{ letter }}" onchange="updateProgress()">
+            <span class="option-key">{{ letter }}</span>
+            {{ opt|slice:"3:" }}
+          </label>
+        </li>
+        {% endwith %}
+        {% endfor %}
+      </ul>
+    </div>
+    {% endfor %}
+
+    <div class="submit-wrap">
+      <button type="submit" class="btn-submit" id="submit-btn" onclick="return confirmSubmit()">
+        <i class="fa-solid fa-paper-plane"></i> Submit Mock Test
+      </button>
+      <p style="font-size:0.8rem;color:#9ca3af;margin-top:10px;">Make sure all questions are answered before submitting.</p>
+    </div>
+  </form>
+
+  {% else %}
+  <!-- RESULT VIEW -->
+  {% with pct=mock_test.percentage|floatformat:"0" %}
+  <div class="result-card">
+    <div class="score-circle {% if mock_test.percentage >= 60 %}pass{% else %}fail{% endif %}">
+      <div class="pct">{{ pct }}%</div>
+      <div class="lbl">SCORE</div>
+    </div>
+    <h2>{% if mock_test.percentage >= 60 %}🎉 Test Complete!{% else %}📋 Test Submitted{% endif %}</h2>
+    <p>
+      {% if mock_test.percentage >= 60 %}
+        Excellent result! Your application is under admin review for approval.
+      {% else %}
+        Your test has been submitted. The admin team will review your performance.
+      {% endif %}
+    </p>
+
+    <div class="result-meta">
+      <div class="result-meta-item">
+        <div class="num">{{ mock_test.score }}</div>
+        <div class="lbl">Correct</div>
+      </div>
+      <div class="result-meta-item">
+        <div class="num">{{ mock_test.total_questions }}</div>
+        <div class="lbl">Total</div>
+      </div>
+      <div class="result-meta-item">
+        <div class="num" style="color:{% if mock_test.percentage >= 60 %}#10b981{% else %}#ef4444{% endif %};">{{ pct }}%</div>
+        <div class="lbl">Score</div>
+      </div>
+      <div class="result-meta-item">
+        <div class="num" style="font-size:1rem;{% if mock_test.status == 'APPROVED' %}color:#10b981;{% elif mock_test.status == 'REJECTED' %}color:#ef4444;{% else %}color:#f59e0b;{% endif %}">
+          {{ mock_test.get_status_display }}
+        </div>
+        <div class="lbl">Status</div>
+      </div>
+    </div>
+
+    {% if mock_test.admin_notes %}
+    <div style="background:#f0f9ff;border-left:4px solid #3b82f6;border-radius:0 9px 9px 0;padding:12px 16px;font-size:0.88rem;color:#1e40af;text-align:left;margin-bottom:18px;">
+      <i class="fa-solid fa-comment-dots"></i> <strong>Admin Note:</strong> {{ mock_test.admin_notes }}
+    </div>
+    {% endif %}
+
+    <a href="/user/dashboard/" class="btn-submit" style="text-decoration:none;">
+      <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+    </a>
+  </div>
+
+  <!-- Answer Review -->
+  <h3 style="font-family:'Outfit',sans-serif;font-size:1.1rem;font-weight:700;color:#1f2937;margin-bottom:16px;">
+    <i class="fa-solid fa-magnifying-glass" style="color:#0e7d73;"></i> Answer Review
+  </h3>
+  {% for q in mock_test.questions_json %}
+  <div class="question-card">
+    <div class="q-text">
+      <span class="q-number">{{ forloop.counter }}</span>
+      {{ q.question }}
+    </div>
+    {% for opt in q.options %}
+    {% with letter=opt|slice:":1" %}
+    <div class="review-option
+      {% if letter == q.correct %}correct
+      {% elif letter == q.user_answer and letter != q.correct %}wrong
+      {% else %}neutral{% endif %}">
+      {% if letter == q.correct %}<i class="fa-solid fa-check-circle"></i>
+      {% else %}<i class="fa-regular fa-circle"></i>{% endif %}
+      {{ opt }}
+      {% if letter == q.correct %}<span style="font-size:0.75rem;background:#10b981;color:white;padding:2px 8px;border-radius:99px;margin-left:auto;">Correct Answer</span>{% endif %}
+    </div>
+    {% endwith %}
+    {% endfor %}
+    <div class="explanation-box">
+      <i class="fa-solid fa-lightbulb" style="flex-shrink:0;margin-top:1px;"></i>
+      <span><strong>Explanation:</strong> {{ q.explanation }}</span>
+    </div>
+  </div>
+  {% endfor %}
+  {% endwith %}
+  {% endif %}
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const totalQ = {{ mock_test.total_questions }};
+
+function updateProgress() {
+  const radios = document.querySelectorAll('input[type="radio"]:checked');
+  const answered = radios.length;
+  const pct = Math.round((answered / totalQ) * 100);
+  document.getElementById('prog').style.width = pct + '%';
+  document.getElementById('prog-text').textContent = answered + ' / ' + totalQ;
+}
+
+function confirmSubmit() {
+  const radios = document.querySelectorAll('input[type="radio"]:checked');
+  if (radios.length < totalQ) {
+    const unanswered = totalQ - radios.length;
+    return confirm(`You have ${unanswered} unanswered question(s). Submit anyway?`);
+  }
+  return true;
+}
+</script>
+{% endblock %}

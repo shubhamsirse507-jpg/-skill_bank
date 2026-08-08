@@ -20,6 +20,7 @@ class Notification(models.Model):
         ('message', 'Direct Message'),
         ('achievement', 'Skill Achievement'),
         ('booking', 'Booking Update'),
+        ('rating', 'Rating & Review'),
     )
 
     user = models.ForeignKey(

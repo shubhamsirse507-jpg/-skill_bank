@@ -1,0 +1,11 @@
+# SkillBank — Run these commands in your terminal after the previous session
+
+# 1. Activate virtual environment (if not already active)
+d:\Django_framework\skill_bank\venv\Scripts\activate
+
+# 2. Apply migrations for new models (SkillCertificate, TeacherMockTest)
+python manage.py makemigrations
+python manage.py migrate
+
+# 3. Start the development server
+python manage.py runserver

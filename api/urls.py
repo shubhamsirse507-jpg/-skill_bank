@@ -4,7 +4,7 @@ URL routing for REST API v1.
 """
 
 from django.urls import path, include
-from rest_framework.routers import DefaultRouter
+from rest_framework.routers import SimpleRouter
 from rest_framework_simplejwt.views import TokenRefreshView
 
 from .views import (
@@ -14,7 +14,8 @@ from .views import (
     NotificationViewSet, AdminReportViewSet
 )
 
-router = DefaultRouter()
+router = SimpleRouter()
+
 router.register(r'categories', SkillCategoryViewSet, basename='category')
 router.register(r'skills', SkillViewSet, basename='skill')
 router.register(r'exchanges', SkillExchangeViewSet, basename='exchange')

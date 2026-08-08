@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Skill Batches — SkillBank{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 1140px; margin: 40px auto; padding: 0 20px;">
+
+    <!-- Header Section -->
+    <div style="text-align: center; margin-bottom: 40px;">
+        <span style="background: rgba(14, 125, 115, 0.1); color: var(--teal-primary); font-size: 0.8rem; font-weight: 700; padding: 6px 16px; border-radius: 100px; text-transform: uppercase; letter-spacing: 1px;">
+            ✦ Group Classes & Workshops
+        </span>
+        <h1 style="font-size: 2.8rem; font-weight: 900; margin-top: 15px; color: #1f2937;">Scheduled Skill Batches</h1>
+        <p style="color: #6b7280; font-size: 1.1rem; max-width: 600px; margin: 10px auto 0;">
+            Scheduled group classes taught live by expert community members. Reserve your seat and learn together.
+        </p>
+    </div>
+
+    <!-- Category Filter Pills -->
+    <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-bottom: 40px;">
+        <a href="{% url 'batches' %}" 
+           style="padding: 8px 18px; border-radius: 100px; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: all 0.2s;
+           {% if not selected_category %}background: var(--teal-primary); color: white;{% else %}background: #ffffff; color: #4b5563; border: 1px solid #e5e7eb;{% endif %}">
+           All Categories
+        </a>
+        {% for cat in categories %}
+            <a href="{% url 'batches' %}?category={{ cat.id }}" 
+               style="padding: 8px 18px; border-radius: 100px; text-decoration: none; font-size: 0.9rem; font-weight: 600; transition: all 0.2s;
+               {% if selected_category == cat.id %}background: var(--teal-primary); color: white;{% else %}background: #ffffff; color: #4b5563; border: 1px solid #e5e7eb;{% endif %}">
+               <i class="{{ cat.icon_class }}" style="margin-right: 5px;"></i>{{ cat.category_name }}
+            </a>
+        {% endfor %}
+    </div>
+
+    <!-- Batches Grid -->
+    {% if batches %}
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px;">
+            {% for batch in batches %}
+                <div class="card-theme" style="display: flex; flex-direction: column; justify-content: space-between; border-radius: 16px; border: 1px solid #e5e7eb; background: #ffffff;">
+                    <div>
+                        <!-- Category Badge & Seats Badge -->
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <span style="background: #f0fdfa; color: var(--teal-primary); font-size: 0.75rem; font-weight: 700; padding: 4px 12px; border-radius: 100px; border: 1px solid #ccfbf1;">
+                                <i class="{{ batch.category.icon_class }}"></i> {{ batch.category.category_name }}
+                            </span>
+                            <span style="background: #fef3c7; color: #92400e; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 100px;">
+                                <i class="fa-solid fa-users"></i> {{ batch.enrolled_count }} / {{ batch.max_seats }} Seats
+                            </span>
+                        </div>
+
+                        <!-- Title & Description -->
+                        <h3 style="font-size: 1.25rem; font-weight: 800; color: #111827; margin-bottom: 8px;">{{ batch.title }}</h3>
+                        <p style="color: #4b5563; font-size: 0.9rem; line-height: 1.5; margin-bottom: 20px;">
+                            {{ batch.description|default:"Join this interactive live group class with hands-on learning and live Q&A." }}
+                        </p>
+
+                        <!-- Instructor & Schedule Details -->
+                        <div style="background: #f9fafb; padding: 12px; border-radius: 12px; margin-bottom: 20px;">
+                            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                                <div style="width: 32px; height: 32px; border-radius: 50%; background: var(--teal-primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem;">
+                                    {{ batch.instructor.username|slice:":1"|upper }}
+                                </div>
+                                <div>
+                                    <span style="font-size: 0.85rem; font-weight: 700; color: #1f2937; display: block;">{{ batch.instructor.get_full_name|default:batch.instructor.username }}</span>
+                                    <span style="font-size: 0.75rem; color: #6b7280;">Batch Instructor</span>
+                                </div>
+                            </div>
+                            <div style="font-size: 0.8rem; color: #374151; display: flex; align-items: center; gap: 15px; border-top: 1px solid #e5e7eb; padding-top: 8px;">
+                                <span><i class="fa-regular fa-calendar-check" style="color: var(--teal-primary);"></i> {{ batch.scheduled_at|date:"D, M d @ H:i" }}</span>
+                                <span><i class="fa-regular fa-clock" style="color: var(--teal-primary);"></i> {{ batch.duration_minutes }} mins</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer: Price & CTA Button -->
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f3f4f6; padding-top: 15px;">
+                        <div>
+                            <span style="font-size: 0.75rem; color: #6b7280; display: block;">Entry Fee</span>
+                            <span style="font-size: 1.1rem; font-weight: 900; color: var(--teal-primary);">₹{{ batch.price_credits }}</span>
+                        </div>
+
+                        {% if batch.id in enrolled_batch_ids %}
+                            <div style="display: flex; gap: 6px; align-items: center;">
+                                <a href="{% url 'my_receipts' %}" style="background: #f0fdfa; color: #0e7d73; border: 1px solid #6ddfd5; padding: 7px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
+                                    <i class="fa-solid fa-receipt"></i> Receipt
+                                </a>
+                                <a href="{% url 'live_room' room_id=batch.id %}" class="btn-primary" style="background: #10b981 !important; padding: 7px 12px; font-size: 0.8rem;">
+                                    <i class="fa-solid fa-video"></i> Live Class
+                                </a>
+                            </div>
+                        {% elif batch.enrolled_count >= batch.max_seats %}
+                            <button class="btn-ghost" disabled style="opacity: 0.6; cursor: not-allowed;">Batch Full</button>
+                        {% else %}
+                            <a href="{% url 'join_batch' batch_id=batch.id %}" class="btn-primary">
+                                <i class="fa-solid fa-user-plus"></i> Join Batch
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div style="text-align: center; padding: 60px 20px; background: #ffffff; border-radius: 16px; border: 1px dashed #d1d5db;">
+            <i class="fa-solid fa-layer-group" style="font-size: 3rem; color: var(--teal-primary); opacity: 0.5; margin-bottom: 15px;"></i>
+            <h3 style="font-size: 1.3rem; font-weight: 700; color: #374151;">No Active Batches Yet</h3>
+            <p style="color: #6b7280; margin-top: 5px;">Check back soon or browse 1-on-1 sessions from our community!</p>
+            <a href="{% url 'search_view' %}" class="btn-primary" style="margin-top: 20px;">Browse 1-on-1 Skills</a>
+        </div>
+    {% endif %}
+
+</div>
+{% endblock %}

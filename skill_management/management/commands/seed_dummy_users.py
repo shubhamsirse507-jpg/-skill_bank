@@ -174,36 +174,77 @@ class Command(BaseCommand):
             else:
                 self.stdout.write(f"   [Exists]  {user.username}")
 
-            # Create or update profile
-            profile, _ = UserProfile.objects.get_or_create(user=user)
-            for field, value in profile_data.items():
-                setattr(profile, field, value)
-            profile.save()
-            self.stdout.write(f"      Profile: role={profile.role}, status={profile.status}")
+            # Create or update Wallet
+            from payments.models import Wallet, WalletTransaction
+            wallet, _ = Wallet.objects.get_or_create(user=user, defaults={'balance': 500.00 if user.username == 'teacher_demo' else 250.00})
+            if not wallet.transactions.exists():
+                WalletTransaction.objects.create(
+                    wallet=wallet,
+                    amount=wallet.balance,
+                    transaction_type='credit',
+                    description='Welcome Bonus Credits'
+                )
 
-            # ── 3. Create Skills for this user ───────────────────────────────
-            skills_data = SKILLS_BY_USER.get(user.username, [])
-            if skills_data:
-                self.stdout.write(f"      Skills ({len(skills_data)}):")
-                for sk in skills_data:
-                    cat = cat_map.get(sk["category"])
-                    if not cat:
-                        continue
-                    skill, sk_created = Skill.objects.get_or_create(
-                        user=user,
-                        title=sk["title"],
-                        defaults={
-                            "category":    cat,
-                            "skill_type":  sk["skill_type"],
-                            "level":       sk["level"],
-                            "description": sk["description"],
-                            "status":      sk.get("status", "pending"),
-                            "is_featured": sk.get("is_featured", False),
-                            "demand_level": "HIGH" if sk.get("is_featured") else "MEDIUM",
-                        }
-                    )
-                    label = "Added" if sk_created else "Exists"
-                    self.stdout.write(f"         [{label}] {skill.title} [{skill.skill_type}]")
+        # ── 4. Seed Group Batches ───────────────────────────────────────────
+        self.stdout.write("\n🎓  Creating scheduled group batches...")
+        from bookings.models import Batch, DoubtCall
+        from django.utils import timezone
+        import datetime
+
+        teacher = User.objects.get(username='teacher_demo')
+        prog_cat = cat_map.get('Programming')
+        design_cat = cat_map.get('Design')
+
+        if prog_cat:
+            b1, b1_created = Batch.objects.get_or_create(
+                title='Mastering Django REST Framework & WebSockets',
+                defaults={
+                    'instructor': teacher,
+                    'category': prog_cat,
+                    'description': 'A 2-hour intensive group class building real-time APIs and live chat rooms.',
+                    'scheduled_at': timezone.now() + datetime.timedelta(days=2, hours=4),
+                    'duration_minutes': 120,
+                    'max_seats': 12,
+                    'enrolled_count': 3,
+                    'price_credits': 150.00,
+                }
+            )
+            label = "Created" if b1_created else "Exists"
+            self.stdout.write(f"   [{label}] Batch: {b1.title}")
+
+        if design_cat:
+            b2, b2_created = Batch.objects.get_or_create(
+                title='UI/UX Design Systems in Figma for Beginners',
+                defaults={
+                    'instructor': teacher,
+                    'category': design_cat,
+                    'description': 'Learn color theory, auto-layout, components, and interactive prototypes.',
+                    'scheduled_at': timezone.now() + datetime.timedelta(days=4, hours=2),
+                    'duration_minutes': 90,
+                    'max_seats': 15,
+                    'enrolled_count': 5,
+                    'price_credits': 100.00,
+                }
+            )
+            label = "Created" if b2_created else "Exists"
+            self.stdout.write(f"   [{label}] Batch: {b2.title}")
+
+        # ── 5. Seed Instant Doubt Calls ─────────────────────────────────────
+        self.stdout.write("\n⚡  Creating sample instant doubt calls...")
+        student = User.objects.get(username='student_user')
+        d1, d1_created = DoubtCall.objects.get_or_create(
+            subject='Django Foreign Key Migration Error',
+            defaults={
+                'learner': student,
+                'mentor': teacher,
+                'question': 'How do I resolve OperationalError during SQLite migration with existing table records?',
+                'status': 'searching',
+                'meeting_link': 'https://meet.jit.si/SkillBankDoubt-DjangoFK'
+            }
+        )
+        label = "Created" if d1_created else "Exists"
+        self.stdout.write(f"   [{label}] Doubt: {d1.subject}")
+
 
         # ── Summary ──────────────────────────────────────────────────────────
         self.stdout.write(self.style.SUCCESS("\n" + "=" * 60))

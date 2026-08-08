@@ -108,3 +108,25 @@ class Skill(models.Model):
 
     def __str__(self):
         return f"{self.title} ({self.get_skill_type_display()}) — {self.user.username}"
+
+
+import uuid
+
+class SkillCertificate(models.Model):
+    """
+    Skill Completion Certificate issued by teacher to student.
+    """
+    certificate_id = models.CharField(max_length=50, unique=True, default=uuid.uuid4)
+    student = models.ForeignKey(User, on_delete=models.CASCADE, related_name='earned_certificates')
+    teacher = models.ForeignKey(User, on_delete=models.CASCADE, related_name='issued_certificates')
+    skill_title = models.CharField(max_length=200)
+    category_name = models.CharField(max_length=100, blank=True, default='General')
+    grade_performance = models.CharField(max_length=50, default='Excellence (Passed)')
+    issue_date = models.DateField(auto_now_add=True)
+    remarks = models.TextField(blank=True, default='')
+
+    class Meta:
+        ordering = ['-issue_date']
+
+    def __str__(self):
+        return f"Certificate {self.certificate_id} — {self.student.username} ({self.skill_title})"

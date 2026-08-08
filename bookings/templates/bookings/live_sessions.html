@@ -1,0 +1,373 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Live Sessions — SkillBank{% endblock %}
+
+{% block extra_css %}
+<style>
+* { box-sizing: border-box; }
+.ls-page { max-width: 1080px; margin: 0 auto; padding: 32px 20px 60px; }
+
+/* ── Hero ── */
+.ls-hero {
+  position: relative; border-radius: 24px; overflow: hidden;
+  background: linear-gradient(135deg, #0f172a 0%, #1E3A8A 40%, #0e7d73 100%);
+  padding: 36px 36px 32px; margin-bottom: 28px;
+  box-shadow: 0 12px 40px rgba(14,125,115,0.25);
+}
+.ls-hero::before {
+  content: ''; position: absolute; inset: 0;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  pointer-events: none;
+}
+.ls-hero-inner { position: relative; display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 20px; }
+.live-dot { display: inline-flex; align-items: center; gap: 7px; background: rgba(16,185,129,0.2); border: 1px solid rgba(16,185,129,0.5); color: #34d399; padding: 5px 14px; border-radius: 99px; font-size: 0.78rem; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 14px; }
+.live-dot span { width: 8px; height: 8px; border-radius: 50%; background: #10b981; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(1.4)} }
+.ls-hero h1 { font-family: 'Outfit', sans-serif; font-size: 2.2rem; font-weight: 900; color: #fff; margin: 0 0 8px; }
+.ls-hero p  { color: rgba(255,255,255,0.75); font-size: 0.95rem; margin: 0; max-width: 540px; }
+.hero-stats { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 20px; }
+.hero-stat { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.18); border-radius: 12px; padding: 10px 18px; text-align: center; }
+.hero-stat strong { display: block; font-size: 1.3rem; font-weight: 900; color: #fff; font-family: 'Outfit', sans-serif; }
+.hero-stat span   { font-size: 0.72rem; color: rgba(255,255,255,0.65); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.hero-actions { display: flex; flex-direction: column; gap: 8px; }
+.hero-btn-solid {
+  background: #10b981; color: #fff; border: none; padding: 11px 22px;
+  border-radius: 11px; font-size: 0.88rem; font-weight: 700; cursor: pointer;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;
+}
+.hero-btn-solid:hover { background: #059669; color: #fff; transform: translateY(-1px); }
+.hero-btn-outline {
+  background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.3);
+  padding: 11px 22px; border-radius: 11px; font-size: 0.88rem; font-weight: 700;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 8px; transition: all 0.2s;
+}
+.hero-btn-outline:hover { background: rgba(255,255,255,0.2); color: #fff; }
+
+/* ── Main Tab Nav ── */
+.ls-tabs {
+  display: flex; gap: 4px; background: #fff; border-radius: 16px;
+  padding: 5px; box-shadow: 0 2px 14px rgba(0,0,0,0.07); margin-bottom: 26px;
+}
+.ls-tab-btn {
+  flex: 1; padding: 13px 20px; border-radius: 12px; border: none;
+  background: transparent; font-size: 0.9rem; font-weight: 700;
+  color: #64748b; cursor: pointer; transition: all 0.22s;
+  display: flex; align-items: center; justify-content: center; gap: 9px;
+}
+.ls-tab-btn.active {
+  background: linear-gradient(135deg, #0f172a, #0e7d73); color: #fff;
+  box-shadow: 0 4px 14px rgba(14,125,115,0.3);
+}
+
+/* ── Tab Panels ── */
+.ls-panel { display: none; }
+.ls-panel.active { display: block; }
+
+/* ── Doubt Form Card ── */
+.doubt-form-card {
+  background: #fff; border-radius: 20px; padding: 28px 30px;
+  border: 1px solid rgba(14,125,115,0.18); margin-bottom: 28px;
+  box-shadow: 0 4px 20px rgba(14,125,115,0.07);
+}
+.section-heading { font-family: 'Outfit', sans-serif; font-size: 1.2rem; font-weight: 800; color: #1e293b; margin: 0 0 18px; display: flex; align-items: center; gap: 9px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
+@media(max-width:620px){ .form-row { grid-template-columns: 1fr; } }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-label { font-size: 0.85rem; font-weight: 700; color: #374151; }
+.form-input {
+  padding: 11px 14px; border-radius: 10px; border: 1.5px solid #e5e7eb;
+  font-size: 0.9rem; font-family: inherit; transition: border-color 0.2s;
+  width: 100%;
+}
+.form-input:focus { outline: none; border-color: #0e7d73; box-shadow: 0 0 0 3px rgba(14,125,115,0.1); }
+.mode-badge { padding: 11px 14px; border-radius: 10px; background: #f0fdfa; border: 1.5px solid #ccfbf1; font-weight: 700; color: #0e7d73; font-size: 0.88rem; display: flex; align-items: center; gap: 8px; }
+.form-footer { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; margin-top: 16px; }
+.form-footer-note { font-size: 0.82rem; color: #64748b; display: flex; align-items: center; gap: 6px; }
+.submit-btn {
+  background: linear-gradient(135deg, #1E3A8A, #0e7d73); color: #fff;
+  border: none; padding: 12px 28px; border-radius: 11px; font-size: 0.95rem;
+  font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 8px;
+  transition: all 0.2s; font-family: inherit;
+}
+.submit-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+
+/* ── Doubt Session Cards ── */
+.doubt-list { display: flex; flex-direction: column; gap: 12px; }
+.doubt-card {
+  background: #fff; border-radius: 16px; padding: 20px 22px;
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;
+  border: 1px solid #e5e7eb; box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  transition: all 0.22s;
+}
+.doubt-card:hover { border-color: #0e7d73; box-shadow: 0 6px 20px rgba(14,125,115,0.1); transform: translateY(-2px); }
+.doubt-info { flex: 1; min-width: 0; }
+.doubt-subject { font-size: 1.05rem; font-weight: 800; color: #1e293b; margin-bottom: 4px; display: flex; align-items: center; gap: 10px; }
+.doubt-status { font-size: 0.72rem; font-weight: 800; padding: 2px 10px; border-radius: 99px; text-transform: uppercase; letter-spacing: 0.5px; }
+.doubt-status.searching { background: #fef3c7; color: #b45309; border: 1px solid #fde68a; }
+.doubt-status.accepted  { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
+.doubt-status.completed { background: #e0e7ff; color: #3730a3; border: 1px solid #c7d2fe; }
+.doubt-q  { font-size: 0.85rem; color: #475569; margin-bottom: 8px; }
+.doubt-meta { display: flex; gap: 14px; font-size: 0.78rem; color: #94a3b8; flex-wrap: wrap; }
+.doubt-meta i { color: #0e7d73; }
+.join-btn {
+  background: linear-gradient(135deg, #0e7d73, #059669); color: #fff;
+  padding: 10px 22px; border-radius: 10px; font-size: 0.85rem; font-weight: 700;
+  text-decoration: none; display: inline-flex; align-items: center; gap: 7px;
+  transition: all 0.2s;
+}
+.join-btn:hover { opacity: 0.9; transform: translateY(-1px); color: #fff; }
+
+/* ── Empty State ── */
+.empty-box {
+  text-align: center; padding: 48px 20px; background: #fff;
+  border: 1.5px dashed #cbd5e1; border-radius: 20px;
+}
+.empty-box .ei { font-size: 3rem; display: block; margin-bottom: 14px; }
+.empty-box h3 { font-size: 1.05rem; font-weight: 700; color: #374151; margin: 0 0 6px; }
+.empty-box p  { font-size: 0.85rem; color: #94a3b8; margin: 0; }
+
+/* ── Live Room Panel ── */
+.room-launcher {
+  background: #fff; border-radius: 20px; padding: 32px; text-align: center;
+  border: 1.5px solid #e5e7eb; box-shadow: 0 4px 20px rgba(0,0,0,0.05); margin-bottom: 24px;
+}
+.room-icon { font-size: 3.5rem; margin-bottom: 16px; display: block; }
+.room-launcher h2 { font-family: 'Outfit', sans-serif; font-size: 1.6rem; font-weight: 900; color: #1e293b; margin: 0 0 10px; }
+.room-launcher p  { color: #64748b; font-size: 0.92rem; max-width: 500px; margin: 0 auto 24px; }
+.room-input-row { display: flex; gap: 10px; max-width: 480px; margin: 0 auto 28px; }
+.room-input {
+  flex: 1; padding: 12px 16px; border-radius: 11px; border: 1.5px solid #e5e7eb;
+  font-size: 0.95rem; font-family: inherit; transition: border-color 0.2s;
+}
+.room-input:focus { outline: none; border-color: #0e7d73; box-shadow: 0 0 0 3px rgba(14,125,115,0.1); }
+.room-go-btn {
+  background: linear-gradient(135deg, #1E3A8A, #0e7d73); color: #fff;
+  border: none; padding: 12px 22px; border-radius: 11px; font-size: 0.92rem;
+  font-weight: 800; cursor: pointer; font-family: inherit; white-space: nowrap;
+  transition: all 0.2s;
+}
+.room-go-btn:hover { opacity: 0.9; transform: translateY(-1px); }
+.room-features { display: flex; justify-content: center; gap: 20px; flex-wrap: wrap; }
+.room-feat { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600; color: #475569; background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px 14px; border-radius: 99px; }
+.room-feat i { color: #0e7d73; }
+
+/* Quick room cards */
+.active-rooms { display: grid; grid-template-columns: repeat(auto-fill,minmax(260px,1fr)); gap: 14px; }
+.room-card {
+  background: #fff; border-radius: 16px; padding: 18px 20px;
+  border: 1px solid #e5e7eb; transition: all 0.22s;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+.room-card:hover { border-color: #0e7d73; box-shadow: 0 6px 22px rgba(14,125,115,0.12); transform: translateY(-2px); }
+.room-card-live { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; font-weight: 800; color: #10b981; margin-bottom: 8px; }
+.room-card-live span { width: 7px; height: 7px; border-radius: 50%; background: #10b981; animation: pulse 1.5s infinite; }
+.room-card h4 { font-weight: 800; font-size: 0.95rem; color: #1e293b; margin: 0 0 4px; }
+.room-card p  { font-size: 0.8rem; color: #64748b; margin: 0 0 12px; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="ls-page">
+
+  <!-- ── Hero ── -->
+  <div class="ls-hero">
+    <div class="ls-hero-inner">
+      <div>
+        <div class="live-dot"><span></span> LIVE</div>
+        <h1>🎥 Live Sessions</h1>
+        <p>Instant doubt-solving calls and dedicated video rooms — everything you need for real-time learning, all in one place.</p>
+        <div class="hero-stats">
+          <div class="hero-stat"><strong>{{ doubts|length }}</strong><span>Active Doubts</span></div>
+          <div class="hero-stat"><strong>15 min</strong><span>Avg Response</span></div>
+          <div class="hero-stat"><strong>Jitsi</strong><span>Powered Video</span></div>
+        </div>
+      </div>
+      <div class="hero-actions">
+        <button onclick="switchTab('doubt', document.querySelector('.ls-tab-btn'))" class="hero-btn-solid">
+          ⚡ Ask a Doubt Now
+        </button>
+        <button onclick="switchTab('room', document.querySelectorAll('.ls-tab-btn')[1])" class="hero-btn-outline">
+          🎥 Enter Live Room
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Main Tabs ── -->
+  <div class="ls-tabs">
+    <button class="ls-tab-btn active" id="tab-doubt" onclick="switchTab('doubt', this)">
+      ⚡ Doubt Calls
+      {% if doubts %}<span style="background:rgba(14,125,115,0.2);color:#0e7d73;font-size:0.72rem;font-weight:800;padding:2px 9px;border-radius:99px;">{{ doubts|length }}</span>{% endif %}
+    </button>
+    <button class="ls-tab-btn" id="tab-room" onclick="switchTab('room', this)">
+      🎥 Live Video Room
+    </button>
+  </div>
+
+  <!-- ══════════════════ PANEL 1: DOUBT CALLS ══════════════════ -->
+  <div class="ls-panel active" id="panel-doubt">
+
+    <!-- Ask a Doubt Form -->
+    <div class="doubt-form-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:14px;">
+        <h2 class="section-heading" style="margin:0;">
+          <i class="fa-solid fa-headset" style="color:#0e7d73;"></i>
+          Ask Your Doubt — Instant 1-on-1 Resolution
+        </h2>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <span style="background:#f0fdfa; border:1px solid #99f6e4; color:#0d9488; font-size:0.82rem; font-weight:800; padding:4px 12px; border-radius:99px;">
+            💰 ₹50.00 / 15 Mins
+          </span>
+          <span style="background:#fef3c7; border:1px solid #fde68a; color:#b45309; font-size:0.75rem; font-weight:700; padding:4px 10px; border-radius:99px;">
+            90% Teacher (₹45) · 10% Admin (₹5)
+          </span>
+        </div>
+      </div>
+
+      <form method="POST" action="{% url 'create_doubt' %}">
+        {% csrf_token %}
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="subject">Subject / Topic</label>
+            <input type="text" id="subject" name="subject" class="form-input" required
+                   placeholder="e.g. Python Django ORM, React State bug…">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Session Mode & Price</label>
+            <div class="mode-badge">
+              <i class="fa-solid fa-video"></i> 15-Min Live Video (₹50 deducted from Wallet)
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom:0;">
+          <label class="form-label" for="question">Describe your doubt or issue</label>
+          <textarea id="question" name="question" class="form-input" rows="3" required
+                    placeholder="Explain clearly what you're stuck on so the mentor can help right away…"></textarea>
+        </div>
+
+        <div class="form-footer">
+          <span class="form-footer-note">
+            <i class="fa-solid fa-wallet" style="color:#0e7d73;"></i>
+            Fee: ₹50.00 (Wallet) | Max Duration: 15 Minutes
+          </span>
+          <button type="submit" class="submit-btn">
+            <i class="fa-solid fa-phone-arrow-up-right"></i>
+            Pay ₹50 & Start Doubt Call
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Active Doubt Sessions -->
+    <h3 class="section-heading" style="margin-bottom:16px;">
+      🔴 Active & Recent Doubt Sessions
+    </h3>
+
+    {% if doubts %}
+    <div class="doubt-list">
+      {% for doubt in doubts %}
+      <div class="doubt-card">
+        <div class="doubt-info">
+          <div class="doubt-subject">
+            {{ doubt.subject }}
+            <span class="doubt-status {{ doubt.status }}">{{ doubt.status|title }}</span>
+          </div>
+          <p class="doubt-q">{{ doubt.question|truncatechars:120 }}</p>
+          <div class="doubt-meta">
+            <span><i class="fa-solid fa-user"></i> {{ doubt.learner.username }}</span>
+            {% if doubt.mentor %}<span><i class="fa-solid fa-chalkboard-teacher"></i> Mentor: {{ doubt.mentor.username }}</span>{% endif %}
+            <span><i class="fa-regular fa-clock"></i> {{ doubt.created_at|timesince }} ago</span>
+          </div>
+        </div>
+        <a href="{% url 'live_room' room_id=doubt.id %}" class="join-btn">
+          <i class="fa-solid fa-video"></i> Join Video Call
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="empty-box">
+      <span class="ei">🎙️</span>
+      <h3>No Active Doubt Sessions</h3>
+      <p>Fill in the form above to create an instant doubt call — a mentor will join you within 2 minutes.</p>
+    </div>
+    {% endif %}
+
+  </div><!-- /panel-doubt -->
+
+
+  <!-- ══════════════════ PANEL 2: LIVE VIDEO ROOM ══════════════════ -->
+  <div class="ls-panel" id="panel-room">
+
+    <!-- Room Launcher -->
+    <div class="room-launcher">
+      <span class="room-icon">🎥</span>
+      <h2>Launch Your Live Video Room</h2>
+      <p>Enter a room name (or use a generated one) and start a private Jitsi-powered live session with camera, mic, screen share, and in-call chat.</p>
+
+      <div class="room-input-row">
+        <input type="text" class="room-input" id="roomNameInput"
+               placeholder="e.g. PythonSession-2026, DesignReview…"
+               value="SkillBankRoom-{{ request.user.username }}">
+        <button class="room-go-btn" onclick="joinRoom()">
+          <i class="fa-solid fa-play"></i> Join Room
+        </button>
+      </div>
+
+      <div class="room-features">
+        <div class="room-feat"><i class="fa-solid fa-video"></i> HD Video</div>
+        <div class="room-feat"><i class="fa-solid fa-microphone"></i> Audio</div>
+        <div class="room-feat"><i class="fa-solid fa-desktop"></i> Screen Share</div>
+        <div class="room-feat"><i class="fa-solid fa-comments"></i> In-call Chat</div>
+        <div class="room-feat"><i class="fa-solid fa-lock"></i> Private Room</div>
+      </div>
+    </div>
+
+    <!-- Quick-Join Doubt Rooms -->
+    {% if doubts %}
+    <h3 class="section-heading" style="margin-bottom:16px;">
+      🔴 Active Doubt Rooms — Join Directly
+    </h3>
+    <div class="active-rooms">
+      {% for doubt in doubts %}
+      <div class="room-card">
+        <div class="room-card-live"><span></span> LIVE</div>
+        <h4>{{ doubt.subject|truncatechars:40 }}</h4>
+        <p>By {{ doubt.learner.username }} · {{ doubt.created_at|timesince }} ago</p>
+        <a href="{% url 'live_room' room_id=doubt.id %}" class="join-btn" style="width:100%;justify-content:center;">
+          <i class="fa-solid fa-video"></i> Enter Room
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+  </div><!-- /panel-room -->
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function switchTab(name, btn) {
+  document.querySelectorAll('.ls-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.ls-tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+
+function joinRoom() {
+  const name = document.getElementById('roomNameInput').value.trim();
+  if (!name) { alert('Please enter a room name.'); return; }
+  const slug = name.replace(/[^a-zA-Z0-9\-_]/g, '-');
+  window.location.href = '/bookings/room/' + encodeURIComponent(slug) + '/';
+}
+
+document.getElementById('roomNameInput').addEventListener('keypress', function(e) {
+  if (e.key === 'Enter') joinRoom();
+});
+</script>
+{% endblock %}

@@ -63,6 +63,7 @@ INSTALLED_APPS = [
     'chatboat',             # AI chat assistant
     'dashboard',            # Landing dashboard (legacy, kept)
     'user_dashboard',       # User-facing dashboard views
+    'payments',             # SkillBank Wallet & Payments
 ]
 
 MIDDLEWARE = [
@@ -100,14 +101,24 @@ TEMPLATES = [
 WSGI_APPLICATION = 'skill_bank.wsgi.application'
 
 # ---------------------------------------------------------------------------
-# Database — SQLite (DB Browser for SQLite compatible)
+# Database Configuration (SQLite local, PostgreSQL / DATABASE_URL in Prod)
 # ---------------------------------------------------------------------------
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / os.environ.get('DB_NAME', 'db.sqlite3'),
+try:
+    import dj_database_url
+    DATABASES = {
+        'default': dj_database_url.config(
+            default=f"sqlite:///{BASE_DIR / os.environ.get('DB_NAME', 'db.sqlite3')}",
+            conn_max_age=600,
+            conn_health_checks=True,
+        )
     }
-}
+except ImportError:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / os.environ.get('DB_NAME', 'db.sqlite3'),
+        }
+    }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 

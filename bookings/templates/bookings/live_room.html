@@ -1,0 +1,187 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Live Video Session — SkillBank{% endblock %}
+
+{% block extra_css %}
+<style>
+.timer-badge {
+  background: #fef2f2; border: 1.5px solid #fecaca; color: #dc2626;
+  font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 800;
+  padding: 6px 16px; border-radius: 99px; display: inline-flex; align-items: center; gap: 8px;
+}
+.timer-badge.warning {
+  animation: timerBlink 1s infinite; background: #dc2626; color: #ffffff; border-color: #991b1b;
+}
+@keyframes timerBlink { 0%,100%{opacity:1;} 50%{opacity:0.7;} }
+.fee-badge {
+  background: #f0fdfa; border: 1px solid #99f6e4; color: #0d9488;
+  font-size: 0.78rem; font-weight: 700; padding: 4px 12px; border-radius: 99px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container" style="max-width: 1240px; margin: 24px auto; padding: 0 20px;">
+
+    <!-- Room Header -->
+    <div style="display: flex; justify-content: space-between; align-items: center; background: #ffffff; padding: 18px 26px; border-radius: 18px; border: 1px solid #e5e7eb; margin-bottom: 20px; box-shadow: 0 4px 16px rgba(0,0,0,0.04); flex-wrap: wrap; gap: 14px;">
+        <div style="display: flex; align-items: center; gap: 14px;">
+            <div style="width: 12px; height: 12px; border-radius: 50%; background: #10b981; animation: pulse 1.5s infinite;"></div>
+            <div>
+                <h2 style="font-size: 1.25rem; font-weight: 800; color: #111827; margin: 0; font-family:'Outfit',sans-serif;">
+                    SkillBank Live Session Room
+                </h2>
+                <div style="display:flex; gap:8px; align-items:center; margin-top:3px; flex-wrap:wrap;">
+                    <span style="font-size: 0.8rem; color: #6b7280;">Room: <strong>{{ room_name }}</strong></span>
+                    <span class="fee-badge">💰 Fee: ₹50.00 (₹45 Teacher / ₹5 Platform)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 15-Minute Live Countdown Timer -->
+        <div style="display: flex; align-items: center; gap: 14px;">
+            <div class="timer-badge" id="timerBadge">
+                <i class="fa-solid fa-stopwatch"></i>
+                <span id="countdownTimer">15:00</span>
+            </div>
+
+            <a href="{% url 'live_sessions' %}" class="btn-ghost" style="padding: 9px 18px; font-size: 0.85rem; font-weight: 700; border-radius: 10px;">
+                <i class="fa-solid fa-arrow-left"></i> Exit Call
+            </a>
+        </div>
+    </div>
+
+    <!-- Video Container & Sidebar -->
+    <div style="display: grid; grid-template-columns: 3fr 1fr; gap: 20px; height: 600px;">
+        
+        <!-- Video Container -->
+        <div style="background: #0f172a; border-radius: 18px; overflow: hidden; position: relative; display: flex; flex-direction: column; box-shadow: 0 8px 30px rgba(0,0,0,0.15);">
+            <div id="meet" style="width: 100%; height: 100%;"></div>
+            
+            <!-- Timeout Modal Overlay -->
+            <div id="timeoutOverlay" style="display:none; position:absolute; inset:0; background:rgba(15,23,42,0.92); z-index:999; flex-direction:column; align-items:center; justify-content:center; color:#fff; text-align:center; padding:30px;">
+                <span style="font-size: 3.5rem; margin-bottom:12px;">⏰</span>
+                <h2 style="font-family:'Outfit',sans-serif; font-size:1.8rem; font-weight:900; margin:0 0 10px;">15-Minute Session Complete</h2>
+                <p style="color:#cbd5e1; font-size:0.95rem; max-width:450px; margin:0 0 20px;">
+                    Your 15-minute Doubt Call session time limit has ended. Redirecting back to Live Sessions…
+                </p>
+                <a href="{% url 'live_sessions' %}" class="btn-primary" style="padding:10px 24px;">Return to Live Sessions</a>
+            </div>
+        </div>
+
+        <!-- Session Notes & Wallet Info -->
+        <div style="background: #ffffff; border-radius: 18px; border: 1px solid #e5e7eb; display: flex; flex-direction: column; padding: 22px; justify-content: space-between; box-shadow: 0 4px 16px rgba(0,0,0,0.04);">
+            <div>
+                <h3 style="font-size: 1rem; font-weight: 800; color: #1f2937; margin-bottom: 16px; border-bottom: 1px solid #f3f4f6; padding-bottom: 10px; font-family:'Outfit',sans-serif;">
+                    <i class="fa-solid fa-circle-info" style="color: var(--teal-primary);"></i> Session Details
+                </h3>
+                
+                <div style="font-size: 0.85rem; color: #4b5563; line-height: 1.6;">
+                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; padding:12px; margin-bottom:14px;">
+                        <p style="margin:0 0 4px; font-weight:700; color:#1e293b;">⚡ Doubt Call Rules:</p>
+                        <ul style="padding-left: 16px; margin: 0; font-size:0.8rem; color:#64748b;">
+                            <li>Duration: <strong>15 Minutes max</strong></li>
+                            <li>Session Fee: <strong>₹50.00</strong></li>
+                            <li>Teacher Earning: <strong>₹45.00 (90%)</strong></li>
+                            <li>Platform Commission: <strong>₹5.00 (10%)</strong></li>
+                        </ul>
+                    </div>
+                    
+                    {% if doubt %}
+                    <div style="border-top:1px solid #f1f5f9; padding-top:10px; margin-top:10px;">
+                        <p style="margin:0 0 4px;"><strong>Subject:</strong> {{ doubt.subject }}</p>
+                        <p style="margin:0 0 4px;"><strong>Learner:</strong> @{{ doubt.learner.username }}</p>
+                        {% if doubt.mentor %}<p style="margin:0;"><strong>Teacher:</strong> @{{ doubt.mentor.username }}</p>{% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div>
+                <a href="{% url 'wallet' %}" class="btn-primary" style="width: 100%; justify-content: center; font-size: 0.9rem; border-radius:10px;">
+                    <i class="fa-solid fa-wallet"></i> View Wallet & Receipts
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Jitsi Meet API -->
+<script src="https://meet.jit.si/external_api.js"></script>
+<script>
+    let jitsiApi = null;
+    let secondsLeft = {{ remaining_seconds|default:900 }};
+
+    function formatTime(secs) {
+        const m = Math.floor(secs / 60);
+        const s = secs % 60;
+        return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    }
+
+    function updateTimerDisplay() {
+        const timerEl = document.getElementById('countdownTimer');
+        const badgeEl = document.getElementById('timerBadge');
+        if (timerEl) {
+            timerEl.textContent = formatTime(secondsLeft);
+        }
+        if (secondsLeft <= 120 && badgeEl) {
+            badgeEl.classList.add('warning');
+        }
+    }
+
+    function startTimer() {
+        updateTimerDisplay();
+        const interval = setInterval(() => {
+            secondsLeft--;
+            updateTimerDisplay();
+
+            if (secondsLeft <= 0) {
+                clearInterval(interval);
+                handleTimeout();
+            }
+        }, 1000);
+    }
+
+    function handleTimeout() {
+        if (jitsiApi) {
+            try { jitsiApi.executeCommand('hangup'); } catch(e) {}
+        }
+        const overlay = document.getElementById('timeoutOverlay');
+        if (overlay) overlay.style.display = 'flex';
+        
+        setTimeout(() => {
+            window.location.href = "{% url 'live_sessions' %}";
+        }, 3000);
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const domain = "meet.jit.si";
+        const options = {
+            roomName: "{{ room_name|escapejs }}",
+            width: "100%",
+            height: "100%",
+            parentNode: document.querySelector('#meet'),
+            userInfo: {
+                displayName: "{{ user_name|escapejs }}"
+            },
+            configOverwrite: {
+                startWithAudioMuted: false,
+                disableThirdPartyRequests: true
+            },
+            interfaceConfigOverwrite: {
+                TOOLBAR_BUTTONS: [
+                    'microphone', 'camera', 'desktop', 'fullscreen',
+                    'fittoscreen', 'chat', 'raisehand', 'tileview', 'hangup'
+                ]
+            }
+        };
+        jitsiApi = new JitsiMeetExternalAPI(domain, options);
+
+        // Start 15-minute countdown
+        startTimer();
+    });
+</script>
+{% endblock %}

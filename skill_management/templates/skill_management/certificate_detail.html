@@ -1,0 +1,298 @@
+{% extends "base.html" %}
+{% block title %}Skill Certificate — {{ cert.certificate_id }} | SkillBank{% endblock %}
+
+{% block extra_css %}
+<style>
+  .cert-page { max-width: 920px; margin: 40px auto; padding: 0 24px; }
+
+  .verify-banner {
+    background: linear-gradient(135deg, #d1fae5, #f0fdfa);
+    border: 1.5px solid #6ee7b7;
+    border-radius: 12px;
+    padding: 14px 22px;
+    display: flex; align-items: center; gap: 12px;
+    font-size: 0.88rem; color: #065f46; font-weight: 600;
+    margin-bottom: 30px;
+  }
+  .verify-banner i { font-size: 1.2rem; color: #10b981; flex-shrink: 0; }
+  .cert-id-badge {
+    margin-left: auto;
+    background: white; border: 1px solid #6ee7b7;
+    padding: 4px 14px; border-radius: 99px;
+    font-size: 0.75rem; font-weight: 700; color: #065f46; letter-spacing: 0.5px;
+  }
+
+  /* ─── Certificate Design ─── */
+  .certificate {
+    background: white;
+    border-radius: 24px;
+    box-shadow: 0 15px 60px rgba(0,0,0,0.1);
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 36px;
+  }
+
+  /* Top gold/teal decorative bar */
+  .cert-topbar {
+    height: 10px;
+    background: linear-gradient(90deg, #1E3A8A 0%, #0e7d73 40%, #14b8a6 70%, #f59e0b 100%);
+  }
+
+  /* Corner decorations */
+  .cert-body {
+    padding: 52px 64px 48px;
+    position: relative;
+  }
+
+  /* Background watermark */
+  .cert-body::before {
+    content: 'SKILLBANK';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%) rotate(-30deg);
+    font-size: 9rem; font-weight: 900; font-family: 'Outfit', sans-serif;
+    color: rgba(14,125,115,0.04);
+    pointer-events: none; white-space: nowrap;
+    letter-spacing: 8px;
+  }
+
+  .cert-header { text-align: center; margin-bottom: 36px; }
+  .cert-logo {
+    width: 58px; height: 58px; border-radius: 16px;
+    background: linear-gradient(135deg, #1E3A8A, #0e7d73);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 14px;
+    color: white; font-size: 1.6rem; font-weight: 900; font-family: 'Outfit', sans-serif;
+  }
+  .cert-platform { font-family: 'Outfit', sans-serif; font-size: 1.1rem; font-weight: 800; color: #1E3A8A; letter-spacing: 3px; text-transform: uppercase; }
+  .cert-presents { font-size: 0.82rem; color: #9ca3af; letter-spacing: 2px; text-transform: uppercase; margin-top: 6px; }
+
+  /* Divider */
+  .cert-divider {
+    display: flex; align-items: center; gap: 14px; margin: 22px 0;
+  }
+  .cert-divider::before, .cert-divider::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, transparent, #e5e7eb, transparent);
+  }
+  .cert-divider i { color: #f59e0b; font-size: 1.1rem; }
+
+  .cert-title {
+    text-align: center;
+    font-family: 'Outfit', sans-serif; font-size: 1.15rem; font-weight: 700;
+    color: #374151; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 28px;
+  }
+
+  .student-name {
+    text-align: center;
+    font-family: 'Outfit', sans-serif;
+    font-size: 3rem; font-weight: 900;
+    background: linear-gradient(135deg, #1E3A8A, #0e7d73);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    line-height: 1.1; margin-bottom: 8px;
+  }
+  .student-underline {
+    width: 200px; height: 2px; margin: 0 auto 28px;
+    background: linear-gradient(90deg, #1E3A8A, #0e7d73, #f59e0b);
+    border-radius: 99px;
+  }
+
+  .cert-text {
+    text-align: center; font-size: 0.95rem; color: #6b7280; line-height: 1.7; margin-bottom: 24px;
+  }
+  .cert-text .skill-highlight {
+    font-size: 1.35rem; font-weight: 900; color: #0e7d73;
+    font-family: 'Outfit', sans-serif; display: block; margin: 8px 0;
+  }
+  .cert-text .category-pill {
+    display: inline-block; background: #f0fdfa; border: 1.5px solid #6ddfd5;
+    padding: 3px 14px; border-radius: 99px; font-size: 0.8rem; font-weight: 700; color: #0e7d73; margin-left: 6px;
+  }
+
+  /* Grade badge */
+  .grade-banner {
+    text-align: center; margin: 20px 0 32px;
+  }
+  .grade-badge {
+    display: inline-flex; align-items: center; gap: 9px;
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+    border: 2px solid #f59e0b;
+    padding: 10px 28px; border-radius: 99px;
+    font-size: 0.9rem; font-weight: 800; color: #92400e;
+    font-family: 'Outfit', sans-serif;
+  }
+
+  /* Signatures row */
+  .signatures {
+    display: grid; grid-template-columns: 1fr auto 1fr; gap: 20px;
+    align-items: end; margin-top: 36px;
+  }
+  .sig-block { text-align: center; }
+  .sig-line {
+    border-bottom: 1.5px solid #d1d5db;
+    padding-bottom: 8px; margin-bottom: 8px;
+    font-style: italic; font-size: 1.15rem; color: #374151;
+    font-weight: 600; min-height: 32px;
+  }
+  .sig-role { font-size: 0.75rem; color: #9ca3af; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+  .sig-name { font-size: 0.88rem; color: #374151; font-weight: 700; }
+
+  .cert-seal {
+    width: 80px; height: 80px; border-radius: 50%;
+    background: linear-gradient(135deg, #1E3A8A, #0e7d73);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    color: white; box-shadow: 0 0 0 6px rgba(14,125,115,0.15), 0 0 0 12px rgba(14,125,115,0.07);
+    margin: 0 auto;
+  }
+  .cert-seal i { font-size: 1.6rem; }
+  .cert-seal .seal-text { font-size: 0.4rem; letter-spacing: 1px; text-transform: uppercase; margin-top: 2px; font-weight: 700; }
+
+  /* Meta footer */
+  .cert-footer {
+    background: #f9fafb; border-top: 1px solid #e5e7eb;
+    padding: 18px 64px;
+    display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;
+  }
+  .cert-footer .meta { font-size: 0.78rem; color: #9ca3af; display: flex; gap: 20px; flex-wrap: wrap; }
+  .cert-footer .meta span { display: flex; align-items: center; gap: 5px; }
+  .cert-footer .meta strong { color: #374151; }
+
+  /* Bottom bar */
+  .cert-bottombar { height: 6px; background: linear-gradient(90deg, #f59e0b, #0e7d73, #1E3A8A); }
+
+  /* Actions */
+  .action-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
+  .btn-print {
+    background: linear-gradient(135deg, #1E3A8A, #0e7d73);
+    color: white; border: none; border-radius: 10px;
+    padding: 12px 28px; font-size: 0.9rem; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 8px;
+    text-decoration: none; box-shadow: 0 4px 14px rgba(14,125,115,0.3);
+  }
+  .btn-print:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(14,125,115,0.35); }
+  .btn-back {
+    background: white; color: #374151; border: 1.5px solid #e5e7eb;
+    padding: 12px 24px; border-radius: 10px; font-size: 0.9rem; font-weight: 600;
+    text-decoration: none; transition: all 0.2s;
+    display: inline-flex; align-items: center; gap: 8px;
+  }
+  .btn-back:hover { background: #f9fafb; border-color: #d1d5db; }
+
+  @media print {
+    nav, footer, .cert-page > .verify-banner, .action-row { display: none !important; }
+    .cert-page { margin: 0; padding: 0; max-width: 100%; }
+    .certificate { box-shadow: none; border-radius: 0; }
+    body { background: white !important; }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="cert-page">
+
+  <!-- Verification Banner -->
+  <div class="verify-banner">
+    <i class="fa-solid fa-shield-check"></i>
+    <span>This certificate is <strong>verified & authentic</strong>. Issued by SkillBank Platform on {{ cert.issue_date|date:"F d, Y" }}.</span>
+    <span class="cert-id-badge">ID: {{ cert.certificate_id|upper|slice:":8" }}…</span>
+  </div>
+
+  <!-- Certificate -->
+  <div class="certificate">
+    <div class="cert-topbar"></div>
+
+    <div class="cert-body">
+      <!-- Header -->
+      <div class="cert-header">
+        <div class="cert-logo">S</div>
+        <div class="cert-platform">SkillBank</div>
+        <div class="cert-presents">Certificate of Skill Completion</div>
+      </div>
+
+      <div class="cert-divider"><i class="fa-solid fa-star"></i></div>
+
+      <div class="cert-title">This is to certify that</div>
+
+      <!-- Student Name -->
+      <div class="student-name">
+        {{ cert.student.get_full_name|default:cert.student.username }}
+      </div>
+      <div class="student-underline"></div>
+
+      <!-- Body Text -->
+      <p class="cert-text">
+        has successfully completed the skill training program in<br>
+        <span class="skill-highlight">
+          {{ cert.skill_title }}
+          <span class="category-pill">{{ cert.category_name }}</span>
+        </span>
+        under the mentorship of <strong>{{ cert.teacher.get_full_name|default:cert.teacher.username }}</strong> on the SkillBank platform.
+        This certificate is awarded in recognition of their dedication, practice, and demonstrated competency.
+      </p>
+
+      <!-- Grade -->
+      <div class="grade-banner">
+        <div class="grade-badge">
+          <i class="fa-solid fa-trophy"></i>
+          {{ cert.grade_performance }}
+        </div>
+      </div>
+
+      {% if cert.remarks %}
+      <div style="text-align:center;background:#f0fdfa;border-radius:10px;padding:12px 20px;margin-bottom:28px;font-size:0.88rem;color:#065f46;border:1px solid #6ee7b7;">
+        <i class="fa-solid fa-quote-left" style="opacity:0.5;margin-right:6px;"></i>
+        {{ cert.remarks }}
+        <i class="fa-solid fa-quote-right" style="opacity:0.5;margin-left:6px;"></i>
+      </div>
+      {% endif %}
+
+      <!-- Signatures -->
+      <div class="signatures">
+        <div class="sig-block">
+          <div class="sig-line">{{ cert.teacher.get_full_name|default:cert.teacher.username }}</div>
+          <div class="sig-role">Certified Instructor</div>
+          <div class="sig-name">{{ cert.teacher.get_full_name|default:cert.teacher.username }}</div>
+        </div>
+
+        <div class="cert-seal">
+          <i class="fa-solid fa-award"></i>
+          <div class="seal-text">Verified</div>
+        </div>
+
+        <div class="sig-block">
+          <div class="sig-line">SkillBank Platform</div>
+          <div class="sig-role">Platform Authority</div>
+          <div class="sig-name">SkillBank Admin</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Certificate Footer -->
+    <div class="cert-footer">
+      <div class="meta">
+        <span><i class="fa-solid fa-certificate" style="color:#0e7d73;"></i> ID: <strong>{{ cert.certificate_id }}</strong></span>
+        <span><i class="fa-solid fa-calendar" style="color:#0e7d73;"></i> Issued: <strong>{{ cert.issue_date|date:"d M Y" }}</strong></span>
+        <span><i class="fa-solid fa-user-graduate" style="color:#0e7d73;"></i> Student: <strong>{{ cert.student.username }}</strong></span>
+      </div>
+      <span style="font-size:0.75rem;color:#d1d5db;">skillbank.platform</span>
+    </div>
+
+    <div class="cert-bottombar"></div>
+  </div>
+
+  <!-- Actions -->
+  <div class="action-row">
+    <button class="btn-print" onclick="window.print()">
+      <i class="fa-solid fa-print"></i> Print Certificate
+    </button>
+    <a href="/skills/certificates/" class="btn-back">
+      <i class="fa-solid fa-arrow-left"></i> My Certificates
+    </a>
+    <a href="/" class="btn-back">
+      <i class="fa-solid fa-home"></i> Home
+    </a>
+  </div>
+
+</div>
+{% endblock %}
