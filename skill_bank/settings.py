@@ -8,10 +8,7 @@ from datetime import timedelta
 import os
 from dotenv import load_dotenv
 
-# Use pure-Python pymysql as the MySQL driver (no C++ build tools required)
-import pymysql
-pymysql.version_info = (2, 2, 4, 'final', 0)
-pymysql.install_as_MySQLdb()
+# SQLite is used — no extra driver needed (built into Python)
 
 # Load .env
 load_dotenv()
@@ -103,20 +100,12 @@ TEMPLATES = [
 WSGI_APPLICATION = 'skill_bank.wsgi.application'
 
 # ---------------------------------------------------------------------------
-# Database — MySQL (reads from .env)
+# Database — SQLite (DB Browser for SQLite compatible)
 # ---------------------------------------------------------------------------
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get('DB_ENGINE', 'django.db.backends.mysql'),
-        'NAME': os.environ.get('DB_NAME', 'skill_exchange_db'),
-        'USER': os.environ.get('DB_USER', 'root'),
-        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
-        'HOST': os.environ.get('DB_HOST', 'localhost'),
-        'PORT': os.environ.get('DB_PORT', '3306'),
-        'OPTIONS': {
-            'charset': 'utf8mb4',
-            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
-        },
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / os.environ.get('DB_NAME', 'db.sqlite3'),
     }
 }
 
