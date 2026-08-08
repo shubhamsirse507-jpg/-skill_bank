@@ -36,14 +36,15 @@
 
 .sidebar-horizontal{
     width:100%;
-    background:#0e7d73;
+    background:#0f172a;
     display:flex;
     align-items:center;
-    gap:25px;
-    padding:15px 30px;
-    margin:15px 0;
-    border-radius:15px;
-    box-shadow:0 5px 20px rgba(0,0,0,0.08);
+    flex-wrap:wrap;
+    gap:8px;
+    padding:12px 20px;
+    margin:15px 0 25px;
+    border-radius:16px;
+    box-shadow:0 6px 24px rgba(15,23,42,0.12);
 }
 
 /* Profile Picture */
@@ -59,17 +60,23 @@
 /* Sidebar Links */
 
 .sidebar-horizontal a{
-    color:white;
-    text-decoration:none;
-    font-weight:600;
-    padding:10px 15px;
-    border-radius:10px;
-    transition:0.3s;
+    color: rgba(255, 255, 255, 0.88);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 700;
+    padding: 8px 16px;
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
 }
 
-.sidebar-horizontal a:hover{
-    background:white;
-    color:#0e7d73;
+.sidebar-horizontal a:hover, .sidebar-horizontal a.active{
+    background: #0e7d73;
+    color: white;
+    box-shadow: 0 4px 12px rgba(14,125,115,0.3);
 }
 
 /* ===========================
