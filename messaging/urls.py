@@ -7,4 +7,5 @@ urlpatterns = [
     path('messages/<int:exchange_id>/', views.messaging_view, name='messaging_detail'),
     path('messages/<int:exchange_id>/send/', views.send_message_ajax, name='send_message_ajax'),
     path('request/create/', views.create_exchange_request, name='create_exchange_request'),
+    path('request/<int:exchange_id>/<str:action>/', views.update_exchange_status, name='update_exchange_status'),
 ]

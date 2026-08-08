@@ -154,7 +154,65 @@ def create_exchange_request(request):
             user_two=receiver
         )
 
+        # Notify receiver
+        try:
+            from notifications.models import Notification
+            Notification.objects.create(
+                user=receiver,
+                title="New Skill Exchange Request",
+                message=f"{request.user.first_name or request.user.username} requested a swap for {skill.title}.",
+                notification_type="skill_request",
+                action_url=f"/messaging/messages/{exchange.id}/",
+                action_text="View Request"
+            )
+        except Exception:
+            pass
+
         messages.success(request, 'Exchange request sent successfully!')
         return redirect('messaging_detail', exchange_id=exchange.id)
 
     return redirect('search_skills')
+
+
+@login_required
+def update_exchange_status(request, exchange_id, action):
+    """Accept, reject, complete, or cancel a skill exchange request."""
+    exchange = get_object_or_404(
+        SkillExchange.objects.filter(Q(requester=request.user) | Q(receiver=request.user)),
+        id=exchange_id
+    )
+
+    action = action.lower()
+    if action == 'accept':
+        exchange.status = 'accepted'
+        messages.success(request, 'Skill exchange accepted!')
+        # Auto-create initial scheduled booking if none exists
+        try:
+            from bookings.models import Booking
+            from datetime import date, time
+            if not Booking.objects.filter(request=exchange).exists():
+                Booking.objects.create(
+                    request=exchange,
+                    scheduled_date=date.today(),
+                    start_time=time(14, 0),
+                    end_time=time(15, 0),
+                    meeting_mode='online',
+                    meeting_link='https://meet.google.com/demo-skill-bank',
+                    status='scheduled'
+                )
+        except Exception:
+            pass
+
+    elif action == 'reject':
+        exchange.status = 'rejected'
+        messages.info(request, 'Skill exchange rejected.')
+    elif action == 'complete':
+        exchange.status = 'completed'
+        messages.success(request, 'Skill exchange marked as completed!')
+    elif action == 'cancel':
+        exchange.status = 'cancelled'
+        messages.warning(request, 'Skill exchange cancelled.')
+
+    exchange.save()
+    return redirect('messaging_detail', exchange_id=exchange.id)
+

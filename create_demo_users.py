@@ -1,89 +1,24 @@
 import os
 import django
+from datetime import date, time
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'skill_bank.settings')
 django.setup()
 
-from django.db import connection
+from fix_missing_tables import fix_schema
 from django.contrib.auth.models import User
 from profiles.models import UserProfile
 from skill_management.models import SkillCategory, Skill
-from messaging.models import SkillExchange
+from messaging.models import SkillExchange, Conversation, Message
 from bookings.models import Booking
 from ratings.models import ReviewRating
 from admin_panel.models import PlatformReport, PlatformNotice, AuditLog
 from authentication.models import OTPVerification
 from notifications.models import Notification
 
-def ensure_tables_exist():
-    with connection.schema_editor() as schema_editor:
-        models = [
-            UserProfile, SkillCategory, Skill, SkillExchange,
-            Booking, ReviewRating, PlatformReport, PlatformNotice,
-            AuditLog, OTPVerification, Notification
-        ]
-        existing_tables = connection.introspection.table_names()
-        for model in models:
-            table_name = model._meta.db_table
-            if table_name not in existing_tables:
-                try:
-                    schema_editor.create_model(model)
-                    print(f"Created missing table: {table_name}")
-                except Exception as e:
-                    pass
-
-        # Table Column Upgrades for pre-existing SQL schema tables
-        column_checks = {
-            'skill_categories': [
-                ('icon_class', 'VARCHAR(80) DEFAULT "fa-solid fa-layer-group"'),
-                ('is_active', 'TINYINT(1) DEFAULT 1'),
-                ('status', 'VARCHAR(10) DEFAULT "active"'),
-                ('created_at', 'DATETIME DEFAULT CURRENT_TIMESTAMP'),
-            ],
-            'skills': [
-                ('demand_level', 'VARCHAR(10) DEFAULT "MEDIUM"'),
-                ('is_featured', 'TINYINT(1) DEFAULT 0'),
-                ('status', 'VARCHAR(10) DEFAULT "approved"'),
-                ('skill_type', 'VARCHAR(10) DEFAULT "offered"'),
-                ('level', 'VARCHAR(20) DEFAULT "Beginner"'),
-                ('created_at', 'DATETIME DEFAULT CURRENT_TIMESTAMP'),
-            ],
-            'notifications': [
-                ('action_url', 'VARCHAR(255) DEFAULT ""'),
-                ('action_text', 'VARCHAR(100) DEFAULT ""'),
-                ('sender_name', 'VARCHAR(100) DEFAULT ""'),
-                ('sender_avatar', 'VARCHAR(255) DEFAULT ""'),
-            ],
-            'profiles_userprofile': [
-                ('headline', 'VARCHAR(200) DEFAULT ""'),
-                ('city', 'VARCHAR(100) DEFAULT ""'),
-                ('country', 'VARCHAR(100) DEFAULT ""'),
-                ('work_preference', 'VARCHAR(50) DEFAULT "Remote"'),
-                ('matching_goal', 'VARCHAR(100) DEFAULT "Peer Skill Swap"'),
-                ('avatar_preset_url', 'VARCHAR(255) DEFAULT "https://api.dicebear.com/7.x/avataaars/svg?seed=SkillHero"'),
-                ('show_email', 'TINYINT(1) DEFAULT 1'),
-                ('show_phone', 'TINYINT(1) DEFAULT 0'),
-                ('is_profile_public', 'TINYINT(1) DEFAULT 1'),
-                ('experience_summary', 'TEXT'),
-                ('availability', 'VARCHAR(20) DEFAULT "available"'),
-            ]
-        }
-
-        with connection.cursor() as cursor:
-            for table_name, cols in column_checks.items():
-                if table_name in existing_tables:
-                    for col_name, col_def in cols:
-                        cursor.execute(f"SHOW COLUMNS FROM {table_name} LIKE '{col_name}'")
-                        if not cursor.fetchone():
-                            try:
-                                cursor.execute(f"ALTER TABLE {table_name} ADD COLUMN {col_name} {col_def}")
-                                print(f"Added missing column '{col_name}' to table '{table_name}'.")
-                            except Exception as ex:
-                                pass
-
 def setup_demo_accounts():
-    print("Setting up Demo Test Accounts for Skill Bank...")
-    ensure_tables_exist()
+    print("Setting up Demo Test Accounts & Sample Conversations for Skill Bank...")
+    fix_schema()
 
     # 1. Demo Regular User
     demo_user, _ = User.objects.get_or_create(
@@ -158,18 +93,77 @@ def setup_demo_accounts():
     cat_design, _ = SkillCategory.objects.get_or_create(category_name="Design & Arts", defaults={'icon_class': 'fa-solid fa-palette'})
     cat_music, _ = SkillCategory.objects.get_or_create(category_name="Music & Audio", defaults={'icon_class': 'fa-solid fa-music'})
 
-    Skill.objects.get_or_create(
+    skill_python, _ = Skill.objects.get_or_create(
         user=demo_user,
         title="Python & Django Web Development",
         defaults={'category': cat_code, 'level': 'Advanced', 'skill_type': 'offered', 'status': 'approved'}
     )
 
-    Skill.objects.get_or_create(
+    skill_figma, _ = Skill.objects.get_or_create(
         user=teacher_user,
         title="UI/UX Prototyping in Figma",
         defaults={'category': cat_design, 'level': 'Intermediate', 'skill_type': 'offered', 'status': 'approved'}
     )
 
+    # 5. Seed Sample Skill Exchanges, Conversations & Bookings
+    exchange_accepted, _ = SkillExchange.objects.get_or_create(
+        requester=demo_user,
+        receiver=teacher_user,
+        skill=skill_figma,
+        defaults={
+            'title': 'Figma for Python Swap',
+            'message': 'Hi Sarah! I would love to learn Figma prototyping from you in exchange for Python lessons.',
+            'status': 'accepted'
+        }
+    )
+
+    conv_accepted, _ = Conversation.objects.get_or_create(
+        request=exchange_accepted,
+        defaults={'user_one': demo_user, 'user_two': teacher_user}
+    )
+
+    Message.objects.get_or_create(
+        conversation=conv_accepted,
+        sender=demo_user,
+        message_text='Hi Sarah! Looking forward to our exchange session.'
+    )
+    Message.objects.get_or_create(
+        conversation=conv_accepted,
+        sender=teacher_user,
+        message_text='Awesome Alex! Let us schedule our first session on Figma fundamentals.'
+    )
+
+    # Seed Booking session
+    Booking.objects.get_or_create(
+        request=exchange_accepted,
+        defaults={
+            'scheduled_date': date.today(),
+            'start_time': time(15, 0),
+            'end_time': time(16, 30),
+            'meeting_mode': 'online',
+            'meeting_link': 'https://meet.google.com/demo-skill-bank',
+            'status': 'scheduled'
+        }
+    )
+
+    # Seed Pending Request
+    exchange_pending, _ = SkillExchange.objects.get_or_create(
+        requester=teacher_user,
+        receiver=demo_user,
+        skill=skill_python,
+        defaults={
+            'title': 'Django Backend Mentorship',
+            'message': 'Hey Alex! Could you guide me on Django REST API structure?',
+            'status': 'pending'
+        }
+    )
+
+    Conversation.objects.get_or_create(
+        request=exchange_pending,
+        defaults={'user_one': teacher_user, 'user_two': demo_user}
+    )
+
+    print("✅ Seeded Sample Exchange Requests, Conversations & Bookings!")
     print("=" * 60)
     print("DEMO ACCOUNTS READY FOR TESTING:")
     print("1) Student User  -> Username: demouser     | Password: DemoPassword123!")

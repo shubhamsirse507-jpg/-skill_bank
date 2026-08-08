@@ -9,15 +9,27 @@ from messaging.models import SkillExchange
 @login_required
 def booking_list(request):
     """Lists bookings for current user (as requester or receiver)."""
-    user_exchanges = SkillExchange.objects.filter(
-        Q(requester=request.user) | Q(receiver=request.user)
-    )
-    bookings = Booking.objects.filter(request__in=user_exchanges).select_related(
-        'request', 'request__requester', 'request__receiver', 'request__skill'
-    )
+    bookings = []
+    error_msg = None
+
+    try:
+        user_exchanges = list(SkillExchange.objects.filter(
+            Q(requester=request.user) | Q(receiver=request.user)
+        ))
+        # Use list() to force QuerySet evaluation HERE (inside try/except),
+        # not lazily in the template where we can't catch OperationalError.
+        bookings = list(
+            Booking.objects.filter(request__in=user_exchanges).select_related(
+                'request', 'request__requester', 'request__receiver', 'request__skill'
+            )
+        )
+    except Exception as e:
+        error_msg = str(e)
+        bookings = []
 
     return render(request, 'bookings/booking_list.html', {
         'bookings': bookings,
+        'error_msg': error_msg,
     })
 
 

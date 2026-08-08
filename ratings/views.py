@@ -10,42 +10,33 @@ from .models import ReviewRating
 @login_required
 def rating_view(request):
     current_user = request.user
-    reviews = ReviewRating.objects.select_related('reviewer', 'reviewed_user', 'booking').all()
-
-    # Calculate Summary Stats
-    total_reviews = reviews.count()
-    avg_rating = reviews.aggregate(Avg('rating'))['rating__avg'] or 0.0
-    avg_rating = round(avg_rating, 1)
-
-    avg_comm = reviews.aggregate(Avg('communication_rating'))['communication_rating__avg'] or 0.0
-    avg_comm = round(avg_comm, 1)
-
-    avg_clarity = reviews.aggregate(Avg('clarity_rating'))['clarity_rating__avg'] or 0.0
-    avg_clarity = round(avg_clarity, 1)
-
-    avg_punc = reviews.aggregate(Avg('punctuality_rating'))['punctuality_rating__avg'] or 0.0
-    avg_punc = round(avg_punc, 1)
-
-    rec_count = reviews.filter(would_recommend=True).count()
-    recommend_pct = int((rec_count / total_reviews * 100)) if total_reviews > 0 else 100
-
-    star_counts = {
-        5: reviews.filter(rating=5).count(),
-        4: reviews.filter(rating=4).count(),
-        3: reviews.filter(rating=3).count(),
-        2: reviews.filter(rating=2).count(),
-        1: reviews.filter(rating=1).count(),
-    }
-    star_percents = {}
-    for star, count in star_counts.items():
-        star_percents[star] = int((count / total_reviews * 100)) if total_reviews > 0 else 0
-
-    # User's bookings ready to review
-    unreviewed_bookings = Booking.objects.filter(
-        Q(request__requester=current_user) | Q(request__receiver=current_user),
-        status='completed',
-        reviews__isnull=True
-    ).select_related('request', 'request__requester', 'request__receiver')
+    try:
+        reviews = ReviewRating.objects.select_related('reviewer', 'reviewed_user', 'booking').all()
+        total_reviews = reviews.count()
+        avg_rating = round(reviews.aggregate(Avg('rating'))['rating__avg'] or 0.0, 1)
+        avg_comm = round(reviews.aggregate(Avg('communication_rating'))['communication_rating__avg'] or 0.0, 1)
+        avg_clarity = round(reviews.aggregate(Avg('clarity_rating'))['clarity_rating__avg'] or 0.0, 1)
+        avg_punc = round(reviews.aggregate(Avg('punctuality_rating'))['punctuality_rating__avg'] or 0.0, 1)
+        rec_count = reviews.filter(would_recommend=True).count()
+        recommend_pct = int((rec_count / total_reviews * 100)) if total_reviews > 0 else 100
+        star_counts = {s: reviews.filter(rating=s).count() for s in range(1, 6)}
+        star_percents = {s: int((count / total_reviews * 100)) if total_reviews > 0 else 0 for s, count in star_counts.items()}
+        unreviewed_bookings = Booking.objects.filter(
+            Q(request__requester=current_user) | Q(request__receiver=current_user),
+            status='completed',
+            reviews__isnull=True
+        ).select_related('request', 'request__requester', 'request__receiver')
+    except Exception:
+        reviews = []
+        total_reviews = 0
+        avg_rating = 0.0
+        avg_comm = 0.0
+        avg_clarity = 0.0
+        avg_punc = 0.0
+        recommend_pct = 100
+        star_counts = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+        star_percents = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+        unreviewed_bookings = []
 
     # Handle submitting new rating form
     if request.method == 'POST':

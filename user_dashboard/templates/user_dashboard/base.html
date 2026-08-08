@@ -2,24 +2,23 @@
 <!DOCTYPE html>
 <html lang="en">
 
-
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Skill Bank</title>
+    <title>{% block title %}Skill Bank — Skill Exchange Platform{% endblock %}</title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Bootstrap Icons -->
-    <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Bootstrap Icons & FontAwesome -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <!-- CSS -->
     <link rel="stylesheet" href="{% static 'user_dashboard/css/dashboard.css' %}">
     <link rel="stylesheet" href="{% static 'user_dashboard/css/responsive.css' %}">
+    {% block extra_css %}{% endblock %}
 </head>
 
 <body>
@@ -28,29 +27,23 @@
 
     <div class="container-fluid p-0">
 
+        <!-- Horizontal Sidebar -->
+        {% include 'user_dashboard/sidebar.html' %}
 
-    <!-- Horizontal Sidebar -->
-    {% include 'user_dashboard/sidebar.html' %}
+        <!-- Dashboard Content -->
+        <main class="dashboard-bg p-4">
+            {% block content %}
+            {% endblock %}
+        </main>
 
-
-
-    <!-- Dashboard Content -->
-    <main class="dashboard-bg p-4">
-
-        {% block content %}
-
-        {% endblock %}
-
-    </main>
-
-
-</div>
+    </div>
 
     {% include 'user_dashboard/footer.html' %}
 
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
-
     <script src="{% static 'user_dashboard/js/dashboard.js' %}"></script>
+    {% block extra_js %}{% endblock %}
 
 </body>
 

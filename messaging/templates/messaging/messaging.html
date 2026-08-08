@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'user_dashboard/base.html' %}
 {% load static %}
 
 {% block title %}Messaging & Exchanges — Skill Bank{% endblock %}
@@ -182,11 +182,32 @@
                     Skill: <strong>{{ active_exchange.skill.title }}</strong>
                 </p>
             </div>
-            <div>
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
                 <span class="badge-status {{ active_exchange.status }}">{{ active_exchange.get_status_display }}</span>
-                {% if active_exchange.status == 'accepted' %}
-                    <a href="/bookings/create/{{ active_exchange.id }}/" class="btn-primary" style="font-size: 12px; padding: 6px 12px; margin-left: 10px;">
-                        <i class="fa-solid fa-calendar-plus"></i> Schedule Booking
+
+                {% if active_exchange.status == 'pending' %}
+                    {% if current_user == active_exchange.receiver %}
+                        <a href="{% url 'update_exchange_status' active_exchange.id 'accept' %}" class="btn-primary" style="font-size: 12px; padding: 6px 12px; background: #10b981;">
+                            <i class="fa-solid fa-check"></i> Accept Request
+                        </a>
+                        <a href="{% url 'update_exchange_status' active_exchange.id 'reject' %}" class="btn-ghost" style="font-size: 12px; padding: 6px 12px; color: #ef4444;">
+                            <i class="fa-solid fa-xmark"></i> Reject
+                        </a>
+                    {% else %}
+                        <a href="{% url 'update_exchange_status' active_exchange.id 'cancel' %}" class="btn-ghost" style="font-size: 12px; padding: 6px 12px; color: #ef4444;">
+                            <i class="fa-solid fa-ban"></i> Cancel Request
+                        </a>
+                    {% endif %}
+                {% elif active_exchange.status == 'accepted' %}
+                    <a href="{% url 'create_booking' active_exchange.id %}" class="btn-primary" style="font-size: 12px; padding: 6px 12px;">
+                        <i class="fa-solid fa-calendar-plus"></i> Schedule Session
+                    </a>
+                    <a href="{% url 'update_exchange_status' active_exchange.id 'complete' %}" class="btn-ghost" style="font-size: 12px; padding: 6px 12px;">
+                        <i class="fa-solid fa-circle-check"></i> Mark Complete
+                    </a>
+                {% elif active_exchange.status == 'completed' %}
+                    <a href="{% url 'ratings:rating_dashboard' %}" class="btn-primary" style="font-size: 12px; padding: 6px 12px; background: #f59e0b;">
+                        <i class="fa-solid fa-star"></i> Leave Review
                     </a>
                 {% endif %}
             </div>

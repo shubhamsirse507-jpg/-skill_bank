@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'user_dashboard/base.html' %}
 {% load static %}
 
 {% block title %}Review & Rating Hub — Skill Bank{% endblock %}
@@ -109,7 +109,7 @@
                 <i class="fa-solid fa-pen-to-square" style="color: #0e7d73;"></i> Leave a Review
             </h3>
 
-            <form method="POST" action="{% url 'rating_dashboard' %}">
+            <form method="POST" action="{% url 'ratings:rating_dashboard' %}">
                 {% csrf_token %}
 
                 <div style="margin-bottom: 15px;">
