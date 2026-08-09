@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.db.models import Count, Q
 import os
 
-from .models import PlatformReport, PlatformNotice, AuditLog
+from .models import PlatformReport, PlatformNotice, AuditLog, TeacherMockTest
 from skill_management.models import SkillCategory, Skill
 from messaging.models import SkillExchange, Message
 from ratings.models import ReviewRating
@@ -30,10 +30,16 @@ def admin_dashboard(request):
     total_categories = SkillCategory.objects.count()
     total_skills = Skill.objects.count()
 
+    # Teacher Hiring stats
+    total_hiring = TeacherMockTest.objects.count()
+    pending_hiring = TeacherMockTest.objects.filter(status__in=['PENDING', 'TAKEN']).count()
+    approved_hiring = TeacherMockTest.objects.filter(status='APPROVED').count()
+
     recent_users = User.objects.order_by('-date_joined')[:5]
     recent_reports = PlatformReport.objects.select_related('reported_by', 'reported_user').order_by('-created_at')[:5]
     recent_exchanges = SkillExchange.objects.select_related('requester', 'receiver').order_by('-created_at')[:5]
     recent_audit_logs = AuditLog.objects.select_related('admin').order_by('-created_at')[:8]
+    recent_hiring = TeacherMockTest.objects.select_related('teacher').order_by('-created_at')[:5]
 
     categories = SkillCategory.objects.annotate(skill_count=Count('skills'))
 
@@ -46,10 +52,14 @@ def admin_dashboard(request):
         'pending_reports': pending_reports,
         'total_categories': total_categories,
         'total_skills': total_skills,
+        'total_hiring': total_hiring,
+        'pending_hiring': pending_hiring,
+        'approved_hiring': approved_hiring,
         'recent_users': recent_users,
         'recent_reports': recent_reports,
         'recent_exchanges': recent_exchanges,
         'recent_audit_logs': recent_audit_logs,
+        'recent_hiring': recent_hiring,
         'categories': categories,
         'active_tab': 'dashboard',
     }
@@ -264,10 +274,10 @@ content_moderation = manage_reports
 skills_categories = manage_skills
 
 
+
 # ---------------------------------------------------------------------------
 # AI Teacher Qualification Mock Test & Hiring Module (Admin Only)
 # ---------------------------------------------------------------------------
-from .models import TeacherMockTest
 from .ai_generator import generate_ai_mock_test
 
 

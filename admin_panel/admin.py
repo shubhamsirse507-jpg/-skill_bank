@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import PlatformReport, PlatformNotice, AuditLog
+from .models import PlatformReport, PlatformNotice, AuditLog, TeacherMockTest
 
 
 @admin.register(PlatformReport)
@@ -20,3 +20,12 @@ class AuditLogAdmin(admin.ModelAdmin):
     list_display = ('id', 'admin', 'action', 'target_table', 'target_id', 'created_at')
     list_filter = ('target_table',)
     search_fields = ('admin__username', 'action')
+
+
+@admin.register(TeacherMockTest)
+class TeacherMockTestAdmin(admin.ModelAdmin):
+    list_display = ('id', 'teacher', 'skill_name', 'skill_level', 'score', 'total_questions', 'percentage', 'status', 'created_at')
+    list_filter = ('status', 'skill_level', 'created_at')
+    search_fields = ('teacher__username', 'teacher__email', 'skill_name', 'admin_notes')
+    ordering = ('-created_at',)
+

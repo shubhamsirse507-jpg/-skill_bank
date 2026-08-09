@@ -1,9 +1,43 @@
 {% extends 'base.html' %}
 {% block title %}Manage Skills & Categories — Admin Panel{% endblock %}
+
+{% block extra_css %}
+<style>
+  .admin-nav {
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+    padding: 0 20px;
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    margin-bottom: 24px;
+  }
+  .admin-nav a {
+    display: flex; align-items: center; gap: 7px;
+    padding: 14px 18px;
+    font-size: 0.88rem; font-weight: 600; color: #6b7280;
+    text-decoration: none; white-space: nowrap;
+    border-bottom: 3px solid transparent;
+    transition: all 0.18s;
+  }
+  .admin-nav a:hover { color: #0e7d73; }
+  .admin-nav a.active { color: #0e7d73; border-bottom-color: #0e7d73; }
+</style>
+{% endblock %}
+
 {% block content %}
-<div style="max-width:1200px;margin:40px auto;padding:0 20px;">
+<!-- Admin Navigation -->
+<nav class="admin-nav">
+  <a href="/admin-panel/"><i class="fa-solid fa-gauge"></i> Dashboard</a>
+  <a href="/admin-panel/users/"><i class="fa-solid fa-users"></i> Users</a>
+  <a href="/admin-panel/skills/" class="active"><i class="fa-solid fa-layer-group"></i> Skills</a>
+  <a href="/admin-panel/reports/"><i class="fa-solid fa-flag"></i> Reports</a>
+  <a href="/admin-panel/monitoring/"><i class="fa-solid fa-chart-line"></i> Monitoring</a>
+  <a href="/admin-panel/hiring/"><i class="fa-solid fa-user-tie"></i> Hiring</a>
+</nav>
+
+<div style="max-width:1200px;margin:20px auto;padding:0 20px;">
     <div style="margin-bottom:24px;">
-        <a href="{% url 'admin_panel:dashboard' %}" style="color:#6b7280;text-decoration:none;font-size:14px;">← Back to Admin</a>
         <h1 style="color:#1f2937;margin:8px 0 0;"><i class="fa-solid fa-tags" style="color:#0e7d73;"></i> Skills & Categories</h1>
     </div>
 
