@@ -159,10 +159,7 @@ def register(request):
         messages.success(request, f'Account created successfully! Welcome, {user.first_name or user.username}!')
         return redirect('home')
 
-    return render(request, 'authentication/register.html', {
-        'bg_video_url': AUTH_BACKGROUND_VIDEO_URL,
-        'brand_logo_image_name': BRAND_LOGO_IMAGE_NAME
-    })
+    return redirect('/login/?mode=signup')
 
 
 @login_required

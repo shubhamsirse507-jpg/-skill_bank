@@ -219,8 +219,14 @@
 
 
 
+  <!-- Tabs -->
+  <div class="tab-row">
+    <button class="tab-btn" id="tabSignup" onclick="switchTab('signup')">Sign up</button>
+    <button class="tab-btn active" id="tabLogin" onclick="switchTab('login')">Log in</button>
+  </div>
+
   <!-- LOG IN FORM -->
-  <div class="form-section active" id="formLogin" style="display:block;">
+  <div class="form-section active" id="formLogin">
     <form id="loginForm" method="POST" action="{% url 'login' %}">
       {% csrf_token %}
       <input type="hidden" name="next" value="{{ request.GET.next }}">
@@ -244,31 +250,72 @@
 
       <button type="submit" class="submit-btn" id="loginBtn">Log in as Student</button>
 
+      <div class="footer-links">
+        <a href="{% url 'forgot_password' %}">Forgot password?</a>
+        <a href="#" onclick="switchTab('signup'); return false;">Create account</a>
+      </div>
+    </form>
+  </div>
 
-      <div class="footer-links" style="justify-content:center;">
+  <!-- SIGN UP FORM -->
+  <div class="form-section" id="formSignup">
+    <form id="signupForm" method="POST" action="{% url 'register' %}">
+      {% csrf_token %}
+      <input type="hidden" name="role" id="signupRoleField" value="student">
+
+      <div class="input-group">
+        <label for="su_fullname">Full name</label>
+        <input type="text" id="su_fullname" name="fullname" placeholder="Ada Lovelace" required>
+      </div>
+      <div class="input-group">
+        <label for="su_email">Email</label>
+        <input type="email" id="su_email" name="email" placeholder="you@example.com" required>
+      </div>
+      <div class="input-group">
+        <label for="su_username">Username</label>
+        <input type="text" id="su_username" name="username" placeholder="Choose a username" required>
+      </div>
+      <div class="input-group">
+        <label for="su_password">Password</label>
+        <input type="password" id="su_password" name="password" placeholder="Create a password" required minlength="6">
+      </div>
+
+      <button type="submit" class="submit-btn" id="signupBtn">Create student account</button>
+
+      <div class="footer-links" style="justify-content: center;">
         <a href="{% url 'forgot_password' %}">Forgot password?</a>
       </div>
     </form>
   </div>
 
-
-
 </div>
 
 <script>
   let currentRole = 'student';
+  let currentTab  = 'login';
 
   function selectRole(role) {
     currentRole = role;
     document.getElementById('roleStudent').classList.toggle('active', role === 'student');
     document.getElementById('roleTeacher').classList.toggle('active', role === 'teacher');
-    document.getElementById('loginRoleField').value = role;
-    updateButtonLabel();
+    document.getElementById('loginRoleField').value  = role;
+    document.getElementById('signupRoleField').value = role;
+    updateButtonLabels();
   }
 
-  function updateButtonLabel() {
+  function switchTab(tab) {
+    currentTab = tab;
+    document.getElementById('tabLogin').classList.toggle('active',  tab === 'login');
+    document.getElementById('tabSignup').classList.toggle('active', tab === 'signup');
+    document.getElementById('formLogin').classList.toggle('active',  tab === 'login');
+    document.getElementById('formSignup').classList.toggle('active', tab === 'signup');
+    updateButtonLabels();
+  }
+
+  function updateButtonLabels() {
     const rn = currentRole === 'student' ? 'Student' : 'Teacher';
-    document.getElementById('loginBtn').textContent = `Log in as ${rn}`;
+    document.getElementById('loginBtn').textContent  = `Log in as ${rn}`;
+    document.getElementById('signupBtn').textContent = `Create ${rn.toLowerCase()} account`;
   }
 
   document.getElementById('loginForm').addEventListener('submit', function() {
@@ -277,7 +324,16 @@
     btn.disabled = true;
   });
 
-  updateButtonLabel();
+  document.getElementById('signupForm').addEventListener('submit', function() {
+    const btn = document.getElementById('signupBtn');
+    btn.textContent = 'Creating account…';
+    btn.disabled = true;
+  });
+
+  // Pre-select tab if sign-up mode is needed
+  {% if request.GET.mode == 'signup' %}switchTab('signup');{% endif %}
+
+  updateButtonLabels();
 </script>
 
 </body>
