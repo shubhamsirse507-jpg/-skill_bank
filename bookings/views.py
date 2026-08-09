@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
+from decimal import Decimal
 from .models import Booking
 from messaging.models import SkillExchange
 
@@ -230,105 +231,132 @@ from payments.models import Wallet, WalletTransaction, PaymentReceipt
 from notifications.models import Notification
 
 
+from django.db import transaction
+
 @login_required
 def join_batch(request, batch_id):
     """Enrolls current user in a group batch with mandatory payment processing."""
-    batch = get_object_or_404(Batch.objects.select_related('instructor', 'category'), id=batch_id)
+    try:
+        batch = get_object_or_404(Batch.objects.select_related('instructor'), id=batch_id)
 
-    # 1. Check if already enrolled
-    already_enrolled = BatchEnrollment.objects.filter(batch=batch, student=request.user).exists()
-    if already_enrolled:
-        messages.info(request, f'You are already enrolled in batch "{batch.title}".')
-        return redirect('batches')
+        # 1. Check if already enrolled
+        already_enrolled = BatchEnrollment.objects.filter(batch=batch, student=request.user).exists()
+        if already_enrolled:
+            messages.info(request, f'You are already enrolled in batch "{batch.title}".')
+            return redirect('/batches/')
 
-    # 2. Check seat capacity
-    if batch.enrolled_count >= batch.max_seats:
-        messages.error(request, 'Sorry, this batch is already full!')
-        return redirect('batches')
+        # 2. Check seat capacity
+        if batch.enrolled_count >= batch.max_seats:
+            messages.error(request, 'Sorry, this batch is already full!')
+            return redirect('/batches/')
 
-    price = batch.price_credits
+        price = Decimal(str(batch.price_credits or '0.00'))
 
-    # 3. Check student's wallet balance
-    student_wallet, _ = Wallet.objects.get_or_create(user=request.user)
-    if student_wallet.balance < price:
-        messages.error(
+        # 3. Check student's wallet balance
+        student_wallet, _ = Wallet.objects.get_or_create(user=request.user)
+        student_bal = Decimal(str(student_wallet.balance or '0.00'))
+
+        if student_bal < price:
+            messages.error(
+                request,
+                f'Insufficient balance (₹{student_bal:.2f}) to join "{batch.title}". '
+                f'Batch fee is ₹{price:.2f}. Please add funds to your wallet.'
+            )
+            return redirect('/wallet/')
+
+        # 4. Atomic Payment Processing & Enrollment
+        with transaction.atomic():
+            # Deduct from student
+            student_wallet.balance = student_bal - price
+            student_wallet.save()
+
+            WalletTransaction.objects.create(
+                wallet=student_wallet,
+                amount=price,
+                transaction_type='debit',
+                description=f'Batch Enrollment Fee: {batch.title} (Instructor: {batch.instructor.username})'
+            )
+
+            # Credit to instructor
+            instructor_wallet, _ = Wallet.objects.get_or_create(user=batch.instructor)
+            inst_bal = Decimal(str(instructor_wallet.balance or '0.00'))
+            inst_earned = Decimal(str(instructor_wallet.earned_total or '0.00'))
+
+            instructor_wallet.balance = inst_bal + price
+            instructor_wallet.earned_total = inst_earned + price
+            instructor_wallet.save()
+
+            WalletTransaction.objects.create(
+                wallet=instructor_wallet,
+                amount=price,
+                transaction_type='credit',
+                description=f'Earned from Batch Enrollment: {batch.title} (Student: {request.user.username})'
+            )
+
+            # Create Batch Enrollment
+            BatchEnrollment.objects.create(batch=batch, student=request.user)
+            batch.enrolled_count += 1
+            batch.save()
+
+            # Safe category name resolution
+            cat_name = 'General'
+            try:
+                if batch.category:
+                    cat_name = batch.category.category_name
+            except Exception:
+                cat_name = 'General'
+
+            # Generate Payment Receipt
+            tx_id = f"TXN-{uuid.uuid4().hex[:10].upper()}"
+            receipt = PaymentReceipt.objects.create(
+                student=request.user,
+                teacher=batch.instructor,
+                batch=batch,
+                item_title=batch.title,
+                category_name=cat_name,
+                amount=price,
+                payment_method='SkillBank Wallet',
+                transaction_id=tx_id,
+                status='PAID'
+            )
+
+            receipt_num_str = str(receipt.receipt_number)
+
+            # Notify Batch Teacher
+            rec_num = receipt_num_str[:8]
+            rec_url = f"/payments/receipt/{receipt_num_str}/"
+            Notification.objects.create(
+                user=batch.instructor,
+                title=f"💳 Payment Received: ₹{price:.2f} from {request.user.username}",
+                message=f"{request.user.username} enrolled in your batch '{batch.title}' and paid ₹{price:.2f}. Receipt #{rec_num} generated.",
+                type="system",
+                action_url=rec_url,
+                action_text="View Payment Receipt",
+                sender_name=request.user.username
+            )
+
+            # Notify Student
+            Notification.objects.create(
+                user=request.user,
+                title=f"💳 Payment Receipt: ₹{price:.2f} for {batch.title}",
+                message=f"You successfully joined '{batch.title}'. Payment of ₹{price:.2f} was deducted from your wallet.",
+                type="booking",
+                action_url=rec_url,
+                action_text="View Receipt",
+                sender_name="SkillBank System"
+            )
+
+        messages.success(
             request,
-            f'Insufficient balance (₹{student_wallet.balance:.2f}) to join "{batch.title}". '
-            f'Batch fee is ₹{price:.2f}. Please add funds to your wallet.'
+            f'Payment of ₹{price:.2f} successful! You have joined "{batch.title}".'
         )
-        return redirect('wallet')
+        return redirect('receipt_detail', receipt_number=receipt_num_str)
 
-    # 4. Process Payment (Deduct from student, Credit to instructor)
-    student_wallet.balance = Decimal(str(student_wallet.balance)) - price
-    student_wallet.save()
-
-    WalletTransaction.objects.create(
-        wallet=student_wallet,
-        amount=price,
-        transaction_type='debit',
-        description=f'Batch Enrollment Fee: {batch.title} (Instructor: {batch.instructor.username})'
-    )
-
-    instructor_wallet, _ = Wallet.objects.get_or_create(user=batch.instructor)
-    instructor_wallet.balance = Decimal(str(instructor_wallet.balance)) + price
-    instructor_wallet.earned_total = Decimal(str(instructor_wallet.earned_total)) + price
-    instructor_wallet.save()
-
-    WalletTransaction.objects.create(
-        wallet=instructor_wallet,
-        amount=price,
-        transaction_type='credit',
-        description=f'Earned from Batch Enrollment: {batch.title} (Student: {request.user.username})'
-    )
-
-    # 5. Create Batch Enrollment
-    BatchEnrollment.objects.create(batch=batch, student=request.user)
-    batch.enrolled_count += 1
-    batch.save()
-
-    # 6. Generate Payment Receipt
-    tx_id = f"TXN-{uuid.uuid4().hex[:10].upper()}"
-    receipt = PaymentReceipt.objects.create(
-        student=request.user,
-        teacher=batch.instructor,
-        batch=batch,
-        item_title=batch.title,
-        category_name=batch.category.category_name if batch.category else 'General',
-        amount=price,
-        payment_method='SkillBank Wallet',
-        transaction_id=tx_id,
-        status='PAID'
-    )
-
-    # 7. Notify Batch Teacher
-    rec_num = str(receipt.receipt_number)[:8]
-    rec_url = f"/payments/receipt/{receipt.receipt_number}/"
-    Notification.objects.create(
-        user=batch.instructor,
-        title=f"💳 Payment Received: ₹{price:.2f} from {request.user.username}",
-        message=f"{request.user.username} enrolled in your batch '{batch.title}' and paid ₹{price:.2f}. Receipt #{rec_num} generated.",
-        type="system",
-        action_url=rec_url,
-        action_text="View Payment Receipt",
-        sender_name=request.user.username
-    )
-
-    # 8. Notify Student
-    Notification.objects.create(
-        user=request.user,
-        title=f"💳 Payment Receipt: ₹{price:.2f} for {batch.title}",
-        message=f"You successfully joined '{batch.title}'. Payment of ₹{price:.2f} was deducted from your wallet.",
-        type="booking",
-        action_url=rec_url,
-        action_text="View Receipt",
-        sender_name="SkillBank System"
-    )
-
-    messages.success(
-        request,
-        f'Payment of ₹{price:.2f} successful! You have joined "{batch.title}".'
-    )
-    return redirect('receipt_detail', receipt_number=receipt.receipt_number)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        messages.error(request, f"Could not process batch enrollment: {str(e)}")
+        return redirect('/batches/')
 
 
 
