@@ -159,6 +159,7 @@ STATIC_ROOT = BASE_DIR / os.environ.get('STATIC_ROOT', 'staticfiles')
 _candidate_static_dirs = [
     BASE_DIR / 'static',
     BASE_DIR / 'user_dashboard' / 'static',
+    BASE_DIR / 'chatboat' / 'static',
     BASE_DIR / 'skill_bank' / 'admin_panel' / 'static',
     BASE_DIR / 'skill_bank' / 'messaging' / 'static',
     BASE_DIR / 'skill_bank' / 'ratings' / 'static',
@@ -170,8 +171,18 @@ STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
 
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedStaticFilesStorage",
+    },
+}
+
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 WHITENOISE_MANIFEST_STRICT = False
+WHITENOISE_USE_FINDERS = True
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / os.environ.get('MEDIA_ROOT', 'media')
