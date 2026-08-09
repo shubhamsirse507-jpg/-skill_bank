@@ -559,3 +559,73 @@ def live_room(request, room_id=None):
     })
 
 
+from django.contrib.admin.views.decorators import staff_member_required
+
+
+@staff_member_required
+def create_batch(request):
+    """Create a new group batch session — Teacher/Admin only."""
+    categories = SkillCategory.objects.filter(is_active=True)
+
+    if request.method == 'POST':
+        title = request.POST.get('title', '').strip()
+        description = request.POST.get('description', '').strip()
+        category_id = request.POST.get('category')
+        scheduled_at = request.POST.get('scheduled_at')
+        duration_minutes = request.POST.get('duration_minutes', 60)
+        max_seats = request.POST.get('max_seats', 15)
+        price_credits = request.POST.get('price_credits', '50.00')
+        meeting_link = request.POST.get('meeting_link', '').strip() or 'https://meet.jit.si/SkillBankBatchRoom'
+
+        errors = []
+        if not title:
+            errors.append('Batch title is required.')
+        if not category_id:
+            errors.append('Please select a category.')
+        if not scheduled_at:
+            errors.append('Scheduled date & time is required.')
+
+        if not errors:
+            try:
+                category = SkillCategory.objects.get(id=category_id)
+                batch = Batch.objects.create(
+                    instructor=request.user,
+                    title=title,
+                    description=description,
+                    category=category,
+                    scheduled_at=scheduled_at,
+                    duration_minutes=int(duration_minutes),
+                    max_seats=int(max_seats),
+                    price_credits=Decimal(str(price_credits)),
+                    meeting_link=meeting_link,
+                    status='upcoming',
+                )
+                messages.success(request, f'✅ Batch "{batch.title}" created successfully!')
+                return redirect('batches')
+            except Exception as e:
+                errors.append(f'Error creating batch: {str(e)}')
+
+        return render(request, 'bookings/create_batch.html', {
+            'categories': categories,
+            'errors': errors,
+            'form_data': request.POST,
+        })
+
+    return render(request, 'bookings/create_batch.html', {
+        'categories': categories,
+        'errors': [],
+        'form_data': {},
+    })
+
+
+@staff_member_required
+def delete_batch(request, batch_id):
+    """Delete a batch — Teacher (own) / Admin (any)."""
+    batch = get_object_or_404(Batch, id=batch_id)
+    if not request.user.is_superuser and batch.instructor != request.user:
+        messages.error(request, 'You can only delete your own batches.')
+        return redirect('batches')
+    batch_title = batch.title
+    batch.delete()
+    messages.success(request, f'Batch "{batch_title}" deleted.')
+    return redirect('batches')

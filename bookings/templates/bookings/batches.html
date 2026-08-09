@@ -15,6 +15,16 @@
         <p style="color: #6b7280; font-size: 1.1rem; max-width: 600px; margin: 10px auto 0;">
             Scheduled group classes taught live by expert community members. Reserve your seat and learn together.
         </p>
+        {% if user.is_authenticated and user.is_staff %}
+        <a href="{% url 'create_batch' %}"
+           style="display:inline-flex; align-items:center; gap:8px; margin-top:22px;
+                  background: linear-gradient(135deg, #0e7d73, #10b981);
+                  color: white; padding: 12px 28px; border-radius: 100px;
+                  font-size: 0.95rem; font-weight: 800; text-decoration: none;
+                  box-shadow: 0 6px 20px rgba(14,125,115,0.3); transition: transform 0.2s;">
+            ➕ Create New Batch
+        </a>
+        {% endif %}
     </div>
 
     <!-- Category Filter Pills -->
@@ -74,29 +84,47 @@
                     </div>
 
                     <!-- Footer: Price & CTA Button -->
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f3f4f6; padding-top: 15px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f3f4f6; padding-top: 15px; flex-wrap: wrap; gap: 8px;">
                         <div>
                             <span style="font-size: 0.75rem; color: #6b7280; display: block;">Entry Fee</span>
                             <span style="font-size: 1.1rem; font-weight: 900; color: var(--teal-primary);">₹{{ batch.price_credits }}</span>
                         </div>
 
-                        {% if batch.id in enrolled_batch_ids %}
-                            <div style="display: flex; gap: 6px; align-items: center;">
+                        <div style="display:flex; gap:6px; align-items:center; flex-wrap:wrap;">
+                            {% if batch.id in enrolled_batch_ids %}
                                 <a href="{% url 'my_receipts' %}" style="background: #f0fdfa; color: #0e7d73; border: 1px solid #6ddfd5; padding: 7px 12px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; text-decoration: none; display: inline-flex; align-items: center; gap: 4px;">
                                     <i class="fa-solid fa-receipt"></i> Receipt
                                 </a>
                                 <a href="{% url 'live_room' room_id=batch.id %}" class="btn-primary" style="background: #10b981 !important; padding: 7px 12px; font-size: 0.8rem;">
                                     <i class="fa-solid fa-video"></i> Live Class
                                 </a>
-                            </div>
-                        {% elif batch.enrolled_count >= batch.max_seats %}
-                            <button class="btn-ghost" disabled style="opacity: 0.6; cursor: not-allowed;">Batch Full</button>
-                        {% else %}
-                            <a href="{% url 'join_batch' batch_id=batch.id %}" class="btn-primary">
-                                <i class="fa-solid fa-user-plus"></i> Join Batch
-                            </a>
-                        {% endif %}
+                            {% elif batch.enrolled_count >= batch.max_seats %}
+                                <button class="btn-ghost" disabled style="opacity: 0.6; cursor: not-allowed;">Batch Full</button>
+                            {% else %}
+                                {% if user.is_authenticated and batch.instructor == user %}
+                                    <span style="font-size:0.75rem; color:#6b7280; font-style:italic;">Your Batch</span>
+                                {% else %}
+                                    <a href="{% url 'join_batch' batch_id=batch.id %}" class="btn-primary">
+                                        <i class="fa-solid fa-user-plus"></i> Join Batch
+                                    </a>
+                                {% endif %}
+                            {% endif %}
+
+                            {% if user.is_authenticated and user.is_staff %}
+                                {% if user.is_superuser or batch.instructor == user %}
+                                <form method="POST" action="{% url 'delete_batch' batch_id=batch.id %}"
+                                      onsubmit="return confirm('Delete batch \'{{ batch.title|escapejs }}\'? This cannot be undone.');"
+                                      style="display:inline;">
+                                    {% csrf_token %}
+                                    <button type="submit" style="background:#fef2f2; color:#dc2626; border:1px solid #fca5a5; padding:7px 12px; border-radius:8px; font-size:0.8rem; font-weight:700; cursor:pointer;">
+                                        🗑 Delete
+                                    </button>
+                                </form>
+                                {% endif %}
+                            {% endif %}
+                        </div>
                     </div>
+
                 </div>
             {% endfor %}
         </div>

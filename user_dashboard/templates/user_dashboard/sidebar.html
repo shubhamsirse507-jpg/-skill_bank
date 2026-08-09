@@ -38,6 +38,16 @@
         🎥 Live Session
     </a>
 
+    <a href="{% url 'batches' %}" {% if request.resolver_match.url_name == 'batches' or request.resolver_match.url_name == 'batches_direct' %}class="active"{% endif %}>
+        📚 Batches
+    </a>
+
+    {% if user.is_staff %}
+    <a href="{% url 'create_batch' %}" {% if request.resolver_match.url_name == 'create_batch' %}class="active"{% endif %} style="color: #0e7d73; font-weight: 700;">
+        ➕ Create Batch
+    </a>
+    {% endif %}
+
     <a href="{% url 'chatbot' %}" {% if request.resolver_match.url_name == 'chatbot' %}class="active"{% endif %}>
         🤖 AI Chatbot
     </a>
@@ -48,8 +58,5 @@
     </a>
     {% endif %}
 
-    <a href="{% url 'logout' %}" style="color: #ef4444;">
-        🚪 Logout
-    </a>
 
 </div>

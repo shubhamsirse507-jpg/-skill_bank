@@ -1,0 +1,349 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Create Batch — SkillBank{% endblock %}
+
+{% block content %}
+<style>
+    :root {
+        --teal: #0e7d73;
+        --teal-light: #f0fdfa;
+        --teal-border: #99f6e4;
+    }
+
+    .create-batch-wrapper {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f0fdfa 0%, #ecfdf5 50%, #f0f9ff 100%);
+        padding: 60px 20px;
+    }
+
+    .batch-form-card {
+        background: #ffffff;
+        border-radius: 24px;
+        box-shadow: 0 20px 60px rgba(14, 125, 115, 0.12), 0 4px 16px rgba(0,0,0,0.06);
+        padding: 48px 52px;
+        max-width: 760px;
+        margin: 0 auto;
+        border: 1px solid #e0fdf4;
+    }
+
+    .form-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .form-header .badge-pill {
+        display: inline-block;
+        background: linear-gradient(135deg, #0e7d73, #10b981);
+        color: white;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 6px 18px;
+        border-radius: 100px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 16px;
+    }
+
+    .form-header h1 {
+        font-size: 2.2rem;
+        font-weight: 900;
+        color: #111827;
+        margin-bottom: 10px;
+        line-height: 1.2;
+    }
+
+    .form-header p {
+        color: #6b7280;
+        font-size: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 22px;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: #374151;
+        margin-bottom: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-label span.required {
+        color: #ef4444;
+        margin-left: 2px;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 12px 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        color: #1f2937;
+        background: #fafafa;
+        transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+        outline: none;
+        font-family: inherit;
+    }
+
+    .form-input:focus {
+        border-color: var(--teal);
+        background: #ffffff;
+        box-shadow: 0 0 0 4px rgba(14, 125, 115, 0.08);
+    }
+
+    textarea.form-input {
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    @media (max-width: 600px) {
+        .form-row { grid-template-columns: 1fr; }
+        .batch-form-card { padding: 28px 22px; }
+        .form-header h1 { font-size: 1.6rem; }
+    }
+
+    .input-hint {
+        font-size: 0.78rem;
+        color: #9ca3af;
+        margin-top: 5px;
+    }
+
+    .error-list {
+        background: #fef2f2;
+        border: 1px solid #fca5a5;
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin-bottom: 24px;
+    }
+
+    .error-list li {
+        color: #dc2626;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(135deg, #0e7d73, #10b981);
+        color: white;
+        font-size: 1.05rem;
+        font-weight: 800;
+        border: none;
+        border-radius: 14px;
+        cursor: pointer;
+        letter-spacing: 0.3px;
+        margin-top: 12px;
+        transition: transform 0.2s, box-shadow 0.2s;
+        box-shadow: 0 6px 20px rgba(14, 125, 115, 0.3);
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 28px rgba(14, 125, 115, 0.4);
+    }
+
+    .cancel-link {
+        display: block;
+        text-align: center;
+        margin-top: 18px;
+        color: #6b7280;
+        font-size: 0.9rem;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s;
+    }
+    .cancel-link:hover { color: #374151; }
+
+    .section-divider {
+        border: none;
+        border-top: 2px dashed #e5e7eb;
+        margin: 30px 0;
+    }
+
+    .section-label {
+        font-size: 0.8rem;
+        font-weight: 800;
+        color: var(--teal);
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-bottom: 18px;
+    }
+
+    .icon-prefix {
+        display: flex;
+        align-items: center;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        overflow: hidden;
+        background: #fafafa;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .icon-prefix:focus-within {
+        border-color: var(--teal);
+        box-shadow: 0 0 0 4px rgba(14, 125, 115, 0.08);
+        background: white;
+    }
+    .icon-prefix .prefix-icon {
+        padding: 0 12px;
+        font-size: 1.1rem;
+        color: #9ca3af;
+        border-right: 2px solid #e5e7eb;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        background: #f3f4f6;
+    }
+    .icon-prefix input, .icon-prefix select {
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent;
+        padding: 12px 14px;
+        flex: 1;
+        font-size: 0.95rem;
+        color: #1f2937;
+        outline: none;
+        font-family: inherit;
+    }
+</style>
+
+<div class="create-batch-wrapper">
+    <div class="batch-form-card">
+
+        <!-- Header -->
+        <div class="form-header">
+            <div class="badge-pill">🏫 Teacher/Admin Only</div>
+            <h1>Create a New Batch</h1>
+            <p>Schedule a live group class and let students enroll with SkillBank credits.</p>
+        </div>
+
+        <!-- Error Messages -->
+        {% if errors %}
+        <ul class="error-list">
+            {% for err in errors %}
+            <li>⚠ {{ err }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        <!-- Django Messages -->
+        {% for msg in messages %}
+        <div class="error-list" style="{% if msg.tags == 'success' %}background:#f0fdf4;border-color:#86efac;{% endif %}">
+            <li style="{% if msg.tags == 'success' %}color:#16a34a;{% else %}color:#dc2626;{% endif %}">{{ msg }}</li>
+        </div>
+        {% endfor %}
+
+        <!-- Form -->
+        <form method="POST" action="{% url 'create_batch' %}">
+            {% csrf_token %}
+
+            <!-- Basic Info -->
+            <div class="section-label">📝 Basic Information</div>
+
+            <div class="form-group">
+                <label class="form-label" for="title">Batch Title <span class="required">*</span></label>
+                <input type="text" id="title" name="title" class="form-input"
+                       placeholder="e.g. Python AI Masterclass — Weekend Batch"
+                       value="{{ form_data.title|default:'' }}" required maxlength="200">
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="description">Description</label>
+                <textarea id="description" name="description" class="form-input"
+                          placeholder="What will students learn? What's the agenda? Prerequisites?">{{ form_data.description|default:'' }}</textarea>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label" for="category">Category <span class="required">*</span></label>
+                <div class="icon-prefix">
+                    <span class="prefix-icon">📂</span>
+                    <select id="category" name="category" required>
+                        <option value="">— Select a Category —</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat.id }}" {% if form_data.category == cat.id|stringformat:"s" %}selected{% endif %}>
+                            {{ cat.category_name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <hr class="section-divider">
+
+            <!-- Schedule -->
+            <div class="section-label">📅 Schedule & Capacity</div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="scheduled_at">Date & Time <span class="required">*</span></label>
+                    <input type="datetime-local" id="scheduled_at" name="scheduled_at" class="form-input"
+                           value="{{ form_data.scheduled_at|default:'' }}" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="duration_minutes">Duration (minutes)</label>
+                    <div class="icon-prefix">
+                        <span class="prefix-icon">⏱</span>
+                        <input type="number" id="duration_minutes" name="duration_minutes"
+                               value="{{ form_data.duration_minutes|default:'60' }}" min="15" max="480" step="15">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label" for="max_seats">Max Seats</label>
+                    <div class="icon-prefix">
+                        <span class="prefix-icon">👥</span>
+                        <input type="number" id="max_seats" name="max_seats"
+                               value="{{ form_data.max_seats|default:'15' }}" min="1" max="100">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="price_credits">Entry Fee (₹ Credits)</label>
+                    <div class="icon-prefix">
+                        <span class="prefix-icon">₹</span>
+                        <input type="number" id="price_credits" name="price_credits"
+                               value="{{ form_data.price_credits|default:'50.00' }}" min="0" step="0.01">
+                    </div>
+                    <div class="input-hint">Set to 0 for a free batch.</div>
+                </div>
+            </div>
+
+            <hr class="section-divider">
+
+            <!-- Meeting Link -->
+            <div class="section-label">🎥 Session Link</div>
+
+            <div class="form-group">
+                <label class="form-label" for="meeting_link">Meeting / Video Call Link</label>
+                <div class="icon-prefix">
+                    <span class="prefix-icon">🔗</span>
+                    <input type="url" id="meeting_link" name="meeting_link"
+                           value="{{ form_data.meeting_link|default:'https://meet.jit.si/SkillBankBatchRoom' }}"
+                           placeholder="https://meet.google.com/xxx or https://meet.jit.si/...">
+                </div>
+                <div class="input-hint">Paste your Google Meet, Zoom, or Jitsi link. A default Jitsi room is prefilled.</div>
+            </div>
+
+            <!-- Submit -->
+            <button type="submit" class="submit-btn">
+                🚀 Launch Batch
+            </button>
+        </form>
+
+        <a href="{% url 'batches' %}" class="cancel-link">← Back to Batches</a>
+    </div>
+</div>
+
+{% endblock %}

@@ -16,9 +16,7 @@ Tablet (992px and below)
 }
 
 
-/* ==========================================
-Mobile Sidebar (768px and below)
-========================================== */
+
 
 @media (max-width: 768px) {
 
@@ -121,9 +119,7 @@ Mobile Sidebar (768px and below)
 }
 
 
-/* ==========================================
-Small Mobile (576px and below)
-========================================== */
+
 
 @media (max-width: 576px) {
 

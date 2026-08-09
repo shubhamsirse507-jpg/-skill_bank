@@ -21,7 +21,7 @@ from skill_management.models import Skill, SkillCategory
 USERS = [
     {
         "username": "student_user",
-        "email": "student@skillbank.com",
+        "email": "skillbank2026@gmail.com",
         "password": "Student@1234",
         "first_name": "Ananya",
         "last_name": "Sharma",
