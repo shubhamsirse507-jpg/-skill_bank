@@ -1,6 +1,12 @@
+body {
+    background: linear-gradient(180deg, #6ddfd5 0%, #fbfefe 100%);
+    background-attachment: fixed;
+    min-height: 100vh;
+}
+
 .dashboard-bg{
     min-height: 50vh;
-    background: linear-gradient(180deg, #6ddfd5, #fbfefe);
+    background: transparent;
 }
 
 .skill-card{

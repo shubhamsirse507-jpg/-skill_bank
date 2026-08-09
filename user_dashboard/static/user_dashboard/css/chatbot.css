@@ -20,7 +20,7 @@
 
 .dashboard-bg{
     min-height:100vh;
-    background: linear-gradient(135deg, #eef2ff, #2a72d1, #f5f3ff);
+    background: transparent;
     padding:30px;
 }
 
