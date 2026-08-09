@@ -154,9 +154,22 @@ USE_TZ = True
 # ---------------------------------------------------------------------------
 STATIC_URL = '/static/'
 STATIC_ROOT = BASE_DIR / os.environ.get('STATIC_ROOT', 'staticfiles')
-STATICFILES_DIRS = [
-    d for d in [BASE_DIR / 'static'] if d.exists()
+
+# Collect static files from all app-level static directories
+_candidate_static_dirs = [
+    BASE_DIR / 'static',
+    BASE_DIR / 'user_dashboard' / 'static',
+    BASE_DIR / 'skill_bank' / 'admin_panel' / 'static',
+    BASE_DIR / 'skill_bank' / 'messaging' / 'static',
+    BASE_DIR / 'skill_bank' / 'ratings' / 'static',
 ]
+STATICFILES_DIRS = [d for d in _candidate_static_dirs if d.exists()]
+
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+]
+
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
 WHITENOISE_MANIFEST_STRICT = False
 
