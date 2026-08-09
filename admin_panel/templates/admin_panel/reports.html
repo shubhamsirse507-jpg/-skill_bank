@@ -33,8 +33,6 @@
 
     <!-- Filter Bar -->
     <form method="GET" style="display:flex;gap:12px;margin-bottom:20px;">
-        {% for s in 'all,PENDING,IN_REVIEW,RESOLVED,DISMISSED'|split:',' %}
-        {% endfor %}
         <a href="?status=all" class="btn-ghost" style="text-decoration:none;{% if status_filter == 'all' %}background:#0e7d73;color:white;{% endif %}">All</a>
         <a href="?status=pending" class="btn-ghost" style="text-decoration:none;{% if status_filter == 'pending' %}background:#f59e0b;color:white;{% endif %}">Pending</a>
         <a href="?status=in_review" class="btn-ghost" style="text-decoration:none;{% if status_filter == 'in_review' %}background:#3b82f6;color:white;{% endif %}">In Review</a>

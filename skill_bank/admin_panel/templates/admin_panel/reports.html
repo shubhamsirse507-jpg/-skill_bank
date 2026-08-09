@@ -51,7 +51,7 @@
                 <tr>
                     <td style="font-weight: 700; color: var(--accent-indigo);">#RPT-{{ report.id }}</td>
                     <td>
-                        <div style="font-weight: 600;">@{{ report.reporter.username }}</div>
+                        <div style="font-weight: 600;">@{{ report.reported_by.username }}</div>
                         <div style="font-size: 0.76rem; color: var(--text-muted);">{{ report.created_at|date:"M d, H:i" }}</div>
                     </td>
                     <td>
