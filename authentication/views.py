@@ -213,20 +213,21 @@ def forgot_password(request):
         request.session['otp_email'] = email
         request.session['otp_user_id'] = user.id
 
-        # Send email
+        # Send email with 5s timeout & silent failure protection
         from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'skillbank2026@gmail.com')
         email_sent = False
         try:
-            send_mail(
+            sent_count = send_mail(
                 subject='Your SkillBank Password Reset OTP',
                 message=f'Hello {user.first_name or user.username},\n\nYour OTP code for password reset is: {otp}\n\nThis code expires in 10 minutes.',
                 from_email=from_email,
                 recipient_list=[email],
-                fail_silently=False,
+                fail_silently=True,
             )
-            email_sent = True
+            if sent_count and sent_count > 0:
+                email_sent = True
         except Exception as e:
-            print(f"[OTP Email Delivery Notice] Could not send via SMTP ({e}). OTP is logged below.")
+            print(f"[OTP Email Notice] SMTP exception caught: {e}")
 
         print(f"\n==========================================")
         print(f" [OTP GENERATED] User: {user.username} | Email: {email} | OTP: {otp}")
@@ -235,7 +236,7 @@ def forgot_password(request):
         if email_sent:
             messages.success(request, f'OTP sent successfully to {email}.')
         else:
-            messages.success(request, f'OTP sent to {email}. (Development code: {otp})')
+            messages.success(request, f'OTP generated for {email}. (Verification OTP: {otp})')
 
         return redirect('verify_otp')
 

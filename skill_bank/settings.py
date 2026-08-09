@@ -250,6 +250,7 @@ EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', _default_email_backend)
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
 EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
 EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() == 'true'
+EMAIL_TIMEOUT = int(os.environ.get('EMAIL_TIMEOUT', 5))  # 5s socket timeout prevents worker SIGKILL
 
 # ---------------------------------------------------------------------------
 # Security (production hardening when DEBUG=False)
