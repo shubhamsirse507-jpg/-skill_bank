@@ -22,7 +22,7 @@ from django.utils import timezone
 from skill_bank.utils import api_error, api_success
 from authentication.models import OTPVerification
 from profiles.models import UserProfile
-from skill_management.models import SkillCategory, Skill
+from skill_management.models import SkillCategory, Skill, SkillCertificate
 from messaging.models import SkillExchange, Conversation, Message
 from bookings.models import Booking
 from ratings.models import ReviewRating
@@ -34,7 +34,7 @@ from .serializers import (
     SkillSerializer, SkillExchangeSerializer, ConversationSerializer,
     MessageSerializer, BookingSerializer, ReviewRatingSerializer,
     NotificationSerializer, PlatformReportSerializer, PlatformNoticeSerializer,
-    AuditLogSerializer
+    AuditLogSerializer, SkillCertificateSerializer
 )
 
 
@@ -265,3 +265,19 @@ class AdminReportViewSet(viewsets.ModelViewSet):
     serializer_class = PlatformReportSerializer
     permission_classes = [IsStaffUser]
     queryset = PlatformReport.objects.all()
+
+
+class SkillCertificateViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint to list, view, and issue skill certificates.
+    Users can view earned or issued certificates.
+    """
+    serializer_class = SkillCertificateSerializer
+
+    def get_queryset(self):
+        user = self.request.user
+        return SkillCertificate.objects.filter(Q(student=user) | Q(teacher=user)).order_by('-issued_at')
+
+    def perform_create(self, serializer):
+        serializer.save(teacher=self.request.user)
+

@@ -112,6 +112,13 @@ def run_tests():
     assert res.status_code == 200, f"Live Session UI failed: {res.status_code}"
     print("✅ 13. Live Session UI (/user/live-session/): PASS (Status 200)")
 
+    # 13b. Certification Module UI
+    res = client.get('/skills/certificates/')
+    assert res.status_code == 200, f"My Certificates failed: {res.status_code}"
+    res = client.get('/skills/issue-certificate/')
+    assert res.status_code == 200, f"Issue Certificate failed: {res.status_code}"
+    print("✅ 13b. Certification Module (/skills/certificates/ & /skills/issue-certificate/): PASS (Status 200)")
+
     # 14. Admin Panel UI (Staff check)
     user.is_staff = True
     user.save()

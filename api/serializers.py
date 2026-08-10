@@ -6,7 +6,7 @@ DRF Serializers for every module in the Skill Exchange Platform API.
 from rest_framework import serializers
 from django.contrib.auth.models import User
 from profiles.models import UserProfile
-from skill_management.models import SkillCategory, Skill
+from skill_management.models import SkillCategory, Skill, SkillCertificate
 from messaging.models import SkillExchange, Conversation, Message
 from bookings.models import Booking
 from ratings.models import ReviewRating
@@ -150,3 +150,17 @@ class AuditLogSerializer(serializers.ModelSerializer):
     class Meta:
         model = AuditLog
         fields = ['id', 'admin', 'action', 'target_table', 'target_id', 'created_at']
+
+
+class SkillCertificateSerializer(serializers.ModelSerializer):
+    student = UserSerializer(read_only=True)
+    teacher = UserSerializer(read_only=True)
+
+    class Meta:
+        model = SkillCertificate
+        fields = [
+            'id', 'certificate_id', 'student', 'teacher', 'skill_title',
+            'grade_performance', 'remarks', 'issued_at'
+        ]
+        read_only_fields = ['certificate_id', 'teacher', 'issued_at']
+

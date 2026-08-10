@@ -22,6 +22,10 @@
         📅 Bookings
     </a>
 
+    <a href="{% url 'my_certificates' %}" {% if request.resolver_match.url_name == 'my_certificates' or request.resolver_match.url_name == 'issue_certificate' or request.resolver_match.url_name == 'certificate_detail' %}class="active"{% endif %}>
+        📜 Certificates
+    </a>
+
     <a href="{% url 'ratings:rating_dashboard' %}" {% if request.resolver_match.url_name == 'rating_dashboard' %}class="active"{% endif %}>
         ⭐ Ratings
     </a>

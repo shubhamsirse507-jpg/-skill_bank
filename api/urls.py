@@ -11,7 +11,7 @@ from .views import (
     RegisterAPIView, LoginAPIView, ProfileMeAPIView,
     SkillCategoryViewSet, SkillViewSet, SkillExchangeViewSet,
     MessageListCreateAPIView, BookingViewSet, ReviewRatingViewSet,
-    NotificationViewSet, AdminReportViewSet
+    NotificationViewSet, AdminReportViewSet, SkillCertificateViewSet
 )
 
 router = SimpleRouter()
@@ -22,6 +22,7 @@ router.register(r'exchanges', SkillExchangeViewSet, basename='exchange')
 router.register(r'bookings', BookingViewSet, basename='booking')
 router.register(r'ratings', ReviewRatingViewSet, basename='rating')
 router.register(r'notifications', NotificationViewSet, basename='notification')
+router.register(r'certificates', SkillCertificateViewSet, basename='certificate')
 router.register(r'admin/reports', AdminReportViewSet, basename='admin-report')
 
 urlpatterns = [

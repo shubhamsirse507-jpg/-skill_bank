@@ -68,6 +68,7 @@
                         <li><hr class="dropdown-divider"></li>
                         <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="bi bi-person me-2"></i>My Profile</a></li>
                         <li><a class="dropdown-item" href="{% url 'booking_list' %}"><i class="bi bi-calendar-check me-2"></i>My Bookings</a></li>
+                        <li><a class="dropdown-item" href="{% url 'my_certificates' %}"><i class="bi bi-award me-2"></i>My Certificates</a></li>
                         <li><a class="dropdown-item" href="{% url 'ratings:rating_dashboard' %}"><i class="bi bi-star me-2"></i>My Ratings</a></li>
                         {% if user.is_staff %}
                         <li><hr class="dropdown-divider"></li>
