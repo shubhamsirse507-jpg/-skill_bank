@@ -4,7 +4,7 @@
 [![Django](https://img.shields.io/badge/Django-4.2+-092E20.svg?style=flat&logo=django&logoColor=white)](https://www.djangoproject.com/)
 [![Django REST Framework](https://img.shields.io/badge/DRF-3.15-red.svg?style=flat&logo=django&logoColor=white)](https://www.django-rest-framework.org/)
 [![JWT Auth](https://img.shields.io/badge/Auth-SimpleJWT-black.svg?style=flat&logo=json-web-tokens&logoColor=white)](https://jwt.io/)
-[![Database](https://img.shields.io/badge/Database-SQLite%20%7C%20PostgreSQL-4169E1.svg?style=flat&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Database](https://img.shields.io/badge/Database-SQLite3-4169E1.svg?style=flat&logo=sqlite&logoColor=white)](https://www.sqlite.org/)
 [![Deployment](https://img.shields.io/badge/Deployment-Render%20%7C%20Railway-46E3B7.svg?style=flat&logo=render&logoColor=white)](https://render.com/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
@@ -60,9 +60,7 @@
 - **API Engine**: Django REST Framework (DRF), `drf-yasg` (Swagger/OpenAPI 2.0)
 - **Authentication**: JWT (`djangorestframework-simplejwt`), Session Authentication
 - **Frontend Architecture**: HTML5, Custom Responsive Vanilla CSS Design System, Django Templates, JavaScript
-- **Database**:
-  - **Development**: SQLite (`db.sqlite3`)
-  - **Production**: PostgreSQL (configured via `dj-database-url` and `psycopg2-binary`)
+- **Database**: SQLite3 (`db.sqlite3`) saved in project root
 - **WSGI & Static Asset Server**: Gunicorn 22.0, WhiteNoise 6.7
 - **Deployment Targets**: Render.com Blueprint (`render.yaml`), Railway.app, PythonAnywhere
 
@@ -144,8 +142,8 @@ DEBUG=True
 ALLOWED_HOSTS=localhost,127.0.0.1
 CORS_ALLOWED_ORIGINS=http://localhost:8000,http://127.0.0.1:8000
 
-# Database Configuration (Optional - defaults to SQLite if omitted)
-# DATABASE_URL=postgres://user:password@localhost:5432/skillbank_db
+# Database Engine (SQLite3 saved in root as db.sqlite3)
+DB_NAME=db.sqlite3
 ```
 
 ### 5. Apply Database Migrations

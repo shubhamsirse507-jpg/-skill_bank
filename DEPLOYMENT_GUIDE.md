@@ -83,3 +83,4 @@ DATABASE_URL=postgres://username:password@ep-host.region.aws.neon.tech/neondb
 ```
 
 *(Note: If `DATABASE_URL` is omitted, the app safely defaults to SQLite `db.sqlite3`.)*
+
