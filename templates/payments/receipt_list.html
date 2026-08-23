@@ -67,6 +67,15 @@
   .empty-state i { font-size: 3.5rem; color: #d1d5db; margin-bottom: 14px; display: block; }
   .empty-state h3 { font-family: 'Outfit', sans-serif; font-size: 1.2rem; color: #374151; margin: 0 0 6px; }
   .empty-state p  { font-size: 0.88rem; color: #9ca3af; margin: 0 0 18px; }
+
+  @media (max-width: 768px) {
+    .receipts-hero { padding: 30px 20px 24px; }
+    .receipts-wrap { margin: 20px auto; padding: 0 16px; }
+    .tabs { width: 100%; flex-direction: column; }
+    .tab-btn { width: 100%; justify-content: center; }
+    .receipt-item { flex-direction: column; align-items: flex-start; }
+    .receipt-amount-box { text-align: left; width: 100%; margin-top: 10px; }
+  }
 </style>
 {% endblock %}
 

@@ -1,206 +1,209 @@
-/* ==========================================
-Tablet (992px and below)
-========================================== */
+/* =======================================================
+  SkillBank User Dashboard Multi-Breakpoint Responsive Rules
+======================================================= */
 
-@media (max-width: 992px) {
-
+/* 1. Desktop Widescreen & Large (>= 1200px) */
+@media (min-width: 1200px) {
     .dashboard-bg {
-        padding: 20px !important;
+        padding: 30px 40px !important;
+        max-width: 1400px;
+        margin: 0 auto;
     }
-
-    .skill-card,
-    .card {
-        margin-bottom: 20px;
+    .hero-section {
+        padding: 60px !important;
     }
-
+    .stat-card-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
 }
 
-
-
-
-@media (max-width: 768px) {
-
-
-    /* Mobile sidebar drawer */
-
-    .sidebar {
-        position: fixed;
-        top: 0;
-        left: -260px;
-        width: 250px;
-        height: 100vh;
-        z-index: 999;
-        transition: 0.3s ease;
+/* 2. Desktop Standard (992px - 1199.98px) */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    .dashboard-bg {
+        padding: 25px 24px !important;
     }
-
-
-    .sidebar.active {
-        left: 0;
+    .hero-section {
+        padding: 40px 30px !important;
     }
+    .hero-title {
+        font-size: 38px !important;
+    }
+    .stat-card-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+    }
+}
 
+/* 3. Tablet Landscape / Laptop Small (768px - 991.98px) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .dashboard-bg {
+        padding: 20px 18px !important;
+    }
+    .hero-section {
+        padding: 30px 24px !important;
+        margin-bottom: 24px !important;
+    }
+    .hero-title {
+        font-size: 32px !important;
+    }
+    .hero-text {
+        font-size: 17px !important;
+    }
+    .hero-image {
+        height: 240px !important;
+    }
+    .stat-card-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+    }
+    .dashboard-card {
+        height: auto !important;
+        min-height: 140px;
+        padding: 18px !important;
+    }
+}
 
-    /* If using horizontal sidebar */
-
+/* 4. Tablet Portrait (576px - 767.98px) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+    .dashboard-bg {
+        padding: 15px 12px !important;
+    }
+    
     .sidebar-horizontal {
-
         flex-direction: row;
-        justify-content: space-around;
-        align-items: center;
-
-        padding: 10px;
-
-        margin: 10px 0;
-
+        justify-content: flex-start;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+        padding: 10px 14px;
+        gap: 6px;
+        margin: 10px 0 20px;
         border-radius: 12px;
-
     }
-
 
     .sidebar-horizontal a {
+        font-size: 0.82rem;
+        padding: 7px 14px;
+        flex-shrink: 0;
+    }
 
-        font-size: 12px;
-        padding: 8px;
+    .hero-section {
+        padding: 24px 18px !important;
         text-align: center;
-
+        border-radius: 20px !important;
     }
 
-
-    .profile-avatar {
-
-        width: 40px;
-        height: 40px;
-
+    .hero-title {
+        font-size: 28px !important;
     }
 
-
-    .dashboard-bg {
-
-        padding: 15px !important;
-
+    .hero-text {
+        font-size: 15px !important;
     }
 
-
-    .welcome-box {
-
-        text-align: center;
-        padding: 15px;
-
+    .hero-image {
+        height: 210px !important;
+        margin-top: 16px;
     }
 
-
-    .stat-card {
-
-        padding: 20px !important;
-        margin-bottom: 12px;
-
+    .stat-card-grid, .row {
+        display: grid !important;
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+        margin: 0 !important;
+        width: 100% !important;
     }
 
-
-    .stat-card h2 {
-
-        font-size: 22px;
-
+    .stat-card, .dashboard-card {
+        width: 100% !important;
+        margin-bottom: 0 !important;
     }
-
-
-    .navbar-brand {
-
-        font-size: 18px !important;
-
-    }
-
-
-    .search-box {
-
-        width: 100%;
-
-    }
-
 }
 
-
-
-
-@media (max-width: 576px) {
-
-
+/* 5. Mobile Standard (400px - 575.98px) */
+@media (min-width: 400px) and (max-width: 575.98px) {
     .dashboard-bg {
-
-        padding: 15px !important;
-
+        padding: 12px 10px !important;
     }
 
+    .sidebar-horizontal {
+        padding: 8px 10px;
+        gap: 4px;
+    }
 
-    h2 {
+    .sidebar-horizontal a {
+        font-size: 0.78rem;
+        padding: 6px 10px;
+    }
 
-        font-size: 24px;
+    .hero-section {
+        padding: 20px 14px !important;
         text-align: center;
-
     }
 
+    .hero-title {
+        font-size: 24px !important;
+    }
+
+    .hero-image {
+        height: 180px !important;
+    }
+
+    .stat-card-grid, .row {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 10px !important;
+        margin: 0 !important;
+        width: 100% !important;
+    }
+
+    .hero-section .btn {
+        width: 100%;
+        margin-bottom: 8px;
+    }
+}
+
+/* 6. Extra Small Mobile (< 400px) */
+@media (max-width: 399.98px) {
+    .dashboard-bg {
+        padding: 8px 6px !important;
+    }
+
+    h2, .h2 {
+        font-size: 20px !important;
+    }
 
     .card-body {
-
-        padding: 18px;
-
+        padding: 12px !important;
     }
 
-
-    .navbar-brand {
-
-        font-size: 20px !important;
-
+    .hero-section {
+        padding: 16px 10px !important;
     }
 
-
-    .navbar-brand img {
-
-        width: 38px;
-        height: 38px;
-
+    .hero-title {
+        font-size: 22px !important;
     }
 
-
-}
-
-/* ==========================================
-Mobile Stats Cards (768px and below)
-========================================== */
-
-@media(max-width:768px){
-
-    .stats-container,
-    .row{
-
-        width:100%;
-        margin:0;
-
+    .hero-text {
+        font-size: 13px !important;
     }
 
-
-    .stat-card{
-
-        width:100% !important;
-
-        margin-bottom:15px;
-
-        border-radius:15px;
-
+    .hero-image {
+        height: 150px !important;
     }
 
-
-    .stat-card .card-body{
-
-        padding:20px;
-
+    .stat-card h2, .dashboard-card h2 {
+        font-size: 22px !important;
     }
 
-
-    .stat-card h2{
-
-        font-size:24px;
-
+    .hero-section .btn {
+        width: 100%;
+        font-size: 0.82rem;
+        padding: 8px 12px;
     }
-
-
 }

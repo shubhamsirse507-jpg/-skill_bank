@@ -144,6 +144,56 @@
     color: #6b7280;
     border: 1px dashed #cbd5e1;
 }
+
+@media (min-width: 1200px) {
+    .cards-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 24px;
+    }
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    .cards-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 20px;
+    }
+}
+
+@media (min-width: 576px) and (max-width: 991.98px) {
+    .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+        margin: 20px 18px;
+    }
+    .search-filter-box {
+        margin: 20px 18px;
+    }
+}
+
+@media (max-width: 575.98px) {
+    .search-filter-box {
+        flex-direction: column;
+        padding: 15px;
+        margin: 15px;
+    }
+    .search-filter-box input,
+    .search-filter-box select,
+    .search-filter-box button {
+        width: 100%;
+        min-width: 0;
+    }
+    .cards-grid {
+        margin: 20px 15px;
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+}
+
+@media (max-width: 399.98px) {
+    .search-hero h1 { font-size: 24px; }
+    .skill-card-item { padding: 14px; }
+    .search-filter-box { padding: 12px; margin: 10px; }
+}
 </style>
 {% endblock %}
 

@@ -276,7 +276,7 @@ class SkillCertificateViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        return SkillCertificate.objects.filter(Q(student=user) | Q(teacher=user)).order_by('-issued_at')
+        return SkillCertificate.objects.filter(Q(student=user) | Q(teacher=user)).order_by('-issue_date')
 
     def perform_create(self, serializer):
         serializer.save(teacher=self.request.user)

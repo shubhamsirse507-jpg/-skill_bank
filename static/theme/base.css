@@ -1,6 +1,12 @@
 /* 
-  Skill Exchange Platform — Base Unified Design System
-  Shared color palette, CSS variables, button primitives, card styles, and theme overrides.
+  Skill Exchange Platform — Base Unified Design System & Responsive Framework
+  Precision Responsive Breakpoints:
+  - Extra Small Mobile (< 400px)
+  - Small Mobile (400px - 575.98px)
+  - Tablet Portrait (576px - 767.98px)
+  - Tablet Landscape / Small Laptop (768px - 991.98px)
+  - Desktop Standard (992px - 1199.98px)
+  - Desktop Widescreen (>= 1200px)
 */
 
 :root {
@@ -18,7 +24,7 @@
   --teal-primary: #0e7d73;
   --teal-light: #6ddfd5;
 
-  /* Accent Purple (for identity/avatars) */
+  /* Accent Colors */
   --accent-purple: #4f46e5;
   --accent-purple-dark: #9333ea;
   --accent-purple-light: #c084fc;
@@ -49,19 +55,50 @@
   --radius-full: 9999px;
 }
 
-/* Global resets */
+/* Global resets & overflow prevention */
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
 body.page-bg {
   background: var(--bg-gradient) !important;
   min-height: 100vh;
   color: var(--text-dark);
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  display: flex;
+  flex-direction: column;
 }
 
-/* Shared Button Utilities */
-.btn-primary {
-  background-color: var(--teal-primary) !important;
-  color: #ffffff !important;
-  border: none !important;
+main {
+  flex: 1 0 auto;
+}
+
+/* Container constraints for Desktop Widescreen */
+.container, .container-fluid, .main-content-container {
+  box-sizing: border-box;
+}
+
+@media (min-width: 1200px) {
+  .container-xl-centered {
+    max-width: 1240px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+/* Responsive Image & Media Defaults */
+img, iframe, video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Shared Button Utilities with Touch Target Friendliness */
+.btn-primary, .btn-ghost, .btn-purple {
+  min-height: 44px;
   padding: 10px 20px;
   border-radius: var(--radius-sm);
   font-weight: 600;
@@ -69,8 +106,16 @@ body.page-bg {
   cursor: pointer;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 8px;
   text-decoration: none;
+  box-sizing: border-box;
+}
+
+.btn-primary {
+  background-color: var(--teal-primary) !important;
+  color: #ffffff !important;
+  border: none !important;
 }
 
 .btn-primary:hover {
@@ -83,12 +128,6 @@ body.page-bg {
   background-color: transparent !important;
   color: var(--teal-primary) !important;
   border: 1.5px solid var(--teal-primary) !important;
-  padding: 10px 20px;
-  border-radius: var(--radius-sm);
-  font-weight: 600;
-  transition: all 0.2s ease;
-  cursor: pointer;
-  text-decoration: none;
 }
 
 .btn-ghost:hover {
@@ -99,10 +138,6 @@ body.page-bg {
   background: linear-gradient(135deg, var(--accent-purple), var(--accent-purple-dark)) !important;
   color: #ffffff !important;
   border: none !important;
-  padding: 10px 20px;
-  border-radius: var(--radius-sm);
-  font-weight: 600;
-  cursor: pointer;
 }
 
 /* Card primitives */
@@ -128,9 +163,103 @@ body.page-bg {
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  display: inline-block;
+  white-space: nowrap;
 }
 
 .badge-status.pending { background: #fef3c7; color: #92400e; }
 .badge-status.accepted { background: #d1fae5; color: #065f46; }
 .badge-status.completed { background: #dbeafe; color: #1e40af; }
 .badge-status.cancelled { background: #fee2e2; color: #991b1b; }
+
+/* Table Responsiveness Wrapper */
+.table-responsive-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-bottom: 1rem;
+}
+
+/* =======================================================
+  ACCURATE MULTI-DEVICE RESPONSIVE BREAKPOINTS
+======================================================= */
+
+/* 1. Desktop Widescreen (1200px+) */
+@media (min-width: 1200px) {
+  .grid-auto-responsive {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+}
+
+/* 2. Desktop Standard (992px - 1199.98px) */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  .grid-auto-responsive {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+}
+
+/* 3. Tablet Landscape / Laptop Small (768px - 991.98px) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .grid-auto-responsive {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .hide-tablet {
+    display: none !important;
+  }
+}
+
+/* 4. Tablet Portrait (576px - 767.98px) */
+@media (min-width: 576px) and (max-width: 767.98px) {
+  .grid-auto-responsive {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+  .card-theme {
+    padding: 16px !important;
+  }
+}
+
+/* 5. Mobile Standard & Small (< 575.98px) */
+@media (max-width: 575.98px) {
+  .grid-auto-responsive {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .btn-primary, .btn-ghost, .btn-purple {
+    width: 100% !important;
+    padding: 10px 14px !important;
+    font-size: 0.9rem !important;
+  }
+  .hide-mobile {
+    display: none !important;
+  }
+  .show-mobile {
+    display: block !important;
+  }
+  .flex-mobile-column {
+    flex-direction: column !important;
+  }
+  .w-mobile-100 {
+    width: 100% !important;
+  }
+  .text-mobile-center {
+    text-align: center !important;
+  }
+}
+
+/* 6. Extra Small Mobile (< 400px) */
+@media (max-width: 399.98px) {
+  h1, .h1 { font-size: 1.5rem !important; }
+  h2, .h2 { font-size: 1.25rem !important; }
+  h3, .h3 { font-size: 1.1rem !important; }
+  .card-theme { padding: 12px !important; }
+  .badge-status { font-size: 10px; padding: 3px 7px; }
+}

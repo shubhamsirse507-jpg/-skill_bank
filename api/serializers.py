@@ -160,7 +160,7 @@ class SkillCertificateSerializer(serializers.ModelSerializer):
         model = SkillCertificate
         fields = [
             'id', 'certificate_id', 'student', 'teacher', 'skill_title',
-            'grade_performance', 'remarks', 'issued_at'
+            'grade_performance', 'remarks', 'issue_date'
         ]
-        read_only_fields = ['certificate_id', 'teacher', 'issued_at']
+        read_only_fields = ['certificate_id', 'teacher', 'issue_date']
 

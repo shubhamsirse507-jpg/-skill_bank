@@ -15,6 +15,6 @@ class SkillAdmin(admin.ModelAdmin):
 
 @admin.register(SkillCertificate)
 class SkillCertificateAdmin(admin.ModelAdmin):
-    list_display = ('certificate_id', 'skill_title', 'student', 'teacher', 'grade_performance', 'issued_at')
-    list_filter = ('grade_performance', 'issued_at')
+    list_display = ('certificate_id', 'skill_title', 'student', 'teacher', 'grade_performance', 'issue_date')
+    list_filter = ('grade_performance', 'issue_date')
     search_fields = ('certificate_id', 'skill_title', 'student__username', 'teacher__username')

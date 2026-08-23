@@ -698,3 +698,50 @@ h1, h2, h3, h4, h5, h6, .brand-font {
     background: rgba(15, 23, 42, 0.2);
     border-radius: 4px;
 }
+
+/* ==========================================
+  Responsive Media Queries for Mobile/Tablet
+========================================== */
+@media (max-width: 992px) {
+    .messaging-grid {
+        grid-template-columns: 280px 1fr;
+        gap: 1rem;
+    }
+    .rating-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-container {
+        padding: 0 0.75rem;
+        margin: 1rem auto;
+    }
+    .messaging-grid {
+        grid-template-columns: 1fr;
+        height: auto;
+        min-height: calc(100vh - 120px);
+    }
+    .conversations-sidebar {
+        max-height: 320px;
+    }
+    .chat-window {
+        min-height: 420px;
+    }
+    .message-wrapper {
+        max-width: 88%;
+    }
+}
+
+@media (max-width: 576px) {
+    .navbar {
+        padding: 0 1rem;
+        height: 60px;
+    }
+    .chat-header, .chat-body, .chat-footer {
+        padding: 0.85rem;
+    }
+    .message-wrapper {
+        max-width: 95%;
+    }
+}

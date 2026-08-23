@@ -719,21 +719,68 @@
     transform: translateY(0);
   }
 
-  /* ─── MOBILE ─── */
-  @media (max-width: 900px) {
-    nav { padding: 0 20px; }
+  /* ─── MULTI-DEVICE RESPONSIVE BREAKPOINTS ─── */
+  @media (min-width: 1200px) {
+    .container { max-width: 1200px; }
+    .categories-grid { grid-template-columns: repeat(4, 1fr); }
+    .how-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+
+  @media (min-width: 992px) and (max-width: 1199.98px) {
+    nav { padding: 0 30px; }
+    .categories-grid { grid-template-columns: repeat(3, 1fr); }
+    .how-grid { grid-template-columns: repeat(3, 1fr); }
+  }
+
+  @media (min-width: 768px) and (max-width: 991.98px) {
+    nav { padding: 0 24px; }
+    .nav-links { gap: 4px; }
+    .nav-links a { padding: 6px 10px; font-size: 0.82rem; }
+    .features-grid { grid-template-columns: 1fr; gap: 36px; }
+    .categories-grid { grid-template-columns: repeat(2, 1fr); }
+    .how-grid { grid-template-columns: repeat(2, 1fr); }
+    .cta-box { padding: 56px 36px; }
+  }
+
+  @media (min-width: 576px) and (max-width: 767.98px) {
+    nav { padding: 0 18px; }
     .nav-links { display: none; }
     .features-grid { grid-template-columns: 1fr; }
+    .categories-grid { grid-template-columns: repeat(2, 1fr); }
+    .how-grid { grid-template-columns: repeat(2, 1fr); }
     .cta-box { padding: 48px 24px; }
-    .how-grid { grid-template-columns: 1fr 1fr; }
+    .hero { padding: 100px 20px 60px; }
   }
-  @media (max-width: 600px) {
-    .hero-stats { gap: 24px; }
+
+  @media (max-width: 575.98px) {
+    nav { padding: 0 16px; height: 60px; }
+    .nav-links { display: none; }
+    .nav-logo-text { font-size: 1.1rem; }
+    .hero { padding: 90px 16px 50px; min-height: auto; }
+    .hero-title { font-size: 2.5rem; letter-spacing: -1px; }
+    .hero-sub { font-size: 0.95rem; margin-bottom: 28px; }
+    .hero-actions { flex-direction: column; width: 100%; gap: 10px; }
+    .btn-hero-primary, .btn-hero-ghost { width: 100%; justify-content: center; padding: 13px 24px; }
+    .hero-stats { gap: 20px; flex-direction: column; margin-top: 36px; padding-top: 24px; }
     .stat-divider { display: none; }
+    .categories-grid { grid-template-columns: 1fr; }
     .how-grid { grid-template-columns: 1fr; }
-    .footer-inner { flex-direction: column; }
+    .features-grid { grid-template-columns: 1fr; }
+    .cta-box { padding: 36px 18px; border-radius: 20px; }
+    .cta-title { font-size: 1.8rem; }
+    .btn-cta-white, .btn-cta-outline { width: 100%; justify-content: center; }
+    .footer-inner { flex-direction: column; gap: 24px; text-align: center; }
+    .footer-logo { justify-content: center; }
+    .footer-bottom { flex-direction: column; text-align: center; gap: 8px; }
     .skye-widget-container { bottom: 16px; right: 16px; }
-    .skye-widget { right: -8px; width: calc(100vw - 32px); height: 480px; }
+    .skye-widget { right: -8px; width: calc(100vw - 32px); height: 460px; }
+  }
+
+  @media (max-width: 399.98px) {
+    .hero-title { font-size: 2rem; }
+    .category-card { padding: 20px 16px; }
+    .how-card { padding: 24px 18px; }
+    .visual-card { padding: 20px 16px; }
   }
 
   /* ─── SKYE FLOATING CHATBOT WIDGET STYLES ─── */

@@ -19,13 +19,13 @@
             background: white !important;
             box-shadow: 0 2px 15px rgba(14, 125, 115, 0.08);
             border-bottom: 1px solid rgba(0,0,0,0.06);
-            padding: 12px 24px;
+            padding: 10px 20px;
             position: sticky;
             top: 0;
             z-index: 1000;
         }
         .base-navbar .navbar-brand {
-            font-size: 1.5rem;
+            font-size: 1.4rem;
             font-weight: 900;
             font-family: 'Outfit', sans-serif;
             color: #0e7d73 !important;
@@ -69,6 +69,7 @@
             text-decoration: none;
             display: inline-flex;
             align-items: center;
+            min-height: 40px;
         }
         .base-navbar .nav-icon-btn:hover {
             background: #f0faf9;
@@ -79,11 +80,12 @@
             color: white !important;
             border: none;
             border-radius: 10px;
-            padding: 7px 16px;
+            padding: 7px 14px;
             font-size: 0.85rem;
             font-weight: 600;
             text-decoration: none;
             transition: background 0.2s, transform 0.15s;
+            white-space: nowrap;
         }
         .base-navbar .nav-logout-btn:hover {
             background: #0c6b64;
@@ -99,6 +101,7 @@
             font-weight: 700;
             text-decoration: none;
             transition: background 0.2s, transform 0.15s;
+            white-space: nowrap;
         }
         .base-navbar .nav-login-btn:hover {
             background: #0c6b64;
@@ -107,6 +110,7 @@
         .base-navbar .navbar-toggler {
             border: none;
             color: #374151;
+            padding: 4px 8px;
         }
         .base-navbar .navbar-toggler:focus {
             box-shadow: none;
@@ -117,6 +121,31 @@
             background: #ef4444; display: inline-block;
             animation: navpulse 1.5s infinite;
         }
+        
+        /* Mobile Navbar Responsive Adjustments */
+        @media (max-width: 991.98px) {
+            .base-navbar {
+                padding: 10px 14px;
+            }
+            .base-navbar .nav-search {
+                margin: 12px 0 !important;
+                width: 100%;
+            }
+            .base-navbar .nav-actions-group {
+                width: 100%;
+                justify-content: space-between;
+                padding-top: 10px;
+                border-top: 1px solid #f1f5f9;
+            }
+            .footer-content-wrapper {
+                flex-direction: column !important;
+                text-align: center !important;
+            }
+            .footer-links-group {
+                justify-content: center !important;
+                flex-wrap: wrap !important;
+            }
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
@@ -124,7 +153,7 @@
 
     <!-- Global Navigation Bar — matches Dashboard navbar -->
     <nav class="navbar base-navbar navbar-expand-lg">
-        <div class="container-fluid">
+        <div class="container-fluid px-2 px-md-3">
 
             <!-- Logo -->
             <a class="navbar-brand" href="/">
@@ -132,7 +161,7 @@
             </a>
 
             <!-- Hamburger for mobile -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#baseNavCollapse" aria-controls="baseNavCollapse" aria-expanded="false">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#baseNavCollapse" aria-controls="baseNavCollapse" aria-expanded="false" aria-label="Toggle navigation">
                 <i class="bi bi-list fs-2"></i>
             </button>
 
@@ -140,12 +169,12 @@
             <div class="collapse navbar-collapse" id="baseNavCollapse">
 
                 <!-- Search bar (center) -->
-                <form class="nav-search d-flex flex-grow-1 mx-4 my-2 my-lg-0" action="/browse/" method="GET">
+                <form class="nav-search d-flex flex-grow-1 mx-lg-4 my-2 my-lg-0" action="/browse/" method="GET">
                     <input class="form-control w-100" type="search" name="q" placeholder="🔍 Search skills..." value="{{ request.GET.q }}">
                 </form>
 
                 <!-- Right icons -->
-                <div class="d-flex align-items-center gap-2 ms-auto flex-wrap">
+                <div class="d-flex align-items-center gap-2 ms-auto flex-wrap nav-actions-group">
 
                     <!-- Live sessions -->
                     <a href="/live/" class="nav-icon-btn" title="Live Sessions">
@@ -199,7 +228,7 @@
 
     <!-- Messages Banner -->
     {% if messages %}
-        <div style="max-width: 1000px; margin: 15px auto; padding: 0 20px;">
+        <div style="max-width: 1000px; margin: 15px auto; padding: 0 15px;">
             {% for message in messages %}
                 <div style="padding: 12px 20px; border-radius: 10px; margin-bottom: 10px; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; justify-content: space-between;
                     {% if message.tags == 'error' %}background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5;
@@ -218,20 +247,20 @@
     </main>
 
     <!-- Footer -->
-    <footer style="background: #1E3A8A; color: white; text-align: center; padding: 35px 20px; margin-top: 60px;">
-        <div style="max-width: 1000px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
-            <div style="text-align: left;">
-                <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.3rem; font-weight: 800; color: #ffffff;">SkillBank</h3>
-                <p style="font-size: 0.85rem; color: #93c5fd; margin-top: 4px;">Trade skills, not money. Live 1-on-1 sessions, group batches, and wallet payments.</p>
+    <footer style="background: #1E3A8A; color: white; padding: 35px 20px; margin-top: 60px;">
+        <div class="footer-content-wrapper" style="max-width: 1000px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px;">
+            <div style="text-align: left;" class="text-mobile-center">
+                <h3 style="font-family: 'Outfit', sans-serif; font-size: 1.3rem; font-weight: 800; color: #ffffff; margin-bottom: 4px;">SkillBank</h3>
+                <p style="font-size: 0.85rem; color: #93c5fd; margin: 0;">Trade skills, not money. Live 1-on-1 sessions, group batches, and wallet payments.</p>
             </div>
-            <div style="display: flex; gap: 20px; font-size: 0.85rem;">
+            <div class="footer-links-group" style="display: flex; gap: 20px; font-size: 0.85rem;">
                 <a href="/browse/" style="color: #e0e7ff; text-decoration: none;">Browse Skills</a>
                 <a href="/batches/" style="color: #e0e7ff; text-decoration: none;">Batches</a>
                 <a href="/live/" style="color: #e0e7ff; text-decoration: none;">Live Sessions</a>
                 <a href="/wallet/" style="color: #e0e7ff; text-decoration: none;">Wallet</a>
             </div>
         </div>
-        <div style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 25px; padding-top: 18px; font-size: 0.8rem; color: #93c5fd;">
+        <div style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 25px; padding-top: 18px; font-size: 0.8rem; color: #93c5fd; text-align: center;">
             © 2026 SkillBank Platform. All rights reserved.
         </div>
     </footer>
