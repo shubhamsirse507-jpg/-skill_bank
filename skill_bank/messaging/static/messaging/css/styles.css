@@ -700,42 +700,60 @@ h1, h2, h3, h4, h5, h6, .brand-font {
 }
 
 /* ==========================================
-  Responsive Media Queries for Mobile/Tablet
+  Comprehensive Multi-Breakpoint Responsive
+  Mobile, Tablet, Desktop for Messaging UI
 ========================================== */
-@media (max-width: 992px) {
+
+/* Tablet Landscape (768px - 991.98px) */
+@media (min-width: 768px) and (max-width: 991.98px) {
     .messaging-grid {
-        grid-template-columns: 280px 1fr;
-        gap: 1rem;
+        grid-template-columns: 240px 1fr;
+        gap: 0.85rem;
     }
     .rating-grid {
         grid-template-columns: 1fr;
     }
+    .main-container {
+        padding: 0 1rem;
+        margin: 1.25rem auto;
+    }
 }
 
-@media (max-width: 768px) {
+/* Tablet Portrait (576px - 767.98px) */
+@media (max-width: 767.98px) {
     .main-container {
         padding: 0 0.75rem;
         margin: 1rem auto;
     }
+    /* Single-column: sidebar stacks above chat */
     .messaging-grid {
         grid-template-columns: 1fr;
         height: auto;
         min-height: calc(100vh - 120px);
+        gap: 0.75rem;
     }
     .conversations-sidebar {
-        max-height: 320px;
+        max-height: 300px;
+        overflow-y: auto;
     }
     .chat-window {
-        min-height: 420px;
+        min-height: 400px;
     }
     .message-wrapper {
-        max-width: 88%;
+        max-width: 90%;
+    }
+    .chat-body {
+        padding: 1rem;
+    }
+    .composer-input {
+        min-height: 44px; /* touch target */
     }
 }
 
-@media (max-width: 576px) {
+/* Mobile Standard (400px - 575.98px) */
+@media (max-width: 575.98px) {
     .navbar {
-        padding: 0 1rem;
+        padding: 0 0.85rem;
         height: 60px;
     }
     .chat-header, .chat-body, .chat-footer {
@@ -743,5 +761,43 @@ h1, h2, h3, h4, h5, h6, .brand-font {
     }
     .message-wrapper {
         max-width: 95%;
+    }
+    .conversations-sidebar {
+        max-height: 260px;
+    }
+    .chat-window {
+        min-height: 350px;
+    }
+    /* Larger tap targets for message actions */
+    .msg-action-btn {
+        min-width: 40px;
+        min-height: 40px;
+    }
+    .thread-item {
+        padding: 12px 10px;
+    }
+}
+
+/* Extra Small Mobile (< 400px) */
+@media (max-width: 399.98px) {
+    .main-container {
+        padding: 0 0.5rem;
+        margin: 0.5rem auto;
+    }
+    .chat-header, .chat-body, .chat-footer {
+        padding: 0.65rem 0.75rem;
+    }
+    .message-wrapper {
+        max-width: 98%;
+    }
+    .conversations-sidebar {
+        max-height: 220px;
+    }
+    .chat-window {
+        min-height: 300px;
+    }
+    .navbar {
+        padding: 0 0.65rem;
+        height: 56px;
     }
 }

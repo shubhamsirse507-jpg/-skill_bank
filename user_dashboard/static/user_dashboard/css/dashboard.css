@@ -135,22 +135,147 @@ body {
 }
 
 
-@media(max-width:768px){
+/* ===================================================
+   MULTI-DEVICE RESPONSIVE — Dashboard
+=================================================== */
 
+/* Desktop Standard (992px - 1199.98px) */
+@media (min-width: 992px) and (max-width: 1199.98px) {
+    .hero-section {
+        padding: 40px 30px;
+    }
+    .hero-title {
+        font-size: 38px;
+    }
+}
+
+/* Tablet Landscape (768px - 991.98px) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+    .hero-section {
+        padding: 30px 24px;
+        margin-bottom: 24px !important;
+    }
+    .hero-title {
+        font-size: 32px;
+    }
+    .hero-text {
+        font-size: 17px;
+    }
+    .hero-image {
+        height: 240px;
+    }
+    .stats-container, .row {
+        width: 100%;
+        margin: 0;
+    }
+    .stat-card {
+        border-radius: 15px;
+        margin-bottom: 15px;
+    }
+}
+
+/* Tablet Portrait & Mobile (< 768px) */
+@media (max-width: 767.98px) {
     .stats-container,
-    .row{
-        width:100%;
-        margin:0;
+    .row {
+        width: 100%;
+        margin: 0;
     }
-
-    .stat-card{
-        width:100%!important;
-        border-radius:15px;
-        margin-bottom:15px;
+    .stat-card {
+        width: 100% !important;
+        border-radius: 15px;
+        margin-bottom: 15px;
     }
+    .stat-card .card-body {
+        padding: 20px;
+    }
+    /* Stack hero section vertically */
+    .hero-section {
+        flex-direction: column !important;
+        padding: 24px 18px;
+        text-align: center;
+        border-radius: 20px !important;
+    }
+    .hero-title {
+        font-size: 26px;
+    }
+    .hero-text {
+        font-size: 15px;
+    }
+    .hero-image {
+        height: 200px;
+        margin-top: 16px;
+    }
+    /* Quick action buttons wrap on mobile */
+    .btn-success, .btn-outline-success {
+        width: 100% !important;
+        margin-bottom: 10px;
+    }
+    /* Sidebar horizontal overflow scroll */
+    .sidebar-horizontal {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
+        flex-wrap: nowrap;
+        padding: 10px 14px;
+        gap: 5px;
+    }
+    .sidebar-horizontal a {
+        flex-shrink: 0;
+        font-size: 0.8rem;
+        padding: 7px 12px;
+    }
+    /* Dashboard card height auto on mobile */
+    .dashboard-card {
+        height: auto !important;
+        min-height: 100px;
+        padding: 18px !important;
+    }
+    .dashboard-card h2 {
+        font-size: 26px;
+    }
+    .dashboard-card h5 {
+        font-size: 15px;
+    }
+}
 
-    .stat-card .card-body{
-        padding:20px;
+/* Mobile Standard (400px - 575.98px) */
+@media (min-width: 400px) and (max-width: 575.98px) {
+    .hero-title {
+        font-size: 22px;
+    }
+    .hero-image {
+        height: 170px;
+    }
+    .request-btn {
+        font-size: 15px;
+        padding: 12px 16px;
+    }
+}
+
+/* Extra Small Mobile (< 400px) */
+@media (max-width: 399.98px) {
+    .sidebar-horizontal a {
+        font-size: 0.75rem;
+        padding: 6px 10px;
+    }
+    .hero-title {
+        font-size: 20px;
+    }
+    .hero-image {
+        height: 140px;
+    }
+    .dashboard-card h2 {
+        font-size: 22px !important;
+    }
+    .hero-section .btn {
+        width: 100%;
+        font-size: 0.82rem;
+        padding: 8px 12px;
+    }
+    .request-btn {
+        font-size: 14px;
+        padding: 11px 14px;
     }
 }
 

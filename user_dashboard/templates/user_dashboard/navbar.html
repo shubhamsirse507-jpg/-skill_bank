@@ -1,5 +1,42 @@
 {% load static %}
 
+<style>
+/* Dashboard navbar logo — permanent fix for all devices */
+.db-navbar-brand {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    text-decoration: none !important;
+    font-family: 'Outfit', -apple-system, sans-serif !important;
+    font-size: 1.35rem !important;
+    font-weight: 900 !important;
+    color: #0e7d73 !important;
+}
+.db-brand-icon {
+    background: #0e7d73 !important;
+    color: #ffffff !important;
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    border-radius: 9px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 16px !important;
+    font-weight: 800 !important;
+    line-height: 1 !important;
+    flex-shrink: 0 !important;
+}
+@media (max-width: 575.98px) {
+    .db-navbar-brand { font-size: 1.1rem !important; }
+    .db-brand-icon { width: 28px !important; height: 28px !important; min-width: 28px !important; font-size: 13px !important; border-radius: 7px !important; }
+}
+@media (max-width: 399.98px) {
+    .db-navbar-brand { font-size: 0.95rem !important; }
+    .db-brand-icon { width: 26px !important; height: 26px !important; min-width: 26px !important; border-radius: 6px !important; }
+}
+</style>
+
 <nav class="navbar bg-white shadow-sm py-3">
     <div class="container-fluid">
 
@@ -19,10 +56,10 @@
 
     </button>
 
-    <!-- Logo -->
-    <a class="navbar-brand d-flex align-items-center fw-bold text-success fs-3"
-       href="{% url 'home' %}">
-        SkillBank
+    <!-- Logo — permanently visible on all devices -->
+    <a class="db-navbar-brand" href="{% url 'home' %}">
+        <span class="db-brand-icon" aria-hidden="true">S</span>
+        <span>SkillBank</span>
     </a>
 
 </div>

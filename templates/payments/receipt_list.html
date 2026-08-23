@@ -68,13 +68,30 @@
   .empty-state h3 { font-family: 'Outfit', sans-serif; font-size: 1.2rem; color: #374151; margin: 0 0 6px; }
   .empty-state p  { font-size: 0.88rem; color: #9ca3af; margin: 0 0 18px; }
 
-  @media (max-width: 768px) {
-    .receipts-hero { padding: 30px 20px 24px; }
-    .receipts-wrap { margin: 20px auto; padding: 0 16px; }
+  @media (min-width: 576px) and (max-width: 767.98px) {
+    .receipts-hero { padding: 36px 28px 28px; }
+    .receipts-wrap { margin: 24px auto; padding: 0 20px; }
+    .tabs { width: 100%; }
+  }
+
+  @media (max-width: 575.98px) {
+    .receipts-hero { padding: 26px 16px 20px; }
+    .receipts-hero h1 { font-size: 1.5rem; }
+    .receipts-wrap { margin: 16px auto; padding: 0 12px; }
     .tabs { width: 100%; flex-direction: column; }
     .tab-btn { width: 100%; justify-content: center; }
-    .receipt-item { flex-direction: column; align-items: flex-start; }
+    .receipt-item { flex-direction: column; align-items: flex-start; padding: 14px 16px; }
     .receipt-amount-box { text-align: left; width: 100%; margin-top: 10px; }
+    .receipt-amount { font-size: 1.15rem; }
+    .btn-view-receipt { width: 100%; justify-content: center; }
+  }
+
+  @media (max-width: 399.98px) {
+    .receipts-hero h1 { font-size: 1.25rem; }
+    .receipts-hero p { font-size: 0.82rem; }
+    .receipt-info h3 { font-size: 0.95rem; }
+    .receipt-meta { font-size: 0.76rem; gap: 8px; }
+    .receipt-item { padding: 12px; }
   }
 </style>
 {% endblock %}

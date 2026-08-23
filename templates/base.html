@@ -32,18 +32,23 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            text-decoration: none;
         }
+        /* Permanent logo fix: explicit dimensions & display guarantee visibility on all devices */
         .base-navbar .brand-icon {
-            background: #0e7d73;
-            color: white;
-            width: 34px;
-            height: 34px;
-            border-radius: 9px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            font-weight: 800;
+            background: #0e7d73 !important;
+            color: #ffffff !important;
+            width: 34px !important;
+            height: 34px !important;
+            min-width: 34px !important;
+            border-radius: 9px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 16px !important;
+            font-weight: 800 !important;
+            line-height: 1 !important;
+            flex-shrink: 0 !important;
         }
         .base-navbar .nav-search .form-control {
             border-radius: 50px;
@@ -125,17 +130,21 @@
         /* Mobile Navbar Responsive Adjustments */
         @media (max-width: 991.98px) {
             .base-navbar {
-                padding: 10px 14px;
+                padding: 8px 12px;
+            }
+            .base-navbar .navbar-brand {
+                font-size: 1.15rem;
             }
             .base-navbar .nav-search {
-                margin: 12px 0 !important;
+                margin: 10px 0 !important;
                 width: 100%;
             }
             .base-navbar .nav-actions-group {
                 width: 100%;
-                justify-content: space-between;
-                padding-top: 10px;
+                justify-content: space-around;
+                padding-top: 8px;
                 border-top: 1px solid #f1f5f9;
+                flex-wrap: nowrap;
             }
             .footer-content-wrapper {
                 flex-direction: column !important;
@@ -144,6 +153,22 @@
             .footer-links-group {
                 justify-content: center !important;
                 flex-wrap: wrap !important;
+            }
+            /* Hide redundant text logout on mobile - keep icon dropdown */
+            .nav-logout-btn {
+                display: none !important;
+            }
+        }
+        @media (max-width: 399.98px) {
+            .base-navbar .brand-icon {
+                width: 28px !important;
+                height: 28px !important;
+                min-width: 28px !important;
+                font-size: 13px !important;
+                border-radius: 7px !important;
+            }
+            .base-navbar .navbar-brand {
+                font-size: 1rem;
             }
         }
     </style>
@@ -155,9 +180,10 @@
     <nav class="navbar base-navbar navbar-expand-lg">
         <div class="container-fluid px-2 px-md-3">
 
-            <!-- Logo -->
+            <!-- Logo — permanently visible on all devices -->
             <a class="navbar-brand" href="/">
-                <span class="brand-icon">S</span> SkillBank
+                <span class="brand-icon" aria-hidden="true">S</span>
+                <span class="brand-name">SkillBank</span>
             </a>
 
             <!-- Hamburger for mobile -->
