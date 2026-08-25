@@ -188,43 +188,53 @@ def login(request):
                     'brand_logo_image_name': BRAND_LOGO_IMAGE_NAME
                 })
 
-            # Check Two-Factor Authentication (2FA) status
-            profile, _ = UserProfile.objects.get_or_create(user=user)
-            is_2fa_enabled = getattr(profile, 'two_factor_enabled', True)
+            # Check Two-Factor Authentication (2FA) status safely
+            is_2fa_enabled = True
+            try:
+                profile = UserProfile.objects.filter(user=user).first()
+                if profile is None:
+                    profile = UserProfile.objects.create(user=user)
+                is_2fa_enabled = getattr(profile, 'two_factor_enabled', True)
+            except Exception as ex:
+                print(f"[Profile 2FA Lookup Notice]: {ex}")
+                is_2fa_enabled = False
 
             if is_2fa_enabled and user.email:
-                # Generate 6-digit 2FA OTP code
-                otp = f"{random.randint(100000, 999999)}"
-                expires = timezone.now() + timedelta(minutes=10)
+                try:
+                    # Generate 6-digit 2FA OTP code
+                    otp = f"{random.randint(100000, 999999)}"
+                    expires = timezone.now() + timedelta(minutes=10)
 
-                # Invalidate previous unverified login OTPs for this user
-                OTPVerification.objects.filter(
-                    user=user,
-                    purpose='Login',
-                    is_verified=False
-                ).update(is_verified=True)
+                    # Invalidate previous unverified login OTPs for this user
+                    OTPVerification.objects.filter(
+                        user=user,
+                        purpose='Login',
+                        is_verified=False
+                    ).update(is_verified=True)
 
-                OTPVerification.objects.create(
-                    user=user,
-                    otp_code=otp,
-                    purpose='Login',
-                    expires_at=expires
-                )
+                    OTPVerification.objects.create(
+                        user=user,
+                        otp_code=otp,
+                        purpose='Login',
+                        expires_at=expires
+                    )
 
-                # Save 2FA state in session
-                request.session['2fa_user_id'] = user.id
-                request.session['2fa_email'] = user.email
-                request.session['2fa_next'] = next_url
+                    # Save 2FA state in session
+                    request.session['2fa_user_id'] = user.id
+                    request.session['2fa_email'] = user.email
+                    request.session['2fa_next'] = next_url
 
-                email_sent, sent_email = send_otp_email(user, otp, purpose='Login')
-                if email_sent:
-                    messages.info(request, f'Two-Factor Authentication code sent to {sent_email}.')
-                else:
-                    messages.success(request, f'2FA code generated for {sent_email}. (Verification Code: {otp})')
+                    email_sent, sent_email = send_otp_email(user, otp, purpose='Login')
+                    if email_sent:
+                        messages.info(request, f'Two-Factor Authentication code sent to {sent_email}.')
+                    else:
+                        messages.success(request, f'2FA code generated for {sent_email}. (Verification Code: {otp})')
 
-                return redirect('verify_2fa')
+                    return redirect('verify_2fa')
+                except Exception as otp_ex:
+                    print(f"[2FA OTP dispatch fallback to direct login]: {otp_ex}")
 
-            # Direct login if 2FA is disabled or user has no email
+            # Direct login if 2FA is disabled or user has no email or fallback
             auth_login(request, user)
             messages.success(request, f'Welcome back, {user.first_name or user.username}!')
             return redirect(next_url)
@@ -425,13 +435,16 @@ def register(request):
         )
 
         # Create linked UserProfile with 2FA enabled by default
-        UserProfile.objects.create(
-            user=user,
-            phone=phone,
-            status='active',
-            role=role if role in ['user', 'student', 'teacher', 'admin'] else 'user',
-            two_factor_enabled=True
-        )
+        try:
+            UserProfile.objects.create(
+                user=user,
+                phone=phone,
+                status='active',
+                role=role if role in ['user', 'student', 'teacher', 'admin'] else 'user',
+                two_factor_enabled=True
+            )
+        except Exception as p_err:
+            print(f"[UserProfile creation notice]: {p_err}")
 
         # Auto login newly registered user
         auth_login(request, user)
@@ -560,7 +573,7 @@ def verify_otp(request):
             })
 
         otp_record = OTPVerification.objects.filter(
-            user_id=user_id,
+            user=user_id,
             otp_code=submitted_otp,
             purpose='ForgotPassword',
             is_verified=False

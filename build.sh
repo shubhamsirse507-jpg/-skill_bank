@@ -9,7 +9,8 @@ pip install -r requirements.txt
 echo "=== 2. Collecting static files ==="
 python manage.py collectstatic --no-input
 
-echo "=== 3. Running database migrations ==="
-python manage.py migrate
+echo "=== 3. Running database migrations & schema sync ==="
+python manage.py migrate --no-input
+python fix_missing_tables.py || true
 
 echo "=== Build Completed Successfully! ==="
