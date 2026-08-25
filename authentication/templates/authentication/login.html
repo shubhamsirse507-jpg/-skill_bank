@@ -31,12 +31,24 @@
     animation: slideUp 0.35s ease both;
   }
 
-  .brand-logo-img {
+  /* Pure-CSS brand icon — no image file needed, never breaks */
+  .brand-logo-icon {
     width: 60px;
     height: 60px;
-    object-fit: contain;
+    min-width: 60px;
+    background: #0e7d73;
+    color: #ffffff;
+    border-radius: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    font-weight: 900;
+    font-family: 'Outfit', sans-serif;
+    line-height: 1;
     animation: floatLogo 4s ease-in-out infinite alternate;
-    filter: drop-shadow(0 4px 12px rgba(12,108,99,0.25));
+    box-shadow: 0 4px 16px rgba(14,125,115,0.35);
+    flex-shrink: 0;
   }
 
   @keyframes floatLogo {
@@ -194,9 +206,9 @@
 </head>
 <body>
 
-<!-- Brand Logo + Name -->
+<!-- Brand Logo + Name (pure CSS — no image file needed) -->
 <div class="brand-header">
-  <img src="{% static brand_logo_image_name %}" alt="Skill Bank Logo" class="brand-logo-img">
+  <div class="brand-logo-icon" aria-hidden="true">S</div>
   <span class="brand-title">Skill Bank</span>
 </div>
 
@@ -239,7 +251,13 @@
       <input type="hidden" name="next" value="{{ request.GET.next }}">
       <input type="hidden" name="role" id="loginRoleField" value="student">
 
-      {% if error %}
+      {% if messages %}
+        {% for message in messages %}
+          <div class="error-alert" style="background: {% if message.tags == 'success' %}#ecfdf5; border-color: #a7f3d0; color: #065f46;{% elif message.tags == 'info' %}#eff6ff; border-color: #bfdbfe; color: #1e40af;{% else %}rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.3); color: #dc2626;{% endif %};" role="alert">
+            <span>{% if message.tags == 'success' %}✓{% elif message.tags == 'info' %}ℹ️{% else %}⚠️{% endif %} {{ message }}</span>
+          </div>
+        {% endfor %}
+      {% elif error %}
       <div class="error-alert" role="alert">
         <svg viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/></svg>
         <span>{{ error }}</span>

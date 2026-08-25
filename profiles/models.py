@@ -59,10 +59,14 @@ class UserProfile(models.Model):
         default='https://api.dicebear.com/7.x/avataaars/svg?seed=SkillHero'
     )
 
-    # Privacy
+    # Privacy & Security
     show_email = models.BooleanField(default=True)
     show_phone = models.BooleanField(default=False)
     is_profile_public = models.BooleanField(default=True)
+    two_factor_enabled = models.BooleanField(
+        default=True,
+        help_text="Enable Two-Factor Authentication (OTP via email) on login."
+    )
 
     # Resume
     resume = models.FileField(upload_to='resumes/', null=True, blank=True)

@@ -1,0 +1,542 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Two-Factor Authentication - Skill Bank</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Inter', sans-serif;
+    }
+
+    body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: linear-gradient(180deg, #6ddfd5 0%, #fbfefe 100%);
+        background-attachment: fixed;
+        gap: 18px;
+    }
+
+    /* ─── Brand Header ─── */
+    .brand-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        animation: slideUp 0.35s ease both;
+    }
+
+    .brand-logo-icon {
+        width: 54px;
+        height: 54px;
+        min-width: 54px;
+        background: #0e7d73;
+        color: #ffffff;
+        border-radius: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        font-weight: 900;
+        font-family: 'Outfit', sans-serif;
+        box-shadow: 0 4px 16px rgba(14,125,115,0.35);
+        flex-shrink: 0;
+    }
+
+    .brand-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2rem;
+        font-weight: 800;
+        color: #0c6c63;
+        letter-spacing: -0.5px;
+    }
+
+    /* ─── 2FA Card ─── */
+    .auth-card {
+        width: 100%;
+        max-width: 440px;
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 36px 32px 32px;
+        box-shadow: 0 12px 48px rgba(12,108,99,0.14), 0 4px 16px rgba(0,0,0,0.06);
+        animation: slideUp 0.4s ease both;
+    }
+
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .security-badge {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 60px;
+        height: 60px;
+        border-radius: 18px;
+        background: linear-gradient(135deg, #0c6c63 0%, #16a38b 100%);
+        margin: 0 auto 16px;
+        box-shadow: 0 8px 24px rgba(12,108,99,0.25);
+    }
+
+    .security-badge svg {
+        width: 28px;
+        height: 28px;
+        fill: none;
+        stroke: #ffffff;
+        stroke-width: 2.2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+    }
+
+    .card-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.55rem;
+        font-weight: 800;
+        color: #0f172a;
+        text-align: center;
+        margin-bottom: 6px;
+    }
+
+    .card-subtitle {
+        font-size: 0.88rem;
+        color: #64748b;
+        text-align: center;
+        margin-bottom: 22px;
+        line-height: 1.5;
+    }
+
+    .email-highlight {
+        color: #0c6c63;
+        font-weight: 600;
+        word-break: break-all;
+    }
+
+    /* ─── Alerts ─── */
+    .alert {
+        padding: 11px 14px;
+        border-radius: 10px;
+        font-size: 0.84rem;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        line-height: 1.4;
+    }
+
+    .alert-success {
+        background: #ecfdf5;
+        color: #065f46;
+        border: 1px solid #a7f3d0;
+    }
+
+    .alert-error {
+        background: #fef2f2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
+    }
+
+    .alert-info {
+        background: #eff6ff;
+        color: #1e40af;
+        border: 1px solid #bfdbfe;
+    }
+
+    /* ─── 6-Digit OTP Inputs ─── */
+    .otp-grid {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin: 20px 0;
+    }
+
+    .otp-grid input {
+        width: 48px;
+        height: 56px;
+        text-align: center;
+        font-size: 24px;
+        font-weight: 800;
+        font-family: 'Outfit', sans-serif;
+        color: #0f172a;
+        background: #f8fafc;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        outline: none;
+        caret-color: #0c6c63;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .otp-grid input:focus {
+        border-color: #0c6c63;
+        background: #ffffff;
+        box-shadow: 0 0 0 4px rgba(12,108,99,0.12);
+        transform: translateY(-2px);
+    }
+
+    .otp-grid input.filled {
+        border-color: #0c6c63;
+        background: #f0faf9;
+    }
+
+    /* ─── Countdown Timer ─── */
+    .timer-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        font-size: 0.84rem;
+        color: #64748b;
+        margin-bottom: 20px;
+    }
+
+    .timer-container svg {
+        width: 15px;
+        height: 15px;
+        stroke: #64748b;
+        fill: none;
+        stroke-width: 2;
+    }
+
+    #timerCount {
+        font-weight: 700;
+        color: #0c6c63;
+    }
+
+    #timerCount.expired {
+        color: #ef4444;
+    }
+
+    /* ─── Submit Button ─── */
+    .submit-btn {
+        width: 100%;
+        padding: 14px;
+        background: #0c6c63;
+        color: #ffffff;
+        border: none;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+        box-shadow: 0 4px 16px rgba(12,108,99,0.28);
+    }
+
+    .submit-btn:hover {
+        background: #09544d;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(12,108,99,0.35);
+    }
+
+    .submit-btn:active {
+        transform: translateY(0);
+    }
+
+    .submit-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    /* ─── Resend & Footer ─── */
+    .resend-box {
+        text-align: center;
+        margin-top: 18px;
+        font-size: 0.85rem;
+        color: #64748b;
+    }
+
+    .resend-btn {
+        background: none;
+        border: none;
+        color: #0c6c63;
+        font-weight: 700;
+        cursor: pointer;
+        padding: 4px 6px;
+        transition: color 0.2s;
+    }
+
+    .resend-btn:hover:not(:disabled) {
+        color: #09544d;
+        text-decoration: underline;
+    }
+
+    .resend-btn:disabled {
+        color: #94a3b8;
+        cursor: not-allowed;
+    }
+
+    .footer-links {
+        text-align: center;
+        margin-top: 16px;
+        padding-top: 14px;
+        border-top: 1px solid #f1f5f9;
+        font-size: 0.83rem;
+    }
+
+    .footer-links a {
+        color: #64748b;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+        color: #0c6c63;
+        text-decoration: underline;
+    }
+
+    @media (max-width: 480px) {
+        body { padding: 12px; }
+        .auth-card { padding: 24px 20px; }
+        .otp-grid { gap: 6px; }
+        .otp-grid input { width: 42px; height: 50px; font-size: 20px; }
+    }
+</style>
+</head>
+<body>
+
+<!-- Brand Header -->
+<div class="brand-header">
+    <div class="brand-logo-icon">S</div>
+    <span class="brand-title">Skill Bank</span>
+</div>
+
+<div class="auth-card">
+    <div class="security-badge">
+        <svg viewBox="0 0 24 24">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <path d="M9 12l2 2 4-4"/>
+        </svg>
+    </div>
+
+    <h1 class="card-title">Two-Factor Authentication</h1>
+    <p class="card-subtitle">
+        Enter the 6-digit security code sent to<br>
+        <span class="email-highlight">{{ email|default:"your registered email" }}</span>
+    </p>
+
+    <!-- Django Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert {% if message.tags == 'error' %}alert-error{% elif message.tags == 'success' %}alert-success{% else %}alert-info{% endif %}">
+                {% if message.tags == 'error' %}⚠️{% elif message.tags == 'success' %}✓{% else %}ℹ️{% endif %}
+                <span>{{ message }}</span>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Dynamic JS Feedback Alert -->
+    <div class="alert alert-error" id="jsAlertError" style="display:none;"></div>
+    <div class="alert alert-success" id="jsAlertSuccess" style="display:none;"></div>
+
+    <form id="twoFactorForm" method="POST" action="{% url 'verify_2fa' %}">
+        {% csrf_token %}
+
+        <!-- 6 Separate Digit Boxes -->
+        <div class="otp-grid" id="otpGrid">
+            <input type="text" name="d1" id="d1" maxlength="1" inputmode="numeric" pattern="[0-9]" placeholder="·" autocomplete="one-time-code" autofocus>
+            <input type="text" name="d2" id="d2" maxlength="1" inputmode="numeric" pattern="[0-9]" placeholder="·">
+            <input type="text" name="d3" id="d3" maxlength="1" inputmode="numeric" pattern="[0-9]" placeholder="·">
+            <input type="text" name="d4" id="d4" maxlength="1" inputmode="numeric" pattern="[0-9]" placeholder="·">
+            <input type="text" name="d5" id="d5" maxlength="1" inputmode="numeric" pattern="[0-9]" placeholder="·">
+            <input type="text" name="d6" id="d6" maxlength="1" inputmode="numeric" pattern="[0-9]" placeholder="·">
+        </div>
+
+        <input type="hidden" name="otp" id="otpHidden">
+
+        <!-- Countdown Timer -->
+        <div class="timer-container">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="9"/>
+                <path d="M12 7v5l3 3"/>
+            </svg>
+            Code expires in <span id="timerCount">10:00</span>
+        </div>
+
+        <button type="submit" class="submit-btn" id="verifyBtn">Verify & Sign In</button>
+    </form>
+
+    <!-- Resend OTP Button -->
+    <div class="resend-box">
+        Didn't receive the code?
+        <button type="button" class="resend-btn" id="resendBtn" disabled>Resend Code (<span id="resendCountdown">30</span>s)</button>
+    </div>
+
+    <div class="footer-links">
+        <a href="{% url 'login' %}">← Return to Login</a>
+    </div>
+</div>
+
+<script>
+(function() {
+    const inputs = Array.from(document.querySelectorAll('.otp-grid input'));
+    const hiddenOtp = document.getElementById('otpHidden');
+    const form = document.getElementById('twoFactorForm');
+    const verifyBtn = document.getElementById('verifyBtn');
+    const resendBtn = document.getElementById('resendBtn');
+    const resendCountdown = document.getElementById('resendCountdown');
+    const timerEl = document.getElementById('timerCount');
+    const alertError = document.getElementById('jsAlertError');
+    const alertSuccess = document.getElementById('jsAlertSuccess');
+
+    function syncHidden() {
+        hiddenOtp.value = inputs.map(i => i.value).join('');
+    }
+
+    // Auto-advance & Backspace support
+    inputs.forEach((inp, idx) => {
+        inp.addEventListener('input', (e) => {
+            const val = e.target.value.replace(/\D/g, '');
+            e.target.value = val;
+            val ? inp.classList.add('filled') : inp.classList.remove('filled');
+            syncHidden();
+
+            if (val && idx < inputs.length - 1) {
+                inputs[idx + 1].focus();
+            }
+
+            // Auto submit when all 6 digits entered
+            if (hiddenOtp.value.length === 6) {
+                verifyBtn.focus();
+            }
+        });
+
+        inp.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && !inp.value && idx > 0) {
+                inputs[idx - 1].value = '';
+                inputs[idx - 1].classList.remove('filled');
+                inputs[idx - 1].focus();
+                syncHidden();
+            }
+        });
+
+        // Paste support
+        inp.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const text = (e.clipboardData || window.clipboardData).getData('text').replace(/\D/g, '');
+            text.split('').slice(0, 6).forEach((ch, i) => {
+                if (inputs[i]) {
+                    inputs[i].value = ch;
+                    inputs[i].classList.add('filled');
+                }
+            });
+            syncHidden();
+            const nextIdx = Math.min(text.length, 5);
+            inputs[nextIdx].focus();
+        });
+    });
+
+    // 10-minute expiry timer
+    let totalSecs = 600;
+    let ticker = setInterval(() => {
+        if (totalSecs <= 0) {
+            timerEl.textContent = 'Expired';
+            timerEl.classList.add('expired');
+            verifyBtn.disabled = true;
+            clearInterval(ticker);
+            return;
+        }
+        totalSecs--;
+        const m = String(Math.floor(totalSecs / 60)).padStart(2, '0');
+        const s = String(totalSecs % 60).padStart(2, '0');
+        timerEl.textContent = `${m}:${s}`;
+    }, 1000);
+
+    // Resend cooldown timer (30 seconds)
+    let resendSecs = 30;
+    let resendTicker = setInterval(() => {
+        if (resendSecs <= 0) {
+            resendBtn.disabled = false;
+            resendBtn.textContent = 'Resend Code';
+            clearInterval(resendTicker);
+            return;
+        }
+        resendSecs--;
+        resendCountdown.textContent = resendSecs;
+    }, 1000);
+
+    // Resend AJAX Request
+    resendBtn.addEventListener('click', function() {
+        resendBtn.disabled = true;
+        resendBtn.textContent = 'Sending…';
+        alertError.style.display = 'none';
+        alertSuccess.style.display = 'none';
+
+        fetch("{% url 'resend_2fa_otp' %}", {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'X-Requested-With': 'XMLHttpRequest',
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: ''
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                alertSuccess.textContent = '✓ ' + data.message;
+                alertSuccess.style.display = 'flex';
+                inputs.forEach(i => { i.value = ''; i.classList.remove('filled'); });
+                syncHidden();
+                inputs[0].focus();
+
+                // Reset main expiry timer
+                totalSecs = 600;
+                verifyBtn.disabled = false;
+                timerEl.classList.remove('expired');
+
+                // Restart resend cooldown
+                resendSecs = 30;
+                resendBtn.textContent = 'Resend Code (30s)';
+                resendTicker = setInterval(() => {
+                    if (resendSecs <= 0) {
+                        resendBtn.disabled = false;
+                        resendBtn.textContent = 'Resend Code';
+                        clearInterval(resendTicker);
+                        return;
+                    }
+                    resendSecs--;
+                    resendBtn.textContent = `Resend Code (${resendSecs}s)`;
+                }, 1000);
+            } else {
+                alertError.textContent = '⚠️ ' + (data.message || 'Failed to resend code.');
+                alertError.style.display = 'flex';
+                resendBtn.disabled = false;
+                resendBtn.textContent = 'Resend Code';
+            }
+        })
+        .catch(err => {
+            alertError.textContent = '⚠️ Network error. Please try again.';
+            alertError.style.display = 'flex';
+            resendBtn.disabled = false;
+            resendBtn.textContent = 'Resend Code';
+        });
+    });
+
+    // Client-side Validation on Submit
+    form.addEventListener('submit', function(e) {
+        syncHidden();
+        if (hiddenOtp.value.length !== 6) {
+            e.preventDefault();
+            alertError.textContent = '⚠️ Please enter all 6 digits of your 2FA code.';
+            alertError.style.display = 'flex';
+            return;
+        }
+        verifyBtn.textContent = 'Verifying…';
+        verifyBtn.disabled = true;
+    });
+
+    inputs[0].focus();
+})();
+</script>
+
+</body>
+</html>

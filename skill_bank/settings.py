@@ -239,18 +239,17 @@ CORS_ALLOWED_ORIGINS = [
 ]
 CORS_ALLOW_CREDENTIALS = True
 
-# ---------------------------------------------------------------------------
-# Email
-# ---------------------------------------------------------------------------
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'skillbank2026@gmail.com')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', 'saqg bxql kvbj gavw')
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', 'skillbank2026@gmail.com')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'skillbank2026@gmail.com').strip()
+_raw_email_pass = os.environ.get('EMAIL_HOST_PASSWORD', 'saqg bxql kvbj gavw')
+EMAIL_HOST_PASSWORD = _raw_email_pass.replace(' ', '').strip()
+DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', f"Skill Bank <{EMAIL_HOST_USER}>")
 _default_email_backend = 'django.core.mail.backends.smtp.EmailBackend' if (EMAIL_HOST_PASSWORD and EMAIL_HOST_USER) else 'django.core.mail.backends.console.EmailBackend'
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', _default_email_backend)
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
-EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
-EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'True').lower() == 'true'
-EMAIL_TIMEOUT = int(os.environ.get('EMAIL_TIMEOUT', 5))  # 5s socket timeout prevents worker SIGKILL
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 465))
+EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'False').lower() == 'true'
+EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'True').lower() == 'true'
+EMAIL_TIMEOUT = int(os.environ.get('EMAIL_TIMEOUT', 15))  # 15s prevents cloud handshake timeouts
 
 # ---------------------------------------------------------------------------
 # Security (production hardening when DEBUG=False)

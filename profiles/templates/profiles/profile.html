@@ -422,6 +422,16 @@
                             <input class="form-check-input" type="checkbox" id="is_profile_public" name="is_profile_public" {% if profile.is_profile_public %}checked{% endif %}>
                         </div>
                     </div>
+
+                    <div class="toggle-row" style="border-left: 3px solid #0c6c63;">
+                        <div class="toggle-info">
+                            <h5>🛡️ Two-Factor Authentication (2FA)</h5>
+                            <p>Require a 6-digit OTP code sent to your email whenever you log in.</p>
+                        </div>
+                        <div class="form-check form-switch fs-4">
+                            <input class="form-check-input" type="checkbox" id="two_factor_enabled" name="two_factor_enabled" {% if profile.two_factor_enabled %}checked{% endif %}>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Section 3: Bio & Location -->

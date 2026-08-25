@@ -116,8 +116,27 @@ def fix_schema():
                 ('show_email', 'TINYINT(1) DEFAULT 1'),
                 ('show_phone', 'TINYINT(1) DEFAULT 0'),
                 ('is_profile_public', 'TINYINT(1) DEFAULT 1'),
+                ('availability', 'VARCHAR(20) DEFAULT "available"'),
+                ('two_factor_enabled', 'TINYINT(1) DEFAULT 1'),
+            ],
+            'user_profiles': [
+                ('phone', 'VARCHAR(20) DEFAULT ""'),
+                ('role', 'VARCHAR(10) DEFAULT "user"'),
+                ('status', 'VARCHAR(20) DEFAULT "active"'),
+                ('headline', 'VARCHAR(200) DEFAULT ""'),
+                ('bio', 'TEXT'),
+                ('city', 'VARCHAR(100) DEFAULT ""'),
+                ('country', 'VARCHAR(100) DEFAULT ""'),
+                ('location', 'VARCHAR(150) DEFAULT ""'),
+                ('work_preference', 'VARCHAR(50) DEFAULT "Remote"'),
+                ('matching_goal', 'VARCHAR(100) DEFAULT "Peer Skill Swap"'),
+                ('avatar_preset_url', 'VARCHAR(255) DEFAULT "https://api.dicebear.com/7.x/avataaars/svg?seed=SkillHero"'),
+                ('show_email', 'TINYINT(1) DEFAULT 1'),
+                ('show_phone', 'TINYINT(1) DEFAULT 0'),
+                ('is_profile_public', 'TINYINT(1) DEFAULT 1'),
                 ('experience_summary', 'TEXT'),
                 ('availability', 'VARCHAR(20) DEFAULT "available"'),
+                ('two_factor_enabled', 'TINYINT(1) DEFAULT 1'),
             ]
         }
 

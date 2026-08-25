@@ -99,13 +99,225 @@ class LoginAPIView(APIView):
         if not user.is_active:
             return api_error('account_inactive', 'Account has been deactivated or suspended.', status_code=403)
 
+        profile, _ = UserProfile.objects.get_or_create(user=user)
+        is_2fa = getattr(profile, 'two_factor_enabled', True)
+
+        if is_2fa and user.email:
+            otp = f"{random.randint(100000, 999999)}"
+            expires = timezone.now() + timedelta(minutes=10)
+
+            OTPVerification.objects.filter(
+                user=user,
+                purpose='Login',
+                is_verified=False
+            ).update(is_verified=True)
+
+            OTPVerification.objects.create(
+                user=user,
+                otp_code=otp,
+                purpose='Login',
+                expires_at=expires
+            )
+
+            # Send email
+            from authentication.views import send_otp_email
+            email_sent, sent_email = send_otp_email(user, otp, purpose='Login')
+
+            return api_success({
+                'two_factor_required': True,
+                'user_id': user.id,
+                'email': sent_email,
+                'message': 'Two-Factor Authentication code sent to your email.',
+                'dev_code': otp if not email_sent else None
+            })
+
         refresh = RefreshToken.for_user(user)
         return api_success({
+            'two_factor_required': False,
             'user': UserSerializer(user).data,
             'tokens': {
                 'refresh': str(refresh),
                 'access': str(refresh.access_token),
             }
+        })
+
+
+class Verify2FAAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        user_id = request.data.get('user_id')
+        email = request.data.get('email', '').strip()
+        otp = request.data.get('otp', '').strip()
+
+        if not otp:
+            return api_error('missing_otp', 'OTP code is required.')
+
+        user = None
+        if user_id:
+            user = User.objects.filter(id=user_id).first()
+        elif email:
+            user = User.objects.filter(email__iexact=email).first()
+
+        if not user:
+            return api_error('user_not_found', 'User not found.', status_code=404)
+
+        otp_record = OTPVerification.objects.filter(
+            user=user,
+            otp_code=otp,
+            purpose='Login',
+            is_verified=False
+        ).order_by('-created_at').first()
+
+        if not otp_record:
+            return api_error('invalid_otp', 'Invalid 2FA code.', status_code=400)
+
+        if otp_record.is_expired():
+            return api_error('expired_otp', '2FA code has expired.', status_code=400)
+
+        otp_record.is_verified = True
+        otp_record.save()
+
+        refresh = RefreshToken.for_user(user)
+        return api_success({
+            'message': '2FA verification successful.',
+            'user': UserSerializer(user).data,
+            'tokens': {
+                'refresh': str(refresh),
+                'access': str(refresh.access_token),
+            }
+        })
+
+
+class ForgotPasswordAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        email_or_username = request.data.get('email', '').strip()
+        if not email_or_username:
+            return api_error('missing_email', 'Email or username is required.')
+
+        user = User.objects.filter(email__iexact=email_or_username).first() or User.objects.filter(username__iexact=email_or_username).first()
+        if not user:
+            return api_error('user_not_found', 'No account found with this email or username.', status_code=404)
+
+        OTPVerification.objects.filter(
+            user=user,
+            purpose='ForgotPassword',
+            is_verified=False
+        ).update(is_verified=True)
+
+        otp = f"{random.randint(100000, 999999)}"
+        expires = timezone.now() + timedelta(minutes=10)
+
+        OTPVerification.objects.create(
+            user=user,
+            otp_code=otp,
+            purpose='ForgotPassword',
+            expires_at=expires
+        )
+
+        from authentication.views import send_otp_email
+        email_sent, sent_email = send_otp_email(user, otp, purpose='ForgotPassword')
+
+        return api_success({
+            'message': f'Password reset OTP sent to {sent_email}.',
+            'user_id': user.id,
+            'email': sent_email,
+            'dev_code': otp if not email_sent else None
+        })
+
+
+class VerifyOTPAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        user_id = request.data.get('user_id')
+        email = request.data.get('email', '').strip()
+        otp = request.data.get('otp', '').strip()
+
+        if not otp:
+            return api_error('missing_otp', 'OTP is required.')
+
+        user = None
+        if user_id:
+            user = User.objects.filter(id=user_id).first()
+        elif email:
+            user = User.objects.filter(email__iexact=email).first()
+
+        if not user:
+            return api_error('user_not_found', 'User not found.', status_code=404)
+
+        otp_record = OTPVerification.objects.filter(
+            user=user,
+            otp_code=otp,
+            purpose='ForgotPassword',
+            is_verified=False
+        ).order_by('-created_at').first()
+
+        if not otp_record:
+            return api_error('invalid_otp', 'Invalid OTP code.', status_code=400)
+
+        if otp_record.is_expired():
+            return api_error('expired_otp', 'OTP code has expired.', status_code=400)
+
+        otp_record.is_verified = True
+        otp_record.save()
+
+        return api_success({
+            'message': 'OTP verified successfully.',
+            'user_id': user.id,
+            'verified': True
+        })
+
+
+class ResetPasswordAPIView(APIView):
+    permission_classes = [permissions.AllowAny]
+
+    def post(self, request):
+        user_id = request.data.get('user_id')
+        email = request.data.get('email', '').strip()
+        otp = request.data.get('otp', '').strip()
+        new_password = request.data.get('new_password', '').strip()
+
+        if not new_password or len(new_password) < 6:
+            return api_error('invalid_password', 'New password must be at least 6 characters long.')
+
+        user = None
+        if user_id:
+            user = User.objects.filter(id=user_id).first()
+        elif email:
+            user = User.objects.filter(email__iexact=email).first()
+
+        if not user:
+            return api_error('user_not_found', 'User not found.', status_code=404)
+
+        # Check for verified OTP within last 15 minutes
+        cutoff = timezone.now() - timedelta(minutes=15)
+        otp_record = OTPVerification.objects.filter(
+            user=user,
+            purpose='ForgotPassword',
+            is_verified=True,
+            created_at__gte=cutoff
+        ).first()
+
+        if not otp_record and not otp:
+            return api_error('unauthorized', 'OTP verification is required before resetting password.', status_code=403)
+
+        if not otp_record and otp:
+            otp_record = OTPVerification.objects.filter(
+                user=user,
+                otp_code=otp,
+                purpose='ForgotPassword'
+            ).first()
+            if not otp_record or otp_record.is_expired():
+                return api_error('invalid_otp', 'Invalid or expired OTP.', status_code=400)
+
+        user.set_password(new_password)
+        user.save()
+
+        return api_success({
+            'message': 'Password reset successful. You can now log in with your new password.'
         })
 
 

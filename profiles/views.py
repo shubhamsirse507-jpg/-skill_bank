@@ -74,10 +74,11 @@ def profile(request):
         profile_obj.work_preference = request.POST.get('work_preference', 'Remote')
         profile_obj.matching_goal = request.POST.get('matching_goal', 'Peer Skill Swap')
 
-        # Privacy switches
+        # Privacy & Security switches
         profile_obj.show_email = request.POST.get('show_email') == 'on'
         profile_obj.show_phone = request.POST.get('show_phone') == 'on'
         profile_obj.is_profile_public = request.POST.get('is_profile_public') == 'on'
+        profile_obj.two_factor_enabled = request.POST.get('two_factor_enabled') == 'on'
 
         # Avatar selection
         avatar_type = request.POST.get('avatar_type', 'preset')

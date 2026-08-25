@@ -1,137 +1,231 @@
 {% load static %}
 <!DOCTYPE html>
-
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Register - Skill Bank</title>
+<title>Create Account - Skill Bank</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
 <style>
     * {
         margin: 0;
         padding: 0;
         box-sizing: border-box;
-        font-family: 'Segoe UI', Arial, sans-serif;
+        font-family: 'Inter', sans-serif;
     }
 
     body {
         min-height: 100vh;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        overflow: auto;
-        position: relative;
-        padding: 30px 20px;
+        padding: 24px 20px;
         background: linear-gradient(180deg, #6ddfd5 0%, #fbfefe 100%);
         background-attachment: fixed;
+        gap: 18px;
     }
 
-    /* ── Register Card ── */
-    .register-box {
-        background: rgba(255,255,255,0.75);
-        backdrop-filter: blur(14px);
-        -webkit-backdrop-filter: blur(14px);
-        padding: 40px 35px;
+    .brand-header {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        animation: slideUp 0.35s ease both;
+    }
+
+    .brand-logo-icon {
+        width: 54px;
+        height: 54px;
+        min-width: 54px;
+        background: #0e7d73;
+        color: #ffffff;
         border-radius: 16px;
-        box-shadow: 0 8px 40px rgba(12,108,99,0.12);
-        border: 1px solid rgba(0,0,0,0.08);
-        width: 100%;
-        max-width: 400px;
-        margin: auto;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        font-weight: 900;
+        font-family: 'Outfit', sans-serif;
+        box-shadow: 0 4px 16px rgba(14,125,115,0.35);
+        flex-shrink: 0;
     }
 
-    .register-box h2 {
-        text-align: center;
-        margin-bottom: 6px;
-        color: #1e293b;
-        font-size: 26px;
-        font-weight: 700;
-        letter-spacing: 0.5px;
+    .brand-title {
+        font-family: 'Outfit', sans-serif;
+        font-size: 2rem;
+        font-weight: 800;
+        color: #0c6c63;
+        letter-spacing: -0.5px;
+    }
+
+    .register-box {
+        width: 100%;
+        max-width: 480px;
+        background: #ffffff;
+        border-radius: 24px;
+        padding: 36px 32px 32px;
+        box-shadow: 0 12px 48px rgba(12,108,99,0.14), 0 4px 16px rgba(0,0,0,0.06);
+        animation: slideUp 0.4s ease both;
+    }
+
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .register-box h1 {
+        font-family: 'Outfit', sans-serif;
+        font-size: 1.65rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 4px;
     }
 
     .register-box p.subtitle {
-        text-align: center;
-        font-size: 13px;
-        color: #64748b;
-        margin-bottom: 24px;
+        font-size: 0.88rem;
+        color: #0c6c63;
+        font-weight: 500;
+        margin-bottom: 20px;
+    }
+
+    /* Role selection cards */
+    .role-label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 10px;
+    }
+
+    .role-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+
+    .role-card {
+        padding: 12px 14px;
+        border-radius: 12px;
+        border: 2px solid #e2e8f0;
+        background: #f8fafc;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .role-card:hover {
+        border-color: #0c6c63;
+        background: #f0faf9;
+    }
+
+    .role-card.active {
+        border-color: #0c6c63;
+        background: #e8f7f5;
+        box-shadow: 0 0 0 1px #0c6c63;
+    }
+
+    .role-card-top {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-bottom: 2px;
+    }
+
+    .role-icon { font-size: 1.1rem; }
+    .role-name { font-size: 0.9rem; font-weight: 700; color: #0f172a; }
+    .role-card.active .role-name { color: #0c6c63; }
+    .role-desc { font-size: 0.74rem; color: #64748b; }
+
+    .input-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
     }
 
     .input-group {
-        margin-bottom: 16px;
+        margin-bottom: 14px;
     }
 
     .input-group label {
         display: block;
         margin-bottom: 6px;
-        font-size: 13px;
-        color: #44556a;
-        font-weight: 500;
+        font-size: 0.82rem;
+        color: #334155;
+        font-weight: 600;
     }
 
     .input-group input {
         width: 100%;
-        padding: 10px 14px;
-        border: 1px solid rgba(0,0,0,0.12);
-        border-radius: 8px;
-        font-size: 14px;
+        padding: 11px 14px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 0.9rem;
         outline: none;
-        background: rgba(255,255,255,0.9);
-        color: #1e293b;
-        transition: border 0.2s, background 0.2s;
-    }
-
-    .input-group input::placeholder {
-        color: #94a3b8;
+        background: #f8fafc;
+        color: #0f172a;
+        transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
     }
 
     .input-group input:focus {
         border-color: #0c6c63;
-        background: #fff;
-        box-shadow: 0 0 0 4px rgba(12,108,99,0.12);
+        background: #ffffff;
+        box-shadow: 0 0 0 4px rgba(12,108,99,0.10);
     }
 
-    .error-msg {
-        font-size: 12px;
-        color: #fca5a5;
-        margin-top: 4px;
-        display: none;
+    .alert {
+        padding: 11px 14px;
+        border-radius: 10px;
+        font-size: 0.84rem;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        line-height: 1.4;
+    }
+
+    .alert-error {
+        background: #fef2f2;
+        color: #991b1b;
+        border: 1px solid #fecaca;
     }
 
     .register-btn {
         width: 100%;
-        padding: 12px;
+        padding: 14px;
         background: #0c6c63;
         color: #fff;
         border: none;
-        border-radius: 8px;
-        font-size: 15px;
-        font-weight: 600;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        font-weight: 700;
         cursor: pointer;
-        margin-top: 8px;
-        transition: opacity 0.2s, transform 0.1s;
-        letter-spacing: 0.4px;
+        margin-top: 6px;
+        transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+        box-shadow: 0 4px 16px rgba(12,108,99,0.28);
     }
 
     .register-btn:hover {
-        opacity: 0.9;
-        transform: translateY(-1px);
+        background: #09544d;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(12,108,99,0.35);
     }
 
-    .register-btn:active {
-        transform: translateY(0);
+    .register-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
     }
 
     .extra-links {
         text-align: center;
         margin-top: 18px;
-        font-size: 13px;
-        color: #44556a;
+        font-size: 0.85rem;
+        color: #64748b;
     }
 
     .extra-links a {
         color: #0c6c63;
         text-decoration: none;
-        font-weight: 500;
+        font-weight: 600;
     }
 
     .extra-links a:hover {
@@ -140,67 +234,141 @@
     }
 
     @media (max-width: 480px) {
-        body { padding: 15px 10px; }
-        .register-box { padding: 24px 18px; border-radius: 14px; }
-        .register-box h2 { font-size: 22px; }
+        body { padding: 12px; }
+        .register-box { padding: 24px 18px; }
+        .input-row { grid-template-columns: 1fr; gap: 0; }
+        .role-grid { grid-template-columns: 1fr; }
     }
 </style>
 </head>
 <body>
 
+<div class="brand-header">
+    <div class="brand-logo-icon">S</div>
+    <span class="brand-title">Skill Bank</span>
+</div>
+
 <div class="register-box">
-    <h2>Create Account</h2>
-    <p class="subtitle">Sign up to get started</p>
-    <form id="registerForm">
+    <h1>Create Account</h1>
+    <p class="subtitle">Join Skill Bank to trade skills & grow together.</p>
+
+    <!-- Role Selection -->
+    <p class="role-label">I want to join as</p>
+    <div class="role-grid">
+        <div class="role-card active" id="roleStudent" onclick="selectRole('student')">
+            <div class="role-card-top">
+                <span class="role-icon">🎓</span>
+                <span class="role-name">Student</span>
+            </div>
+            <p class="role-desc">Learn skills, join batches, ask doubts</p>
+        </div>
+        <div class="role-card" id="roleTeacher" onclick="selectRole('teacher')">
+            <div class="role-card-top">
+                <span class="role-icon">📖</span>
+                <span class="role-name">Teacher</span>
+            </div>
+            <p class="role-desc">List skills, mentor, share knowledge</p>
+        </div>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-error">
+                ⚠️ <span>{{ message }}</span>
+            </div>
+        {% endfor %}
+    {% elif error %}
+        <div class="alert alert-error">
+            ⚠️ <span>{{ error }}</span>
+        </div>
+    {% endif %}
+
+    <div class="alert alert-error" id="clientError" style="display: none;"></div>
+
+    <form id="registerForm" method="POST" action="{% url 'register' %}">
         {% csrf_token %}
-        <div class="input-group">
-            <label for="fullname">Full Name</label>
-            <input type="text" id="fullname" name="fullname" placeholder="Enter your full name" required>
+        <input type="hidden" name="role" id="roleInput" value="student">
+
+        <div class="input-row">
+            <div class="input-group">
+                <label for="first_name">First Name</label>
+                <input type="text" id="first_name" name="first_name" placeholder="John" required>
+            </div>
+            <div class="input-group">
+                <label for="last_name">Last Name</label>
+                <input type="text" id="last_name" name="last_name" placeholder="Doe">
+            </div>
         </div>
-        <div class="input-group">
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" placeholder="Enter your email" required>
-        </div>
+
         <div class="input-group">
             <label for="username">Username</label>
-            <input type="text" id="username" name="username" placeholder="Choose a username" required>
+            <input type="text" id="username" name="username" placeholder="Choose a unique username" required autocomplete="username">
         </div>
+
         <div class="input-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" name="password" placeholder="Create a password" required minlength="6">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" name="email" placeholder="you@example.com" required autocomplete="email">
         </div>
+
         <div class="input-group">
-            <label for="confirmPassword">Confirm Password</label>
-            <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Re-enter your password" required minlength="6">
-            <div class="error-msg" id="matchError">Passwords do not match</div>
+            <label for="phone">Phone Number (Optional)</label>
+            <input type="tel" id="phone" name="phone" placeholder="+1 (555) 000-0000">
         </div>
-        <button type="submit" class="register-btn">Register</button>
+
+        <div class="input-row">
+            <div class="input-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" placeholder="Min. 6 characters" required minlength="6" autocomplete="new-password">
+            </div>
+            <div class="input-group">
+                <label for="confirm_password">Confirm Password</label>
+                <input type="password" id="confirm_password" name="confirm_password" placeholder="Re-enter password" required minlength="6" autocomplete="new-password">
+            </div>
+        </div>
+
+        <button type="submit" class="register-btn" id="regBtn">Create Student Account</button>
+
         <div class="extra-links">
-            Already have an account? <a href="{% url 'login' %}">Login</a>
+            Already have an account? <a href="{% url 'login' %}">Log in</a>
         </div>
     </form>
 </div>
 
 <script>
+    let currentRole = 'student';
+
+    function selectRole(role) {
+        currentRole = role;
+        document.getElementById('roleStudent').classList.toggle('active', role === 'student');
+        document.getElementById('roleTeacher').classList.toggle('active', role === 'teacher');
+        document.getElementById('roleInput').value = role;
+        const titleRole = role === 'student' ? 'Student' : 'Teacher';
+        document.getElementById('regBtn').textContent = `Create ${titleRole} Account`;
+    }
+
     document.getElementById('registerForm').addEventListener('submit', function(e) {
-        e.preventDefault();
+        const p1 = document.getElementById('password').value;
+        const p2 = document.getElementById('confirm_password').value;
+        const errEl = document.getElementById('clientError');
 
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
-        const matchError = document.getElementById('matchError');
-
-        if (password !== confirmPassword) {
-            matchError.style.display = 'block';
+        if (p1.length < 6) {
+            e.preventDefault();
+            errEl.textContent = '⚠️ Password must be at least 6 characters long.';
+            errEl.style.display = 'flex';
             return;
         }
-        matchError.style.display = 'none';
 
-        const fullname = document.getElementById('fullname').value;
-        const email = document.getElementById('email').value;
-        const username = document.getElementById('username').value;
+        if (p1 !== p2) {
+            e.preventDefault();
+            errEl.textContent = '⚠️ Passwords do not match. Please verify and try again.';
+            errEl.style.display = 'flex';
+            return;
+        }
 
-        alert('Registered: ' + fullname + ' (' + username + ')');
-        // Replace this with your actual registration API call
+        errEl.style.display = 'none';
+        const btn = document.getElementById('regBtn');
+        btn.textContent = 'Creating Account…';
+        btn.disabled = true;
     });
 </script>
 

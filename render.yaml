@@ -15,3 +15,19 @@ services:
         value: "False"
       - key: ALLOWED_HOSTS
         value: ".onrender.com,localhost,127.0.0.1"
+      - key: EMAIL_BACKEND
+        value: "django.core.mail.backends.smtp.EmailBackend"
+      - key: EMAIL_HOST
+        value: "smtp.gmail.com"
+      - key: EMAIL_PORT
+        value: "465"
+      - key: EMAIL_USE_SSL
+        value: "True"
+      - key: EMAIL_HOST_USER
+        value: "skillbank2026@gmail.com"
+      - key: EMAIL_HOST_PASSWORD
+        value: "saqgbxqlkvbjgavw"
+      - key: DEFAULT_FROM_EMAIL
+        value: "skillbank2026@gmail.com"
+      - key: EMAIL_TIMEOUT
+        value: "15"
