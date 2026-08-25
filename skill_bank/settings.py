@@ -27,14 +27,11 @@ SECRET_KEY = os.environ.get(
 )
 DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 'yes')
 
-ALLOWED_HOSTS = [
-    h.strip() for h in os.environ.get('ALLOWED_HOSTS', '*').split(',') if h.strip()
-] + ['.onrender.com', '.railway.app', '.vercel.app', 'localhost', '127.0.0.1']
-if DEBUG or '*' in ALLOWED_HOSTS:
-    ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['*']
 
 CSRF_TRUSTED_ORIGINS = [
     'https://*.onrender.com',
+    'https://skill-bank-platform.onrender.com',
     'https://*.railway.app',
     'http://localhost:8000',
     'http://127.0.0.1:8000',
@@ -252,13 +249,16 @@ EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'True').lower() == 'true'
 EMAIL_TIMEOUT = int(os.environ.get('EMAIL_TIMEOUT', 15))  # 15s prevents cloud handshake timeouts
 
 # ---------------------------------------------------------------------------
-# Security (production hardening when DEBUG=False)
+# Security & Cloud Proxy Configuration
 # ---------------------------------------------------------------------------
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+USE_X_FORWARDED_HOST = True
+
 if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
-    SECURE_SSL_REDIRECT = True
+    SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'False').lower() == 'true'
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_BROWSER_XSS_FILTER = True

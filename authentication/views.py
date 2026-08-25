@@ -18,7 +18,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.mail import send_mail, EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives, get_connection
 from django.conf import settings
 from django.utils import timezone
 from django.http import JsonResponse
@@ -31,7 +31,7 @@ from profiles.models import UserProfile
 
 def send_otp_email(user, otp_code, purpose='Login'):
     """
-    Sends a formatted OTP email to the user.
+    Sends a formatted OTP email to the user with dual-channel (Port 465 SSL / Port 587 TLS) fallback.
     Returns (email_sent: bool, recipient_email: str).
     """
     recipient_email = user.email.strip() if user.email else ''
@@ -93,7 +93,7 @@ def send_otp_email(user, otp_code, purpose='Login'):
         """
 
     email_sent = False
-    # Attempt 1: Default Django configured Email Backend (Port 587 TLS)
+    # Attempt 1: Standard configured Django mail dispatch (Port 465 SSL default)
     try:
         msg = EmailMultiAlternatives(
             subject=subject,
@@ -105,17 +105,16 @@ def send_otp_email(user, otp_code, purpose='Login'):
         sent = msg.send(fail_silently=False)
         email_sent = bool(sent and sent > 0)
     except Exception as e1:
-        print(f"[OTP Email Delivery] Primary SMTP TLS attempt failed: {e1}")
+        print(f"[OTP Email Delivery] Primary SMTP dispatch attempt failed: {e1}")
 
-    # Attempt 2: Fallback to Port 465 SSL if primary connection failed
+    # Attempt 2: Fallback explicitly with Port 465 SSL connection
     if not email_sent:
         try:
-            from django.core.mail import get_connection
             host_user = getattr(settings, 'EMAIL_HOST_USER', 'skillbank2026@gmail.com').strip()
             raw_pass = getattr(settings, 'EMAIL_HOST_PASSWORD', 'saqgbxqlkvbjgavw')
             host_pass = str(raw_pass).replace(' ', '').strip()
 
-            ssl_connection = get_connection(
+            ssl_conn = get_connection(
                 backend='django.core.mail.backends.smtp.EmailBackend',
                 host='smtp.gmail.com',
                 port=465,
@@ -129,13 +128,13 @@ def send_otp_email(user, otp_code, purpose='Login'):
                 body=plain_text,
                 from_email=from_email,
                 to=[recipient_email],
-                connection=ssl_connection
+                connection=ssl_conn
             )
             msg_ssl.attach_alternative(html_content, "text/html")
             sent_ssl = msg_ssl.send(fail_silently=False)
             email_sent = bool(sent_ssl and sent_ssl > 0)
             if email_sent:
-                print(f"[OTP Email Delivery] Successfully sent via Port 465 SSL fallback!")
+                print(f"[OTP Email Delivery] Successfully dispatched via Port 465 SSL fallback!")
         except Exception as e2:
             print(f"[OTP Email Delivery] Port 465 SSL fallback failed: {e2}")
 
@@ -198,7 +197,7 @@ def login(request):
                 otp = f"{random.randint(100000, 999999)}"
                 expires = timezone.now() + timedelta(minutes=10)
 
-                # Invalidate any previous unverified login OTPs for this user
+                # Invalidate previous unverified login OTPs for this user
                 OTPVerification.objects.filter(
                     user=user,
                     purpose='Login',
@@ -264,7 +263,6 @@ def verify_2fa(request):
     if request.method == 'POST':
         submitted_otp = request.POST.get('otp', '').strip()
         if not submitted_otp:
-            # Fallback to individual inputs d1..d6
             d1 = request.POST.get('d1', '')
             d2 = request.POST.get('d2', '')
             d3 = request.POST.get('d3', '')
@@ -294,16 +292,13 @@ def verify_2fa(request):
         elif otp_record.is_expired():
             messages.error(request, 'The 2FA code has expired. Please click Resend Code.')
         else:
-            # Mark OTP verified
             otp_record.is_verified = True
             otp_record.save()
 
-            # Clean up 2FA session keys
             request.session.pop('2fa_user_id', None)
             request.session.pop('2fa_email', None)
             request.session.pop('2fa_next', None)
 
-            # Log user in
             auth_login(request, user)
             messages.success(request, f'Welcome back, {user.first_name or user.username}!')
             return redirect(next_url)
@@ -329,7 +324,6 @@ def resend_2fa_otp(request):
     if not user:
         return JsonResponse({'status': 'error', 'message': 'User not found.'}, status=404)
 
-    # Invalidate previous unverified login codes
     OTPVerification.objects.filter(
         user=user,
         purpose='Login',
@@ -487,14 +481,12 @@ def forgot_password(request):
                 'error': msg
             })
 
-        # Invalidate prior unverified forgot-password OTPs for this user
         OTPVerification.objects.filter(
             user=user,
             purpose='ForgotPassword',
             is_verified=False
         ).update(is_verified=True)
 
-        # Generate & store OTP model record
         otp = f"{random.randint(100000, 999999)}"
         expires = timezone.now() + timedelta(minutes=10)
 
@@ -551,7 +543,6 @@ def verify_otp(request):
     if request.method == 'POST':
         submitted_otp = request.POST.get('otp', '').strip()
         if not submitted_otp:
-            # Fallback to individual input fields if combined hidden field is empty
             d1 = request.POST.get('d1', '')
             d2 = request.POST.get('d2', '')
             d3 = request.POST.get('d3', '')
@@ -632,7 +623,6 @@ def reset_password(request):
             user.set_password(password)
             user.save()
 
-            # Cleanup session
             request.session.pop('otp_email', None)
             request.session.pop('otp_user_id', None)
             request.session.pop('otp_verified_user_id', None)

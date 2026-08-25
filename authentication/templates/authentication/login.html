@@ -248,7 +248,7 @@
   <div class="form-section active" id="formLogin">
     <form id="loginForm" method="POST" action="{% url 'login' %}">
       {% csrf_token %}
-      <input type="hidden" name="next" value="{{ request.GET.next }}">
+      <input type="hidden" name="next" value="{{ request.GET.next|default:'' }}">
       <input type="hidden" name="role" id="loginRoleField" value="student">
 
       {% if messages %}
