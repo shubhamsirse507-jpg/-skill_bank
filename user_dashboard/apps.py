@@ -1,6 +1,5 @@
-import os
-import sys
 from django.apps import AppConfig
+from django.db.models.signals import post_migrate
 
 
 class UserDashboardConfig(AppConfig):
@@ -8,10 +7,11 @@ class UserDashboardConfig(AppConfig):
     name = 'user_dashboard'
 
     def ready(self):
-        # Auto-run schema column repairs on server startup
-        if 'runserver' in sys.argv or 'gunicorn' in sys.argv or 'uwsgi' in sys.argv:
+        def on_post_migrate(sender, **kwargs):
             try:
                 from fix_missing_tables import fix_schema
                 fix_schema()
-            except Exception as e:
-                print("Auto schema fix notice:", e)
+            except Exception:
+                pass
+
+        post_migrate.connect(on_post_migrate, sender=self)

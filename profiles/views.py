@@ -44,9 +44,17 @@ def calculate_completion_score(profile_obj):
 def profile(request):
     """
     Unified view for user Profile UI.
-    Database-backed CRUD operation on UserProfile.
+    Database-backed CRUD operation on UserProfile with auto self-healing schema.
     """
-    profile_obj, _ = UserProfile.objects.get_or_create(user=request.user)
+    try:
+        profile_obj, _ = UserProfile.objects.get_or_create(user=request.user)
+    except Exception:
+        try:
+            from fix_missing_tables import fix_schema
+            fix_schema()
+            profile_obj, _ = UserProfile.objects.get_or_create(user=request.user)
+        except Exception:
+            profile_obj = getattr(request.user, 'profile', None)
 
     if request.method == 'POST':
         action = request.POST.get('action')

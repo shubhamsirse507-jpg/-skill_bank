@@ -13,18 +13,32 @@ from django.db.models import Q
 def dashboard(request):
     """User-facing dashboard home page."""
     user = request.user
-    user_skills = Skill.objects.filter(user=user)
-    recent_skills = Skill.objects.filter(status='approved').order_by('-created_at')[:6]
 
-    skills_offered_count = Skill.objects.filter(user=user, skill_type='offered').count()
-    skills_requested_count = Skill.objects.filter(user=user, skill_type='wanted').count()
-    pending_requests_count = SkillExchange.objects.filter(receiver=user, status='pending').count()
-    completed_swaps_count = SkillExchange.objects.filter(
-        Q(requester=user) | Q(receiver=user),
-        status='completed'
-    ).count()
+    try:
+        user_skills = list(Skill.objects.filter(user=user))
+        recent_skills = list(Skill.objects.filter(status='approved').order_by('-created_at')[:6])
+        skills_offered_count = Skill.objects.filter(user=user, skill_type='offered').count()
+        skills_requested_count = Skill.objects.filter(user=user, skill_type='wanted').count()
+    except Exception:
+        user_skills = []
+        recent_skills = []
+        skills_offered_count = 0
+        skills_requested_count = 0
 
-    categories = SkillCategory.objects.filter(is_active=True)[:8]
+    try:
+        pending_requests_count = SkillExchange.objects.filter(receiver=user, status='pending').count()
+        completed_swaps_count = SkillExchange.objects.filter(
+            Q(requester=user) | Q(receiver=user),
+            status='completed'
+        ).count()
+    except Exception:
+        pending_requests_count = 0
+        completed_swaps_count = 0
+
+    try:
+        categories = list(SkillCategory.objects.filter(is_active=True)[:8])
+    except Exception:
+        categories = []
 
     return render(request, "user_dashboard/dashboard.html", {
         'user_skills': user_skills,
@@ -61,7 +75,17 @@ def add_skill(request):
         level = request.POST.get("level", "Beginner")
 
         if title:
+            # Auto-create a default category if none exist (prevents IntegrityError on fresh DB)
             category = SkillCategory.objects.first()
+            if category is None:
+                category, _ = SkillCategory.objects.get_or_create(
+                    category_name='General',
+                    defaults={
+                        'description': 'General Skills',
+                        'icon_class': 'fa-solid fa-layer-group',
+                        'is_active': True,
+                    }
+                )
             if category_id and category_id.isdigit():
                 cat = SkillCategory.objects.filter(id=int(category_id)).first()
                 if cat:

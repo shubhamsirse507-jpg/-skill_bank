@@ -177,7 +177,8 @@ STORAGES = {
     },
 }
 
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+# STATICFILES_STORAGE is deprecated in Django 4.2+ — use STORAGES dict above instead.
+# Do NOT re-declare it here; it conflicts with the STORAGES dict and causes warnings.
 WHITENOISE_MANIFEST_STRICT = False
 WHITENOISE_USE_FINDERS = True
 
@@ -255,10 +256,12 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 USE_X_FORWARDED_HOST = True
 
 if not DEBUG:
+    # Render.com terminates SSL at its load balancer — DO NOT redirect internally.
+    # SECURE_PROXY_SSL_HEADER above handles detection of HTTPS correctly.
+    SECURE_SSL_REDIRECT = False  # Never True on Render (causes infinite redirect loops)
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
-    SECURE_SSL_REDIRECT = os.environ.get('SECURE_SSL_REDIRECT', 'False').lower() == 'true'
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
     SECURE_BROWSER_XSS_FILTER = True
@@ -284,7 +287,7 @@ LOGGING = {
     },
     'root': {
         'handlers': ['console'],
-        'level': 'WARNING',
+        'level': 'INFO',  # Raised from WARNING so 500 errors appear in Render logs
     },
     'loggers': {
         'django': {

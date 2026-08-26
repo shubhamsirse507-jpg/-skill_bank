@@ -202,21 +202,31 @@ def batches_view(request):
         try:
             seed_rich_batches()
         except Exception as e:
-            pass
+            pass  # Seeding failures must never cause a 500
 
     category_id = request.GET.get('category')
-    batches = Batch.objects.select_related('instructor', 'category').all()
-    if category_id:
-        batches = batches.filter(category_id=category_id)
-    
-    categories = SkillCategory.objects.filter(is_active=True)
-    
+
+    try:
+        batches = list(Batch.objects.select_related('instructor', 'category').all())
+        if category_id:
+            batches = [b for b in batches if str(b.category_id) == str(category_id)]
+    except Exception:
+        batches = []
+
+    try:
+        categories = list(SkillCategory.objects.filter(is_active=True))
+    except Exception:
+        categories = []
+
     # User's enrolled batch IDs if authenticated
     enrolled_batch_ids = []
     if request.user.is_authenticated:
-        enrolled_batch_ids = list(
-            BatchEnrollment.objects.filter(student=request.user).values_list('batch_id', flat=True)
-        )
+        try:
+            enrolled_batch_ids = list(
+                BatchEnrollment.objects.filter(student=request.user).values_list('batch_id', flat=True)
+            )
+        except Exception:
+            enrolled_batch_ids = []
 
     return render(request, 'bookings/batches.html', {
         'batches': batches,
@@ -362,7 +372,10 @@ def join_batch(request, batch_id):
 
 def live_sessions_view(request):
     """Unified Live Sessions hub — Doubt Calls tab + Live Video Room tab."""
-    doubts = DoubtCall.objects.select_related('learner', 'mentor').all()[:15]
+    try:
+        doubts = list(DoubtCall.objects.select_related('learner', 'mentor').all()[:15])
+    except Exception:
+        doubts = []
     return render(request, 'bookings/live_sessions.html', {
         'doubts': doubts,
     })
