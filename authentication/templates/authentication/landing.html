@@ -2062,9 +2062,28 @@
       </div>
     </div>
 
+    <!-- Skye Attached Preview Strip -->
+    <div id="skyePreviewWrap" style="display: none; padding: 6px 16px; background: #f1f5f9; border-top: 1px solid #e2e8f0; align-items: center; justify-content: space-between;">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <img id="skyeThumb" src="" style="width: 32px; height: 32px; border-radius: 6px; object-fit: cover;" alt="Attachment" />
+        <span style="font-size: 0.78rem; font-weight: 700; color: #0c6c63;"><i class="fa-solid fa-image"></i> Photo attached</span>
+      </div>
+      <button type="button" id="skyeRemoveThumb" style="background: none; border: none; color: #ef4444; font-size: 14px; cursor: pointer;">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
     <!-- Footer Input Area -->
     <div class="skye-footer">
-      <input type="text" id="skyeInput" class="skye-input" placeholder="Ask Skye anything..." autocomplete="off">
+      <button type="button" id="skyeMicBtn" class="skye-action-btn" title="Voice Input with Mic" aria-label="Voice input" style="width: 36px; height: 36px; border-radius: 50%; background: #f1f5f9; color: var(--teal); border: 1px solid rgba(12, 108, 99, 0.2); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; transition: all 0.2s ease; flex-shrink: 0;">
+        <i class="fa-solid fa-microphone"></i>
+      </button>
+      <button type="button" id="skyeCamBtn" class="skye-action-btn" title="Camera / Upload Image" aria-label="Camera snap" style="width: 36px; height: 36px; border-radius: 50%; background: #f1f5f9; color: var(--teal); border: 1px solid rgba(12, 108, 99, 0.2); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 13px; transition: all 0.2s ease; flex-shrink: 0;">
+        <i class="fa-solid fa-camera"></i>
+      </button>
+      <input type="file" id="skyeFileInput" accept="image/*" style="display:none;">
+
+      <input type="text" id="skyeInput" class="skye-input" placeholder="Ask Skye or speak via mic..." autocomplete="off">
       <button id="skyeSendBtn" class="skye-send-btn" aria-label="Send message">
         <i class="fa-solid fa-paper-plane" style="font-size: 15px;"></i>
       </button>
@@ -2229,6 +2248,16 @@
   const skyeSendBtn = document.getElementById('skyeSendBtn');
   const skyeMessages = document.getElementById('skyeMessages');
   const skyeChips = document.getElementById('skyeChips');
+  const skyeMicBtn = document.getElementById('skyeMicBtn');
+  const skyeCamBtn = document.getElementById('skyeCamBtn');
+  const skyeFileInput = document.getElementById('skyeFileInput');
+  const skyePreviewWrap = document.getElementById('skyePreviewWrap');
+  const skyeThumb = document.getElementById('skyeThumb');
+  const skyeRemoveThumb = document.getElementById('skyeRemoveThumb');
+
+  let skyeAttachedImg = null;
+  let skyeRecognition = null;
+  let skyeIsRecording = false;
 
   function toggleSkye() {
     skyeWidget.classList.toggle('open');
@@ -2241,12 +2270,88 @@
   if (skyeToggleBtn) skyeToggleBtn.addEventListener('click', toggleSkye);
   if (skyeCloseBtn) skyeCloseBtn.addEventListener('click', toggleSkye);
 
-  function addMessage(text, sender) {
+  // Skye Mic Handler
+  if (skyeMicBtn) {
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRec) {
+      skyeRecognition = new SpeechRec();
+      skyeRecognition.continuous = true;
+      skyeRecognition.interimResults = true;
+      skyeRecognition.onstart = () => {
+        skyeIsRecording = true;
+        skyeMicBtn.style.background = '#ef4444';
+        skyeMicBtn.style.color = '#ffffff';
+      };
+      skyeRecognition.onresult = (e) => {
+        let text = '';
+        for (let i = 0; i < e.results.length; i++) {
+          text += e.results[i][0].transcript;
+        }
+        skyeInput.value = text;
+      };
+      skyeRecognition.onerror = () => {
+        skyeIsRecording = false;
+        skyeMicBtn.style.background = '#f1f5f9';
+        skyeMicBtn.style.color = 'var(--teal)';
+      };
+      skyeRecognition.onend = () => {
+        skyeIsRecording = false;
+        skyeMicBtn.style.background = '#f1f5f9';
+        skyeMicBtn.style.color = 'var(--teal)';
+      };
+      skyeMicBtn.addEventListener('click', () => {
+        if (skyeIsRecording) {
+          skyeRecognition.stop();
+        } else {
+          try { skyeRecognition.start(); } catch (err) {}
+        }
+      });
+    } else {
+      skyeMicBtn.addEventListener('click', () => alert('Speech recognition not supported in this browser.'));
+    }
+  }
+
+  // Skye Camera / Upload Handler
+  if (skyeCamBtn && skyeFileInput) {
+    skyeCamBtn.addEventListener('click', () => skyeFileInput.click());
+    skyeFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          skyeAttachedImg = evt.target.result;
+          skyeThumb.src = skyeAttachedImg;
+          skyePreviewWrap.style.display = 'flex';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+  if (skyeRemoveThumb) {
+    skyeRemoveThumb.addEventListener('click', () => {
+      skyeAttachedImg = null;
+      skyeThumb.src = '';
+      skyePreviewWrap.style.display = 'none';
+      skyeFileInput.value = '';
+    });
+  }
+
+  function addMessage(text, sender, imgUrl) {
     const msgDiv = document.createElement('div');
     msgDiv.className = `skye-msg skye-msg-${sender}`;
     const bubble = document.createElement('div');
     bubble.className = 'skye-msg-bubble';
-    bubble.textContent = text;
+    if (imgUrl) {
+      const img = document.createElement('img');
+      img.src = imgUrl;
+      img.style.cssText = 'max-width:100%; border-radius:10px; margin-bottom:6px; display:block;';
+      bubble.appendChild(img);
+    }
+    if (text) {
+      const span = document.createElement('div');
+      span.textContent = text;
+      bubble.appendChild(span);
+    }
     msgDiv.appendChild(bubble);
     skyeMessages.appendChild(msgDiv);
     skyeMessages.scrollTop = skyeMessages.scrollHeight;
@@ -2272,12 +2377,14 @@
 
   async function handleSend(text) {
     const prompt = text || skyeInput.value.trim();
-    if (!prompt) return;
+    const curImg = skyeAttachedImg;
+    if (!prompt && !curImg) return;
 
     if (!text) skyeInput.value = '';
     if (skyeChips) skyeChips.style.display = 'none';
+    if (skyeRemoveThumb) skyeRemoveThumb.click();
 
-    addMessage(prompt, 'user');
+    addMessage(prompt, 'user', curImg);
     addTypingIndicator();
     skyeSendBtn.disabled = true;
 
@@ -2285,7 +2392,7 @@
       const res = await fetch('/chat/api/send/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: prompt })
+        body: JSON.stringify({ message: prompt, image: curImg })
       });
       const data = await res.json();
       removeTypingIndicator();

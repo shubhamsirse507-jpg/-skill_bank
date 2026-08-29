@@ -14,7 +14,6 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
-
 def call_pollinations_ai(prompt):
     """Call Pollinations GET AI text endpoint."""
     encoded_prompt = urllib.parse.quote(prompt)
@@ -87,19 +86,34 @@ def call_duckduckgo_ai(prompt):
     raise ValueError("DuckDuckGo returned empty response")
 
 
-def call_gemini_api(prompt, api_key):
-    """Call Google Gemini 1.5 Flash API."""
+def call_gemini_api(prompt, api_key, image_data=None):
+    """Call Google Gemini 1.5 Flash Multimodal Vision & Text API."""
     if not api_key:
         raise ValueError("Gemini API key missing")
 
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={api_key}"
+    parts = []
+    if image_data and "base64," in image_data:
+        try:
+            mime_type = image_data.split(";")[0].split(":")[1] if ":" in image_data else "image/jpeg"
+            b64_data = image_data.split("base64,")[1]
+            parts.append({
+                "inline_data": {
+                    "mime_type": mime_type,
+                    "data": b64_data
+                }
+            })
+        except Exception as e:
+            logger.warning(f"Error parsing image base64: {e}")
+
+    parts.append({"text": prompt})
     payload = {
-        "contents": [{"parts": [{"text": prompt}]}]
+        "contents": [{"parts": parts}]
     }
     data = json.dumps(payload).encode('utf-8')
     req = urllib.request.Request(url, data=data, headers={'Content-Type': 'application/json'}, method='POST')
 
-    with urllib.request.urlopen(req, timeout=12) as response:
+    with urllib.request.urlopen(req, timeout=14) as response:
         res_data = json.loads(response.read().decode('utf-8'))
         return res_data['candidates'][0]['content']['parts'][0]['text']
 
@@ -148,9 +162,9 @@ def call_openrouter_api(prompt, api_key):
         return res_data['choices'][0]['message']['content']
 
 
-def generate_ai_response(prompt, requested_provider="auto"):
+def generate_ai_response(prompt, requested_provider="auto", image_data=None):
     """
-    Generate accurate AI response with multi-level zero-fail failover and Skill_Data enrichment.
+    Generate accurate AI response with multi-level zero-fail failover, image support, and Skill_Data enrichment.
     """
     # 1. Fetch skill context from Skill_Data (covers tech, creative, business, health, lifestyle, trades)
     skill_context = query_skill_bank_data(prompt)
@@ -158,13 +172,16 @@ def generate_ai_response(prompt, requested_provider="auto"):
     if skill_context and "Skill Bank supports" not in skill_context:
         enriched_prompt = f"Context from Skill Bank Global Knowledge Base:\n{skill_context}\n\nUser Question: {prompt}"
 
+    if image_data:
+        enriched_prompt = f"[User attached an image / camera capture for analysis]\n{enriched_prompt}"
+
     gemini_key = getattr(settings, 'GEMINI_API_KEY', '')
     groq_key = getattr(settings, 'GROQ_API_KEY', '')
     openrouter_key = getattr(settings, 'OPENROUTER_API_KEY', '')
 
     pipeline = []
     if gemini_key:
-        pipeline.append(("Google Gemini 1.5", lambda p: call_gemini_api(p, gemini_key)))
+        pipeline.append(("Google Gemini 1.5 Vision", lambda p: call_gemini_api(p, gemini_key, image_data=image_data)))
     if groq_key:
         pipeline.append(("Groq Llama 3", lambda p: call_groq_api(p, groq_key)))
     if openrouter_key:
@@ -203,4 +220,3 @@ def generate_ai_response(prompt, requested_provider="auto"):
         "response": fallback_res,
         "errors": errors
     }
-

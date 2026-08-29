@@ -1,5 +1,6 @@
 /* ========================================
    AI CHAT BOAT — Django Integration JS
+   Multimodal Voice (Mic) & Vision (Camera)
    ======================================== */
 'use strict';
 
@@ -8,56 +9,38 @@ const state = {
   messages: [],
   isLoading: false,
   messageCounter: 0,
+  attachedImage: null, // Base64 Data URL
+  isRecording: false,
+  recognition: null,
+  cameraStream: null,
+  facingMode: 'user', // 'user' or 'environment'
+  currentlySpeakingId: null,
 };
 
-// ─── AI Responses ───────────────────────────────────
+// ─── AI Responses Fallbacks ─────────────────────────
 const AI_RESPONSES = {
   greetings: [
-    "Hello! 👋 I'm **AI Chat Boat**, your intelligent assistant built into **Skill Bank**. Ask me anything — coding, career advice, skills, or just a chat!",
-    "Hi there! Great to see you on Skill Bank! I'm ready to help with anything — skill-building, technical questions, or general knowledge. What's on your mind?",
-    "Hey! 🌟 Welcome! I'm AI Chat Boat — your personal AI companion. Ask me about skills, technology, learning paths, or anything else!",
-  ],
-  coding: [
-    "Here's a clean Python implementation:\n\n```python\ndef bubble_sort(arr):\n    n = len(arr)\n    for i in range(n - 1):\n        for j in range(n - i - 1):\n            if arr[j] > arr[j + 1]:\n                arr[j], arr[j + 1] = arr[j + 1], arr[j]\n    return arr\n\n# Example\nmy_list = [64, 34, 25, 12, 22, 11, 90]\nprint(\"Sorted:\", bubble_sort(my_list))\n```\n\n**How it works:**\n- Compares adjacent elements and swaps if needed\n- Time complexity: **O(n²)** — ideal for small datasets\n- Space complexity: **O(1)** — in-place sorting 🚀",
-    "Great coding question! Here's a Django view pattern:\n\n```python\nfrom django.views.generic import ListView\nfrom django.contrib.auth.mixins import LoginRequiredMixin\n\nclass SkillListView(LoginRequiredMixin, ListView):\n    model = Skill\n    template_name = 'skills/list.html'\n    context_object_name = 'skills'\n    paginate_by = 12\n\n    def get_queryset(self):\n        return Skill.objects.filter(\n            user=self.request.user\n        ).order_by('-created_at')\n```\n\nThis pattern combines **class-based views** with **login protection** — a Django best practice! 💡",
-  ],
-  quantum: [
-    "Great question! **Quantum Computing** explained simply:\n\n🔵 **Classical computers** use bits (0 or 1) — like light switches.\n\n🟣 **Quantum computers** use **qubits** which can be 0, 1, or *both at once* (superposition)!\n\nImagine searching every key in a lock simultaneously — that's quantum power.\n\n**Key concepts:**\n- **Superposition** — multiple states simultaneously\n- **Entanglement** — qubits linked across distances\n- **Interference** — amplifying correct answers\n\n💡 Quantum computers excel at cryptography, drug discovery, and optimization!",
+    "Hello! 👋 I'm **AI Chat Boat**, your intelligent assistant built into **Skill Bank**. Ask me anything — via text, mic 🎙️, or photo 📸!",
+    "Hi there! Great to see you on Skill Bank! I can help you find skill swap matches, learn technical roadmaps, or analyze documents/photos you upload. What's on your mind?",
   ],
   skills: [
-    "Great question about skill development! 🎯\n\n**Top In-Demand Skills for 2025:**\n\n1. **🤖 AI & Machine Learning** — Python, TensorFlow, PyTorch\n2. **☁️ Cloud Computing** — AWS, Azure, Google Cloud\n3. **🔒 Cybersecurity** — Ethical hacking, SIEM, Zero Trust\n4. **📊 Data Science** — SQL, Pandas, visualization\n5. **🌐 Full-Stack Web** — React, Django, Node.js\n6. **📱 Mobile Dev** — Flutter, React Native\n\n**My recommendation:** Start with Python + one cloud platform. That combination opens 80% of tech doors! 🚀\n\nWould you like a personalized learning roadmap?",
-    "Building skills effectively requires a smart approach! 📚\n\n**The 3-Phase Learning Method:**\n\n1. **Learn** (20%) — Consume tutorials, docs, courses\n2. **Build** (60%) — Create real projects from scratch\n3. **Teach** (20%) — Write blogs, explain to others\n\n**Pro tip:** The Feynman Technique is gold — if you can't explain it simply, you don't understand it yet.\n\nWhat specific skill are you trying to build? I can give you a targeted roadmap! 🎯",
-  ],
-  ideas: [
-    "Here are **5 innovative app ideas** for 2025 🚀\n\n1. **🧠 MindMap AI** — Mental health app detecting mood from journals\n2. **🌿 GreenTrack** — Carbon footprint gamification platform\n3. **👁️ SightAssist** — AR app for visually impaired with real-time narration\n4. **🎓 SkillSwap** — Peer-to-peer skill exchange marketplace\n5. **🍽️ FridgeChef** — AI recipe generator from fridge contents\n\nWant a deep-dive into any of these? 💡",
-  ],
-  webdesign: [
-    "Top **Web Design Best Practices for 2025** 🎨\n\n**Visual Design**\n- Dark mode with smooth transitions\n- Glassmorphism for depth & premium feel\n- 60fps micro-animations\n\n**Typography**\n- Variable fonts (e.g., Outfit, Inter)\n- Fluid type with `clamp()`\n- WCAG AAA contrast ratios\n\n**Performance**\n- Core Web Vitals: LCP < 2.5s, CLS < 0.1\n- WebP/AVIF images\n- Lazy loading below the fold\n\n**Django-specific tips:**\n- Use `{% static %}` for all assets\n- WhiteNoise for static file serving in production\n- django-compressor for CSS/JS minification\n\nWant a deep dive? 🚀",
-  ],
-  django: [
-    "**Django Best Practices** for your Skill Bank project! 🐍\n\n**Project Structure**\n```\nskill_bank/\n├── apps/\n│   ├── authentication/\n│   ├── profiles/\n│   ├── chatboat/      ← You are here!\n│   └── notifications/\n├── templates/\n├── static/\n└── manage.py\n```\n\n**Key patterns to follow:**\n- Use **class-based views** for CRUD operations\n- **`@login_required`** for protected pages\n- **Custom managers** for complex querysets\n- **signals** for decoupled side-effects (e.g., notifications)\n- **`django-environ`** for environment variables\n\n**Performance:**\n- `select_related()` / `prefetch_related()` to avoid N+1 queries\n- Database indexing on frequently filtered fields\n\nWhat specific Django topic would you like help with? 🎯",
+    "Great question about skill development! 🎯\n\n**Top In-Demand Skills for 2025:**\n\n1. **🤖 AI & Prompting** — Python, LLMs, LangChain\n2. **☁️ Cloud Computing** — AWS, Azure, Docker\n3. **🌐 Full-Stack Web** — React, Django, Node.js\n4. **🎨 UI/UX & Design** — Figma, Design Systems\n\nWhat skill are you looking to trade or learn today?",
   ],
   default: [
-    "That's a great point! 🎯\n\nBased on what you've shared, I'd approach this by breaking it into smaller, manageable parts. Start with a clear objective and work backwards.\n\nWould you like me to elaborate on any specific aspect? I can dive deeper into technical details, provide examples, or explore alternative approaches! ✨",
-    "Excellent question! Here's my analysis:\n\nThere are several important dimensions to consider here. Let's look at the core problem — then explore solutions balancing efficiency with practicality.\n\nI'd recommend a **phased approach** — test assumptions early, adjust as you go. This minimizes risk while maximizing learning.\n\nWhat's your biggest constraint — time, budget, or technical complexity? That'll help me give more targeted advice! 💡",
-    "Fascinating topic! 🔍\n\nThe most critical factors are:\n\n1. **Context** — Understanding the full picture first\n2. **Strategy** — Choosing the right approach for your situation\n3. **Execution** — Implementing with precision and adaptability\n\nI'd love to explore this further. What specific outcome are you working towards? ✨",
+    "That's a great question! 🎯\n\nBased on what you've shared, I can help connect this with suitable skill exchange paths on SkillBank. Feel free to ask more or attach an image / speak via mic for more details!",
   ],
 };
 
 function getAIResponse(input) {
   const lower = input.toLowerCase();
-  if (/\b(hi|hello|hey|good|greet|howdy)\b/.test(lower)) return random(AI_RESPONSES.greetings);
-  if (/\b(code|function|sort|javascript|python|program|algorithm|django|view)\b/.test(lower)) return random(AI_RESPONSES.coding);
-  if (/\b(quantum|qubit|superposition)\b/.test(lower)) return random(AI_RESPONSES.quantum);
-  if (/\b(skill|learn|career|roadmap|course|training)\b/.test(lower)) return random(AI_RESPONSES.skills);
-  if (/\b(idea|startup|app|mobile|business|innovat)\b/.test(lower)) return random(AI_RESPONSES.ideas);
-  if (/\b(design|web|css|ui|ux|frontend|trend)\b/.test(lower)) return random(AI_RESPONSES.webdesign);
-  if (/\b(django|model|url|template|migration|orm)\b/.test(lower)) return random(AI_RESPONSES.django);
-  return random(AI_RESPONSES.default);
+  if (/\b(hi|hello|hey|greet)\b/.test(lower)) return AI_RESPONSES.greetings[0];
+  if (/\b(skill|learn|career|roadmap|course)\b/.test(lower)) return AI_RESPONSES.skills[0];
+  return AI_RESPONSES.default[0];
 }
 
-function random(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-function formatTime() { return new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }); }
+function formatTime() {
+  return new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+}
 
 // ─── Markdown renderer ──────────────────────────────
 function renderMarkdown(text) {
@@ -75,7 +58,7 @@ function renderMarkdown(text) {
 }
 
 function escapeHtml(str) {
-  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return str ? str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') : '';
 }
 
 // ─── DOM refs ───────────────────────────────────────
@@ -98,6 +81,26 @@ const dom = {
   toast: document.getElementById('toast'),
   topExportBtn: document.getElementById('topExportBtn'),
   topShareBtn: document.getElementById('topShareBtn'),
+
+  // Mic & Camera Elements
+  micBtn: document.getElementById('micBtn'),
+  voiceListeningBar: document.getElementById('voiceListeningBar'),
+  voiceStopBtn: document.getElementById('voiceStopBtn'),
+  cameraBtn: document.getElementById('cameraBtn'),
+  imageUploadBtn: document.getElementById('imageUploadBtn'),
+  fileUploadInput: document.getElementById('fileUploadInput'),
+  imagePreviewBar: document.getElementById('imagePreviewBar'),
+  imagePreviewThumb: document.getElementById('imagePreviewThumb'),
+  removeImageBtn: document.getElementById('removeImageBtn'),
+
+  // Camera Modal Elements
+  cameraModal: document.getElementById('cameraModal'),
+  cameraVideo: document.getElementById('cameraVideo'),
+  cameraCanvas: document.getElementById('cameraCanvas'),
+  closeCameraBtn: document.getElementById('closeCameraBtn'),
+  snapPhotoBtn: document.getElementById('snapPhotoBtn'),
+  switchCameraBtn: document.getElementById('switchCameraBtn'),
+  modalUploadBtn: document.getElementById('modalUploadBtn'),
 };
 
 // ─── Messages ───────────────────────────────────────
@@ -110,7 +113,7 @@ function hideWelcome() {
   }
 }
 
-function createMessageRow(role, content, id, providerName) {
+function createMessageRow(role, content, id, providerName, attachedImgUrl) {
   const isUser = role === 'user';
   const time = formatTime();
   const row = document.createElement('div');
@@ -126,25 +129,32 @@ function createMessageRow(role, content, id, providerName) {
           <circle cx="13" cy="15" r="2.2" fill="white"/>
           <circle cx="23" cy="15" r="2.2" fill="white"/>
           <defs><linearGradient id="mg${id}" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#06b6d4"/>
+            <stop offset="0%" stop-color="#0c6c63"/><stop offset="100%" stop-color="#14b8a6"/>
           </linearGradient></defs>
         </svg>
       </div>`;
 
+  const imgHtml = attachedImgUrl ? `<img src="${attachedImgUrl}" class="msg-attached-img" alt="Uploaded Image" />` : '';
+
   const actions = isUser
     ? `<button class="msg-action-btn" onclick="editMsg(${id})">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>Edit</button>`
+        <i class="fa-solid fa-pen-to-square"></i> Edit</button>`
     : `<button class="msg-action-btn" onclick="copyMsg(${id})">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copy</button>
+        <i class="fa-solid fa-copy"></i> Copy</button>
+       <button class="msg-action-btn" onclick="speakMsg(${id})" id="tts-btn-${id}">
+        <i class="fa-solid fa-volume-high"></i> Listen</button>
        <button class="msg-action-btn" onclick="regenerate()">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.86"/></svg>Regenerate</button>`;
+        <i class="fa-solid fa-arrows-rotate"></i> Retry</button>`;
 
   const senderTag = isUser ? (window.CHAT_USERNAME || 'You') : (providerName || '🤖 AI Chat Boat');
 
   row.innerHTML = `${avatarSVG}
     <div class="msg-content-wrap">
       <span class="msg-sender-name">${senderTag} · ${time}</span>
-      <div class="msg-bubble" id="bubble-${id}">${isUser ? escapeHtml(content) : renderMarkdown(content)}</div>
+      <div class="msg-bubble" id="bubble-${id}">
+        ${imgHtml}
+        ${isUser ? escapeHtml(content) : renderMarkdown(content)}
+      </div>
       <div class="msg-actions">${actions}</div>
     </div>`;
   return row;
@@ -159,12 +169,12 @@ function showTyping() {
       <svg viewBox="0 0 36 36" fill="none">
         <path d="M6 18 Q18 5 30 18 Q18 31 6 18Z" fill="url(#tg)" opacity="0.9"/>
         <defs><linearGradient id="tg" x1="0" y1="0" x2="36" y2="36">
-          <stop offset="0%" stop-color="#7c3aed"/><stop offset="100%" stop-color="#06b6d4"/>
+          <stop offset="0%" stop-color="#0c6c63"/><stop offset="100%" stop-color="#14b8a6"/>
         </linearGradient></defs>
       </svg>
     </div>
     <div class="msg-content-wrap">
-      <span class="msg-sender-name">🤖 AI Chat Boat · typing…</span>
+      <span class="msg-sender-name">🤖 AI Chat Boat · analyzing…</span>
       <div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>
     </div>`;
   dom.messagesList.appendChild(row);
@@ -180,20 +190,26 @@ function scrollBottom() {
   requestAnimationFrame(() => dom.messagesContainer.scrollTo({ top: dom.messagesContainer.scrollHeight, behavior: 'smooth' }));
 }
 
-// ─── Send ───────────────────────────────────────────
+// ─── Send Message Flow ──────────────────────────────
 async function sendMessage() {
   const input = dom.messageInput.value.trim();
-  if (!input || state.isLoading) return;
+  const currentImg = state.attachedImage;
+  if ((!input && !currentImg) || state.isLoading) return;
+
   hideWelcome();
   state.isLoading = true;
   state.messageCounter++;
   const uid = state.messageCounter;
-  state.messages.push({ id: uid, role: 'user', content: input });
-  dom.messagesList.appendChild(createMessageRow('user', input, uid));
+
+  state.messages.push({ id: uid, role: 'user', content: input || '[Attached Image]', image: currentImg });
+  dom.messagesList.appendChild(createMessageRow('user', input, uid, null, currentImg));
   scrollBottom();
+
+  // Reset inputs & preview
   dom.messageInput.value = '';
   dom.messageInput.style.height = 'auto';
   dom.charCount.textContent = '0 / 8000';
+  removeAttachedImage();
   updateSendBtn();
   dom.sendBtn.classList.add('loading');
   dom.sendBtn.disabled = true;
@@ -207,7 +223,7 @@ async function sendMessage() {
     const res = await fetch('/chat/api/send/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: input, provider: selectedModel })
+      body: JSON.stringify({ message: input, provider: selectedModel, image: currentImg })
     });
     const data = await res.json();
 
@@ -215,11 +231,11 @@ async function sendMessage() {
       reply = data.response;
       providerName = `🤖 ${data.provider_used || 'AI Chat Boat'}`;
     } else {
-      reply = getAIResponse(input);
+      reply = getAIResponse(input || "analyze image");
     }
   } catch (err) {
     console.warn('API error:', err);
-    reply = getAIResponse(input);
+    reply = getAIResponse(input || "analyze image");
   }
 
   removeTyping();
@@ -228,7 +244,7 @@ async function sendMessage() {
   state.messages.push({ id: aid, role: 'ai', content: reply });
   dom.messagesList.appendChild(createMessageRow('ai', reply, aid, providerName));
   scrollBottom();
-  updateHistoryTitle(input);
+  updateHistoryTitle(input || 'Visual Query');
   state.isLoading = false;
   dom.sendBtn.classList.remove('loading');
   updateSendBtn();
@@ -241,6 +257,219 @@ function updateHistoryTitle(msg) {
     h.querySelector('.history-item-title').textContent = msg.length > 26 ? msg.slice(0, 26) + '…' : msg;
   }
 }
+
+// ─── Image Handling ─────────────────────────────────
+function setAttachedImage(dataUrl) {
+  state.attachedImage = dataUrl;
+  if (dom.imagePreviewThumb) dom.imagePreviewThumb.src = dataUrl;
+  if (dom.imagePreviewBar) dom.imagePreviewBar.style.display = 'flex';
+  updateSendBtn();
+  showToast('📸 Image attached!', 'success');
+}
+
+function removeAttachedImage() {
+  state.attachedImage = null;
+  if (dom.imagePreviewThumb) dom.imagePreviewThumb.src = '';
+  if (dom.imagePreviewBar) dom.imagePreviewBar.style.display = 'none';
+  if (dom.fileUploadInput) dom.fileUploadInput.value = '';
+  updateSendBtn();
+}
+
+if (dom.removeImageBtn) {
+  dom.removeImageBtn.addEventListener('click', removeAttachedImage);
+}
+
+if (dom.imageUploadBtn && dom.fileUploadInput) {
+  dom.imageUploadBtn.addEventListener('click', () => dom.fileUploadInput.click());
+  dom.fileUploadInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (evt) => setAttachedImage(evt.target.result);
+      reader.readAsDataURL(file);
+    }
+  });
+}
+
+// ─── Camera Modal & Live Stream ─────────────────────
+async function startCamera() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    showToast('⚠️ Camera not supported in this browser', 'error');
+    return;
+  }
+  try {
+    stopCamera();
+    const constraints = {
+      video: { facingMode: state.facingMode, width: { ideal: 1280 }, height: { ideal: 720 } }
+    };
+    state.cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+    dom.cameraVideo.srcObject = state.cameraStream;
+    dom.cameraModal.style.display = 'flex';
+  } catch (err) {
+    console.error('Camera access error:', err);
+    showToast('❌ Camera permission denied', 'error');
+  }
+}
+
+function stopCamera() {
+  if (state.cameraStream) {
+    state.cameraStream.getTracks().forEach(track => track.stop());
+    state.cameraStream = null;
+  }
+  if (dom.cameraVideo) dom.cameraVideo.srcObject = null;
+  if (dom.cameraModal) dom.cameraModal.style.display = 'none';
+}
+
+function snapPhoto() {
+  if (!state.cameraStream || !dom.cameraVideo) return;
+  const canvas = dom.cameraCanvas;
+  canvas.width = dom.cameraVideo.videoWidth || 640;
+  canvas.height = dom.cameraVideo.videoHeight || 480;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(dom.cameraVideo, 0, 0, canvas.width, canvas.height);
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+  setAttachedImage(dataUrl);
+  stopCamera();
+}
+
+if (dom.cameraBtn) dom.cameraBtn.addEventListener('click', startCamera);
+if (dom.closeCameraBtn) dom.closeCameraBtn.addEventListener('click', stopCamera);
+if (dom.snapPhotoBtn) dom.snapPhotoBtn.addEventListener('click', snapPhoto);
+
+if (dom.switchCameraBtn) {
+  dom.switchCameraBtn.addEventListener('click', () => {
+    state.facingMode = state.facingMode === 'user' ? 'environment' : 'user';
+    startCamera();
+  });
+}
+
+if (dom.modalUploadBtn) {
+  dom.modalUploadBtn.addEventListener('click', () => {
+    stopCamera();
+    dom.fileUploadInput.click();
+  });
+}
+
+// ─── Microphone Voice Recognition ───────────────────
+function initSpeechRecognition() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    showToast('⚠️ Voice recognition not supported on this browser', 'error');
+    return null;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.continuous = true;
+  recognition.interimResults = true;
+  recognition.lang = 'en-US';
+
+  recognition.onstart = () => {
+    state.isRecording = true;
+    if (dom.micBtn) dom.micBtn.classList.add('recording');
+    if (dom.voiceListeningBar) dom.voiceListeningBar.style.display = 'flex';
+    showToast('🎙️ Listening... Speak now', 'success');
+  };
+
+  recognition.onresult = (event) => {
+    let transcript = '';
+    for (let i = 0; i < event.results.length; i++) {
+      transcript += event.results[i][0].transcript;
+    }
+    dom.messageInput.value = transcript;
+    dom.messageInput.dispatchEvent(new Event('input'));
+  };
+
+  recognition.onerror = (event) => {
+    console.warn('Speech recognition error:', event.error);
+    stopRecording();
+    if (event.error === 'not-allowed') {
+      showToast('❌ Microphone permission denied', 'error');
+    }
+  };
+
+  recognition.onend = () => {
+    stopRecording();
+  };
+
+  return recognition;
+}
+
+function startRecording() {
+  if (!state.recognition) {
+    state.recognition = initSpeechRecognition();
+  }
+  if (state.recognition) {
+    try {
+      state.recognition.start();
+    } catch (e) {
+      console.warn('Recognition already started:', e);
+    }
+  }
+}
+
+function stopRecording() {
+  state.isRecording = false;
+  if (dom.micBtn) dom.micBtn.classList.remove('recording');
+  if (dom.voiceListeningBar) dom.voiceListeningBar.style.display = 'none';
+  if (state.recognition) {
+    try {
+      state.recognition.stop();
+    } catch (e) {}
+  }
+}
+
+if (dom.micBtn) {
+  dom.micBtn.addEventListener('click', () => {
+    if (state.isRecording) {
+      stopRecording();
+    } else {
+      startRecording();
+    }
+  });
+}
+
+if (dom.voiceStopBtn) {
+  dom.voiceStopBtn.addEventListener('click', stopRecording);
+}
+
+// ─── Text-to-Speech (Speaker 🔊) ────────────────────
+window.speakMsg = function(id) {
+  const b = document.getElementById(`bubble-${id}`);
+  if (!b) return;
+  const text = b.innerText;
+
+  if (!window.speechSynthesis) {
+    showToast('⚠️ Speech Synthesis not supported', 'error');
+    return;
+  }
+
+  if (state.currentlySpeakingId === id) {
+    window.speechSynthesis.cancel();
+    state.currentlySpeakingId = null;
+    const btn = document.getElementById(`tts-btn-${id}`);
+    if (btn) btn.innerHTML = '<i class="fa-solid fa-volume-high"></i> Listen';
+    return;
+  }
+
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.rate = 1.0;
+  utterance.pitch = 1.0;
+
+  utterance.onstart = () => {
+    state.currentlySpeakingId = id;
+    const btn = document.getElementById(`tts-btn-${id}`);
+    if (btn) btn.innerHTML = '<i class="fa-solid fa-stop text-danger"></i> Stop';
+  };
+
+  utterance.onend = () => {
+    state.currentlySpeakingId = null;
+    const btn = document.getElementById(`tts-btn-${id}`);
+    if (btn) btn.innerHTML = '<i class="fa-solid fa-volume-high"></i> Listen';
+  };
+
+  window.speechSynthesis.speak(utterance);
+};
 
 // ─── Actions ────────────────────────────────────────
 window.copyMsg = async function(id) {
@@ -267,6 +496,7 @@ window.regenerate = function() {
   if (lastAiRow) lastAiRow.remove();
   state.messages = state.messages.slice(0, -1);
   dom.messageInput.value = last.content;
+  if (last.image) setAttachedImage(last.image);
   sendMessage();
 };
 
@@ -277,6 +507,7 @@ function newChat() {
   const ws = dom.welcomeScreen;
   ws.style.display = ''; ws.style.opacity = '1'; ws.style.transform = '';
   dom.messageInput.value = ''; dom.charCount.textContent = '0 / 8000';
+  removeAttachedImage();
   updateSendBtn();
 
   const histItem = document.createElement('button');
@@ -294,7 +525,7 @@ function newChat() {
 
 // ─── Input handling ──────────────────────────────────
 function updateSendBtn() {
-  dom.sendBtn.disabled = !dom.messageInput.value.trim() || state.isLoading;
+  dom.sendBtn.disabled = (!dom.messageInput.value.trim() && !state.attachedImage) || state.isLoading;
 }
 
 dom.messageInput.addEventListener('input', () => {
@@ -329,7 +560,7 @@ dom.sidebarOverlay.addEventListener('click', closeSidebar);
 dom.newChatBtn.addEventListener('click', newChat);
 
 // ─── Theme ────────────────────────────────────────────
-let dark = true;
+let dark = false;
 dom.themeToggleBtn && dom.themeToggleBtn.addEventListener('click', () => {
   dark = !dark;
   document.body.classList.toggle('light-mode', !dark);
@@ -389,11 +620,11 @@ function showToast(msg, type = '') {
   const ctx = canvas.getContext('2d');
   let W = innerWidth, H = innerHeight;
   canvas.width = W; canvas.height = H;
-  const colors = ['rgba(124,58,237,', 'rgba(6,182,212,', 'rgba(236,72,153,'];
-  const particles = Array.from({ length: 50 }, () => ({
+  const colors = ['rgba(12,108,99,', 'rgba(20,184,166,', 'rgba(14,165,233,'];
+  const particles = Array.from({ length: 40 }, () => ({
     x: Math.random() * W, y: Math.random() * H,
     r: Math.random() * 1.5 + 0.3,
-    vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4,
+    vx: (Math.random() - 0.5) * 0.3, vy: (Math.random() - 0.5) * 0.3,
     color: colors[Math.floor(Math.random() * 3)],
     opacity: Math.random() * 0.5 + 0.1,
   }));
@@ -410,9 +641,9 @@ function showToast(msg, type = '') {
       for (let j = i + 1; j < particles.length; j++) {
         const dx = particles[i].x - particles[j].x, dy = particles[i].y - particles[j].y;
         const d = Math.sqrt(dx*dx + dy*dy);
-        if (d < 120) {
+        if (d < 110) {
           ctx.beginPath(); ctx.moveTo(particles[i].x, particles[i].y); ctx.lineTo(particles[j].x, particles[j].y);
-          ctx.strokeStyle = `rgba(124,58,237,${0.08*(1-d/120)})`; ctx.lineWidth = 0.5; ctx.stroke();
+          ctx.strokeStyle = `rgba(12,108,99,${0.08*(1-d/110)})`; ctx.lineWidth = 0.5; ctx.stroke();
         }
       }
     }
@@ -426,7 +657,7 @@ function showToast(msg, type = '') {
 document.addEventListener('keydown', e => {
   if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); dom.messageInput.focus(); }
   if ((e.ctrlKey || e.metaKey) && e.key === 'n') { e.preventDefault(); newChat(); }
-  if (e.key === 'Escape') closeSidebar();
+  if (e.key === 'Escape') { closeSidebar(); stopCamera(); }
 });
 
 // ─── Init ─────────────────────────────────────────────

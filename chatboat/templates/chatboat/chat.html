@@ -4,16 +4,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="AI Chat Boat — Your intelligent AI assistant built into Skill Bank. Ask anything, learn faster." />
+  <meta name="description" content="AI Chat Boat — Your intelligent AI assistant built into Skill Bank. Ask with text, voice mic, or camera photos." />
   <title>AI Chat Boat | Skill Bank</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="{% static 'chatboat/css/chat.css' %}" />
 </head>
 <body>
 
-  <!-- Pass Django username to JS (falls back to 'Guest' for anonymous users) -->
+  <!-- Pass Django username to JS -->
   <script>
     window.CHAT_USERNAME = "{{ user.username|default:'Guest'|escapejs }}";
   </script>
@@ -45,8 +46,8 @@
               <circle cx="22" cy="16" r="2" fill="#fff"/>
               <defs>
                 <linearGradient id="bG" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
-                  <stop offset="0%" stop-color="#7c3aed"/>
-                  <stop offset="100%" stop-color="#06b6d4"/>
+                  <stop offset="0%" stop-color="#0c6c63"/>
+                  <stop offset="100%" stop-color="#14b8a6"/>
                 </linearGradient>
               </defs>
             </svg>
@@ -75,17 +76,16 @@
       </nav>
 
       <div class="sidebar-footer">
-        <div class="sidebar-section-label">Settings</div>
+        <div class="sidebar-section-label">Settings & Multimodal</div>
 
         <!-- Model selector -->
         <div>
-          <label for="modelSelector" class="model-label">AI Model</label>
+          <label for="modelSelector" class="model-label">AI Intelligence</label>
           <div class="custom-select-wrap">
             <select id="modelSelector" class="model-selector">
-              <option value="gemini" selected>Gemini 1.5 Pro</option>
-              <option value="gpt4">GPT-4 Turbo</option>
-              <option value="claude">Claude 3.5 Sonnet</option>
-              <option value="mistral">Mistral Large</option>
+              <option value="gemini" selected>Gemini 1.5 Flash (Vision + Voice)</option>
+              <option value="groq">Groq Llama 3.1 Ultra Fast</option>
+              <option value="openrouter">OpenRouter Free Models</option>
             </select>
             <svg class="select-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
           </div>
@@ -115,7 +115,7 @@
             <span class="user-plan">{% if user.is_authenticated %}Skill Bank Member{% else %}Preview Mode{% endif %}</span>
           </div>
           {% if user.is_authenticated %}
-          <a href="{% url 'login' %}" class="logout-btn">Logout</a>
+          <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
           {% endif %}
         </div>
 
@@ -134,7 +134,7 @@
         <div class="topbar-title">
           <div class="ai-status-dot" title="AI Online"></div>
           <h1>AI Chat Boat</h1>
-          <span class="ai-version-badge">v2.0</span>
+          <span class="ai-version-badge">Vision & Voice Enabled</span>
         </div>
 
         <div class="topbar-actions">
@@ -158,27 +158,14 @@
           <div class="welcome-avatar">
             <div class="avatar-ring"></div>
             <div class="avatar-inner">
-              <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <circle cx="32" cy="32" r="30" fill="url(#wG)" opacity="0.15"/>
-                <path d="M16 32 Q32 12 48 32 Q32 52 16 32Z" fill="url(#wG)" opacity="0.9"/>
-                <circle cx="26" cy="28" r="3.5" fill="white"/>
-                <circle cx="38" cy="28" r="3.5" fill="white"/>
-                <circle cx="27.5" cy="27" r="1.2" fill="#1a1a2e"/>
-                <circle cx="39.5" cy="27" r="1.2" fill="#1a1a2e"/>
-                <defs>
-                  <linearGradient id="wG" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-                    <stop offset="0%" stop-color="#7c3aed"/>
-                    <stop offset="100%" stop-color="#06b6d4"/>
-                  </linearGradient>
-                </defs>
-              </svg>
+              <span style="font-size: 38px;">🤖</span>
             </div>
           </div>
           <h2 class="welcome-title">
             Hello, <em class="welcome-username">{{ user.username|default:'there' }}</em>! 👋<br>
             I'm <span class="gradient-text">AI Chat Boat</span>
           </h2>
-          <p class="welcome-subtitle">Your intelligent AI companion inside Skill Bank. Ask me about skills, coding, career paths, or anything on your mind!</p>
+          <p class="welcome-subtitle">Ask me anything via text, speak with your <strong>microphone</strong> 🎙️, or snap a photo with your <strong>camera</strong> 📸 to analyze skills and documents!</p>
 
           <div class="suggestion-grid" role="list">
             <button class="suggestion-card" role="listitem" data-prompt="What are the most in-demand tech skills to learn in 2025?">
@@ -195,11 +182,11 @@
                 <span>Bubble sort in Python</span>
               </div>
             </button>
-            <button class="suggestion-card" role="listitem" data-prompt="Explain quantum computing in simple terms">
-              <div class="suggestion-icon">🔬</div>
+            <button class="suggestion-card" role="listitem" data-prompt="Help me formulate a skill description to teach Acoustic Guitar">
+              <div class="suggestion-icon">🎸</div>
               <div class="suggestion-text">
-                <strong>Explain quantum computing</strong>
-                <span>In simple terms</span>
+                <strong>Skill Description Help</strong>
+                <span>Guitar swap tutoring</span>
               </div>
             </button>
             <button class="suggestion-card" role="listitem" data-prompt="What are Django best practices for building a web app?">
@@ -217,21 +204,51 @@
 
       </div>
 
+      <!-- Attached Image Preview Bar -->
+      <div class="image-preview-bar" id="imagePreviewBar" style="display: none;">
+        <div class="preview-thumbnail-wrap">
+          <img id="imagePreviewThumb" src="" alt="Attached Preview" />
+          <button type="button" class="preview-remove-btn" id="removeImageBtn" title="Remove image">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <span class="preview-label"><i class="fa-solid fa-image text-success me-1"></i> Image attached for AI analysis</span>
+      </div>
+
+      <!-- Voice Listening Status Bar -->
+      <div class="voice-listening-bar" id="voiceListeningBar" style="display: none;">
+        <div class="voice-wave">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <span class="voice-listening-text">Listening... Speak now into your microphone</span>
+        <button type="button" class="voice-stop-btn" id="voiceStopBtn">Stop</button>
+      </div>
+
       <!-- Input Area -->
       <footer class="input-area" role="contentinfo">
         <div class="input-toolbar">
-          <button class="tool-btn" id="attachBtn" aria-label="Attach file" title="Attach">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+          <!-- Mic / Speech Button -->
+          <button class="tool-btn" id="micBtn" aria-label="Voice input with microphone" title="Speak with Mic">
+            <i class="fa-solid fa-microphone" style="font-size: 16px;"></i>
           </button>
-          <button class="tool-btn" id="imageBtn" aria-label="Add image" title="Image">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+
+          <!-- Camera / Snap Button -->
+          <button class="tool-btn" id="cameraBtn" aria-label="Take a photo with camera" title="Camera / Photo Snap">
+            <i class="fa-solid fa-camera" style="font-size: 16px;"></i>
           </button>
+
+          <!-- File / Image Upload Button -->
+          <button class="tool-btn" id="imageUploadBtn" aria-label="Upload image" title="Upload Image">
+            <i class="fa-solid fa-paperclip" style="font-size: 16px;"></i>
+          </button>
+          <input type="file" id="fileUploadInput" accept="image/*" style="display: none;" />
         </div>
+
         <div class="input-box-wrap">
           <textarea
             id="messageInput"
             class="message-input"
-            placeholder="Message AI Chat Boat…"
+            placeholder="Message AI Chat Boat or speak via Mic / snap with Camera…"
             rows="1"
             aria-label="Type your message"
             maxlength="8000"
@@ -240,14 +257,42 @@
             <span class="char-count" id="charCount">0 / 8000</span>
           </div>
         </div>
+
         <button class="send-btn" id="sendBtn" aria-label="Send message" disabled>
           <svg class="send-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
           <div class="send-spinner" aria-hidden="true"></div>
         </button>
       </footer>
-      <div class="input-disclaimer">AI Chat Boat can make mistakes. Always verify important information.</div>
+      <div class="input-disclaimer">AI Chat Boat can analyze text, speech, and images. Always verify critical facts.</div>
 
     </main>
+  </div>
+
+  <!-- ══════════ CAMERA MODAL ══════════ -->
+  <div class="camera-modal-backdrop" id="cameraModal" style="display: none;">
+    <div class="camera-modal-card">
+      <div class="camera-modal-header">
+        <h5><i class="fa-solid fa-camera text-success me-2"></i> Camera Snapshot</h5>
+        <button type="button" class="camera-close-btn" id="closeCameraBtn"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="camera-preview-container">
+        <video id="cameraVideo" autoplay playsinline></video>
+        <canvas id="cameraCanvas" style="display: none;"></canvas>
+      </div>
+
+      <div class="camera-modal-actions">
+        <button type="button" class="btn-camera-snap" id="snapPhotoBtn">
+          <i class="fa-solid fa-circle-dot me-1"></i> Capture Photo
+        </button>
+        <button type="button" class="btn-camera-switch" id="switchCameraBtn" title="Switch Camera">
+          <i class="fa-solid fa-arrows-rotate"></i>
+        </button>
+        <button type="button" class="btn-camera-upload" id="modalUploadBtn">
+          <i class="fa-solid fa-upload me-1"></i> Upload File
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Toast -->
@@ -256,21 +301,6 @@
   <!-- Sidebar overlay (mobile) -->
   <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
 
-  <script>
-    // Tool button toasts
-    document.getElementById('attachBtn').addEventListener('click', () => {
-      const t = document.getElementById('toast');
-      t.textContent = '📎 File attachment coming soon!';
-      t.className = 'toast success show';
-      setTimeout(() => t.classList.remove('show'), 3000);
-    });
-    document.getElementById('imageBtn').addEventListener('click', () => {
-      const t = document.getElementById('toast');
-      t.textContent = '🖼️ Image upload coming soon!';
-      t.className = 'toast success show';
-      setTimeout(() => t.classList.remove('show'), 3000);
-    });
-  </script>
   <script src="{% static 'chatboat/js/chat.js' %}"></script>
 </body>
 </html>

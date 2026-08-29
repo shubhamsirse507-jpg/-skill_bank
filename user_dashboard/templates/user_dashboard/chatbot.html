@@ -4,25 +4,35 @@
 {% block title %}AI Chatbot — Skill Bank{% endblock %}
 
 {% block content %}
-<div class="container mt-4" style="max-width: 850px;">
+<div class="container mt-4" style="max-width: 880px;">
 
-    <div class="d-flex align-items-center mb-4">
-        <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-sm me-3">← Back</a>
-        <h2 class="fw-bold mb-0">🤖 Skill Bank AI Chatbot</h2>
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div class="d-flex align-items-center">
+            <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-sm me-3 rounded-pill px-3">← Back</a>
+            <h2 class="fw-bold mb-0">🤖 Skye AI Chatbot</h2>
+        </div>
+        <a href="{% url 'chatboat' %}" class="btn btn-sm btn-outline-primary rounded-pill px-3">
+            <i class="bi bi-arrows-fullscreen me-1"></i> Full App Mode
+        </a>
     </div>
 
-    <div class="card shadow border-0 rounded-4 overflow-hidden" style="height: 600px; display: flex; flex-direction: column;">
+    <div class="card shadow border-0 rounded-4 overflow-hidden" style="height: 640px; display: flex; flex-direction: column;">
 
         <!-- Chat Header -->
-        <div class="d-flex align-items-center p-3" style="background: linear-gradient(135deg, #16a38b, #0f766e); color: white;">
-            <div class="rounded-circle bg-white d-flex align-items-center justify-content-center me-3"
-                 style="width:48px;height:48px;min-width:48px;">
-                <span style="font-size:24px;">🤖</span>
+        <div class="d-flex align-items-center justify-content-between p-3" style="background: linear-gradient(135deg, #0c6c63, #14b8a6); color: white;">
+            <div class="d-flex align-items-center">
+                <div class="rounded-circle bg-white d-flex align-items-center justify-content-center me-3"
+                     style="width:48px;height:48px;min-width:48px;">
+                    <span style="font-size:24px;">🤖</span>
+                </div>
+                <div>
+                    <div class="fw-bold fs-5">Skye AI Assistant</div>
+                    <small style="opacity:0.9;">Voice, Vision & Global Skill Knowledge Base • Online</small>
+                </div>
             </div>
-            <div>
-                <div class="fw-bold fs-5">SkillBot</div>
-                <small style="opacity:0.85;">Your personal skill exchange assistant • Online</small>
-            </div>
+            <span class="badge bg-white text-dark rounded-pill px-3 py-2 fw-semibold">
+                <span class="spinner-grow spinner-grow-sm text-success me-1" style="width: 8px; height: 8px;" role="status"></span> Active
+            </span>
         </div>
 
         <!-- Messages Area -->
@@ -30,39 +40,77 @@
             <!-- Welcome message -->
             <div class="d-flex mb-3">
                 <div class="rounded-circle bg-success d-flex align-items-center justify-content-center me-2"
-                     style="width:36px;height:36px;min-width:36px;">
-                    <span>🤖</span>
+                     style="width:36px;height:36px;min-width:36px; background: #0c6c63 !important;">
+                    <span class="text-white">🤖</span>
                 </div>
                 <div>
-                    <div class="card border-0 rounded-4 px-3 py-2 shadow-sm" style="background:#e8f5f3; max-width:420px;">
+                    <div class="card border-0 rounded-4 px-3 py-2 shadow-sm" style="background:#e8f5f3; max-width:460px;">
                         <p class="mb-1">Hello, <strong>{{ user.get_full_name|default:user.username }}</strong>! 👋</p>
-                        <p class="mb-0 small text-muted">I'm SkillBot, your AI assistant. I can help you:</p>
+                        <p class="mb-0 small text-muted">I'm <strong>Skye</strong>, your multimodal AI assistant. You can:</p>
                         <ul class="small text-muted mt-1 mb-0">
-                            <li>Find skills and exchange partners</li>
-                            <li>Learn about how the platform works</li>
-                            <li>Get tips for successful skill exchanges</li>
-                            <li>Answer any questions you have</li>
+                            <li>🎙️ Speak your question aloud with your <strong>microphone</strong></li>
+                            <li>📷 Upload photos or documents with your <strong>camera</strong></li>
+                            <li>🔍 Find swap partners & learn roadmap advice</li>
                         </ul>
                     </div>
-                    <small class="text-muted ms-1">SkillBot • just now</small>
+                    <small class="text-muted ms-1">Skye • just now</small>
                 </div>
             </div>
         </div>
 
+        <!-- Attached Image Preview Strip -->
+        <div id="dashPreviewStrip" style="display: none; padding: 8px 16px; background: #edf7f6; border-top: 1px solid #d1eae6;" class="align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+                <img id="dashPreviewImg" src="" style="width: 36px; height: 36px; border-radius: 8px; object-fit: cover;" alt="Attachment" />
+                <span class="small fw-bold text-success"><i class="bi bi-card-image me-1"></i> Photo attached for AI inspection</span>
+            </div>
+            <button type="button" id="dashRemoveImgBtn" class="btn btn-sm btn-link text-danger p-0 text-decoration-none">
+                <i class="bi bi-x-circle-fill fs-5"></i>
+            </button>
+        </div>
+
+        <!-- Voice Listening Wave Bar -->
+        <div id="dashVoiceBar" style="display: none; padding: 8px 18px; background: linear-gradient(135deg, #0c6c63, #14b8a6); color: white;" class="align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+                <span class="spinner-grow spinner-grow-sm text-light" role="status"></span>
+                <span class="small fw-bold">Listening... Speak now into your microphone</span>
+            </div>
+            <button type="button" id="dashVoiceStopBtn" class="btn btn-sm btn-light rounded-pill px-3 py-0 fw-bold" style="font-size: 12px; color: #0c6c63;">
+                Stop
+            </button>
+        </div>
+
         <!-- Input Area -->
         <div class="p-3 border-top" style="background: white;">
-            <div class="d-flex gap-2">
-                <input type="text" id="chatInput" class="form-control rounded-pill"
-                       placeholder="Ask me anything about skill exchanges..."
+            <div class="d-flex gap-2 align-items-center">
+                <!-- Mic Button -->
+                <button type="button" id="dashMicBtn" class="btn btn-light rounded-circle border d-flex align-items-center justify-content-center"
+                        style="width: 44px; height: 44px; min-width: 44px; color: #0c6c63;" title="Speak with Mic">
+                    <i class="bi bi-mic-fill fs-5"></i>
+                </button>
+
+                <!-- Camera / Photo Button -->
+                <button type="button" id="dashCamBtn" class="btn btn-light rounded-circle border d-flex align-items-center justify-content-center"
+                        style="width: 44px; height: 44px; min-width: 44px; color: #0c6c63;" title="Upload or snap photo">
+                    <i class="bi bi-camera-fill fs-5"></i>
+                </button>
+                <input type="file" id="dashFileInput" accept="image/*" style="display: none;" />
+
+                <input type="text" id="chatInput" class="form-control rounded-pill px-3 py-2"
+                       placeholder="Ask Skye, speak with Mic 🎙️, or attach a photo 📷..."
                        onkeydown="if(event.key==='Enter'){sendMessage()}">
-                <button onclick="sendMessage()" class="btn btn-success rounded-pill px-4 fw-bold">
+
+                <button onclick="sendMessage()" id="dashSendBtn" class="btn btn-success rounded-pill px-4 fw-bold d-flex align-items-center gap-1"
+                        style="background: #0c6c63; border-color: #0c6c63;">
                     <i class="bi bi-send-fill"></i> Send
                 </button>
             </div>
+
             <div class="mt-2 d-flex flex-wrap gap-2">
                 <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="quickMsg('How do I find a skill exchange partner?')">💡 Find partners</button>
-                <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="quickMsg('What skills are most popular?')">🔥 Popular skills</button>
-                <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="quickMsg('How do bookings work?')">📅 Bookings help</button>
+                <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="quickMsg('What skills are most popular in 2025?')">🔥 Popular skills</button>
+                <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="quickMsg('How do bookings and live sessions work?')">📅 Bookings help</button>
+                <button class="btn btn-sm btn-outline-secondary rounded-pill" onclick="quickMsg('Help me craft an attractive skill description')">✨ Profile tips</button>
             </div>
         </div>
     </div>
@@ -70,28 +118,28 @@
     <!-- Quick Actions -->
     <div class="row g-3 mt-3">
         <div class="col-md-4">
-            <a href="{% url 'search_skills' %}" class="card text-decoration-none border-0 shadow-sm rounded-4 p-3 d-flex flex-row align-items-center gap-3">
+            <a href="{% url 'search_skills' %}" class="card text-decoration-none border-0 shadow-sm rounded-4 p-3 d-flex flex-row align-items-center gap-3 bg-white">
                 <span style="font-size:28px;">🔍</span>
                 <div>
-                    <div class="fw-semibold">Browse Skills</div>
+                    <div class="fw-semibold text-dark">Browse Skills</div>
                     <small class="text-muted">Explore all available skills</small>
                 </div>
             </a>
         </div>
         <div class="col-md-4">
-            <a href="{% url 'add_skill' %}" class="card text-decoration-none border-0 shadow-sm rounded-4 p-3 d-flex flex-row align-items-center gap-3">
+            <a href="{% url 'add_skill' %}" class="card text-decoration-none border-0 shadow-sm rounded-4 p-3 d-flex flex-row align-items-center gap-3 bg-white">
                 <span style="font-size:28px;">➕</span>
                 <div>
-                    <div class="fw-semibold">Add a Skill</div>
+                    <div class="fw-semibold text-dark">Add a Skill</div>
                     <small class="text-muted">Share what you can teach</small>
                 </div>
             </a>
         </div>
         <div class="col-md-4">
-            <a href="{% url 'messaging_index' %}" class="card text-decoration-none border-0 shadow-sm rounded-4 p-3 d-flex flex-row align-items-center gap-3">
+            <a href="{% url 'messaging_index' %}" class="card text-decoration-none border-0 shadow-sm rounded-4 p-3 d-flex flex-row align-items-center gap-3 bg-white">
                 <span style="font-size:28px;">💬</span>
                 <div>
-                    <div class="fw-semibold">My Messages</div>
+                    <div class="fw-semibold text-dark">My Messages</div>
                     <small class="text-muted">View skill exchange chats</small>
                 </div>
             </a>
@@ -101,53 +149,154 @@
 
 {% block extra_js %}
 <script>
-    const RESPONSES = {
-        'partner': "To find a skill exchange partner:\n1. Go to 🔍 Browse Skills\n2. Search for the skill you want to learn\n3. Click on a skill card to view the user's profile\n4. Click 'Request Exchange' to send a skill swap request\n5. Once accepted, chat and arrange your sessions!",
-        'popular': "The most popular skill categories on Skill Bank are:\n• 💻 Programming (Python, JavaScript, React)\n• 🎨 Design (UI/UX, Graphic Design)\n• 🎸 Music (Guitar, Piano, Singing)\n• 📸 Photography\n• 🌍 Languages (Spanish, French, Mandarin)\n• 💪 Fitness & Yoga",
-        'booking': "Bookings work like this:\n1. Accept a skill exchange request in Messages\n2. Go to 📅 Bookings\n3. Click 'Schedule Session'\n4. Pick a date, time, and meeting mode (online/in-person)\n5. Both users get a booking confirmation\n6. After the session, leave a ⭐ review!",
-        'default': "That's a great question! I'm your Skill Bank AI assistant. I can help you find skills, set up exchanges, and navigate the platform. Try browsing our skill categories or use the search bar to find what you're looking for. Is there anything specific I can help you with?"
-    };
+    let attachedImg = null;
+    let isRecording = false;
+    let recognition = null;
 
-    function addMessage(text, isUser) {
+    // Mic Speech Recognition
+    const micBtn = document.getElementById('dashMicBtn');
+    const voiceBar = document.getElementById('dashVoiceBar');
+    const voiceStopBtn = document.getElementById('dashVoiceStopBtn');
+    const chatInput = document.getElementById('chatInput');
+
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRec) {
+        recognition = new SpeechRec();
+        recognition.continuous = true;
+        recognition.interimResults = true;
+        recognition.onstart = () => {
+            isRecording = true;
+            micBtn.classList.remove('btn-light');
+            micBtn.classList.add('btn-danger', 'text-white');
+            voiceBar.style.display = 'flex';
+        };
+        recognition.onresult = (e) => {
+            let str = '';
+            for (let i = 0; i < e.results.length; i++) {
+                str += e.results[i][0].transcript;
+            }
+            chatInput.value = str;
+        };
+        recognition.onerror = () => {
+            stopVoice();
+        };
+        recognition.onend = () => {
+            stopVoice();
+        };
+        micBtn.addEventListener('click', () => {
+            if (isRecording) {
+                recognition.stop();
+            } else {
+                try { recognition.start(); } catch(err){}
+            }
+        });
+        voiceStopBtn.addEventListener('click', () => {
+            if (recognition) recognition.stop();
+        });
+    } else {
+        micBtn.addEventListener('click', () => alert('Speech recognition not supported on this browser.'));
+    }
+
+    function stopVoice() {
+        isRecording = false;
+        micBtn.classList.remove('btn-danger', 'text-white');
+        micBtn.classList.add('btn-light');
+        voiceBar.style.display = 'none';
+    }
+
+    // Camera / Photo Upload
+    const camBtn = document.getElementById('dashCamBtn');
+    const fileInput = document.getElementById('dashFileInput');
+    const previewStrip = document.getElementById('dashPreviewStrip');
+    const previewImg = document.getElementById('dashPreviewImg');
+    const removeImgBtn = document.getElementById('dashRemoveImgBtn');
+
+    camBtn.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                attachedImg = evt.target.result;
+                previewImg.src = attachedImg;
+                previewStrip.style.display = 'flex';
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    removeImgBtn.addEventListener('click', () => {
+        attachedImg = null;
+        previewImg.src = '';
+        previewStrip.style.display = 'none';
+        fileInput.value = '';
+    });
+
+    function addMessage(text, isUser, imgUrl) {
         const area = document.getElementById('chatMessages');
         const time = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+        
+        let imgTag = imgUrl ? `<img src="${imgUrl}" style="max-width:240px; border-radius:12px; margin-bottom:8px; display:block;" alt="Attached">` : '';
+
         const html = isUser
             ? `<div class="d-flex mb-3 justify-content-end">
                 <div>
-                    <div class="card border-0 rounded-4 px-3 py-2 shadow-sm text-white" style="background:#16a38b; max-width:380px;">
-                        <p class="mb-0">${text}</p>
+                    <div class="card border-0 rounded-4 px-3 py-2 shadow-sm text-white" style="background:#0c6c63; max-width:420px;">
+                        ${imgTag}
+                        <p class="mb-0">${text ? text.replace(/</g,'&lt;') : ''}</p>
                     </div>
                     <small class="text-muted float-end me-1">You • ${time}</small>
                 </div>
                </div>`
             : `<div class="d-flex mb-3">
-                <div class="rounded-circle bg-success d-flex align-items-center justify-content-center me-2" style="width:36px;height:36px;min-width:36px;"><span>🤖</span></div>
+                <div class="rounded-circle bg-success d-flex align-items-center justify-content-center me-2" style="width:36px;height:36px;min-width:36px; background:#0c6c63 !important;"><span>🤖</span></div>
                 <div>
-                    <div class="card border-0 rounded-4 px-3 py-2 shadow-sm" style="background:#e8f5f3; max-width:420px;">
+                    <div class="card border-0 rounded-4 px-3 py-2 shadow-sm" style="background:#e8f5f3; max-width:460px;">
                         <p class="mb-0" style="white-space:pre-line;">${text}</p>
                     </div>
-                    <small class="text-muted ms-1">SkillBot • ${time}</small>
+                    <small class="text-muted ms-1">Skye • ${time}</small>
                 </div>
                </div>`;
         area.insertAdjacentHTML('beforeend', html);
         area.scrollTop = area.scrollHeight;
     }
 
-    function getReply(msg) {
-        const lower = msg.toLowerCase();
-        if (lower.includes('partner') || lower.includes('find') || lower.includes('search')) return RESPONSES.partner;
-        if (lower.includes('popular') || lower.includes('trending') || lower.includes('skill')) return RESPONSES.popular;
-        if (lower.includes('book') || lower.includes('session') || lower.includes('schedule')) return RESPONSES.booking;
-        return RESPONSES.default;
-    }
-
-    function sendMessage() {
+    async function sendMessage() {
         const input = document.getElementById('chatInput');
         const msg = input.value.trim();
-        if (!msg) return;
-        addMessage(msg, true);
+        const curImg = attachedImg;
+        if (!msg && !curImg) return;
+
+        addMessage(msg, true, curImg);
         input.value = '';
-        setTimeout(() => addMessage(getReply(msg), false), 800);
+        if (removeImgBtn) removeImgBtn.click();
+
+        // Temporary thinking
+        const tempId = 'thinking-' + Date.now();
+        const area = document.getElementById('chatMessages');
+        area.insertAdjacentHTML('beforeend', `<div id="${tempId}" class="d-flex mb-3"><div class="rounded-circle bg-success d-flex align-items-center justify-content-center me-2" style="width:36px;height:36px;min-width:36px;background:#0c6c63!important;"><span>🤖</span></div><div class="card border-0 rounded-4 px-3 py-2 shadow-sm" style="background:#e8f5f3;"><span class="spinner-grow spinner-grow-sm text-success"></span> Skye is typing...</div></div>`);
+        area.scrollTop = area.scrollHeight;
+
+        try {
+            const res = await fetch('/chat/api/send/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: msg, image: curImg })
+            });
+            const data = await res.json();
+            const temp = document.getElementById(tempId);
+            if (temp) temp.remove();
+
+            if (data.response) {
+                addMessage(data.response, false);
+            } else {
+                addMessage("I'm here to help you trade skills on SkillBank! Let me know if you need help matching or learning.", false);
+            }
+        } catch (err) {
+            const temp = document.getElementById(tempId);
+            if (temp) temp.remove();
+            addMessage("SkillBank connects members worldwide to swap skills! Ask me anything about learning or exchange partners.", false);
+        }
     }
 
     function quickMsg(msg) {
