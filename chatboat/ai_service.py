@@ -14,6 +14,41 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
+def call_ollama_ai(prompt, model="llama3.2:1b", image_data=None):
+    """
+    Call Local Ollama API (100% Offline, Free, Zero API Keys!).
+    Runs on http://localhost:11434/api/generate
+    """
+    url = "http://localhost:11434/api/generate"
+    payload = {
+        "model": model,
+        "prompt": prompt,
+        "stream": False,
+        "options": {
+            "temperature": 0.7,
+            "num_predict": 400
+        }
+    }
+
+    if image_data and "base64," in image_data:
+        try:
+            b64_data = image_data.split("base64,")[1]
+            payload["images"] = [b64_data]
+            payload["model"] = "llava" # Vision model if available
+        except Exception:
+            pass
+
+    data = json.dumps(payload).encode('utf-8')
+    req = urllib.request.Request(url, data=data, headers={'Content-Type': 'application/json'}, method='POST')
+
+    with urllib.request.urlopen(req, timeout=25) as response:
+        res_data = json.loads(response.read().decode('utf-8'))
+        text = res_data.get('response', '').strip()
+        if text:
+            return text
+    raise ValueError("Ollama returned empty response")
+
+
 def call_pollinations_ai(prompt):
     """Call Pollinations GET AI text endpoint."""
     encoded_prompt = urllib.parse.quote(prompt)
@@ -32,7 +67,6 @@ def call_pollinations_ai(prompt):
 
 def call_duckduckgo_ai(prompt):
     """Call DuckDuckGo Free AI chat API (No Key Required!)."""
-    # Step 1: Get status token
     status_req = urllib.request.Request(
         "https://duckduckgo.com/duckchat/v1/status",
         headers={
@@ -47,7 +81,6 @@ def call_duckduckgo_ai(prompt):
     if not vqd:
         raise ValueError("DuckDuckGo token fetch failed")
 
-    # Step 2: Chat completion
     chat_url = "https://duckduckgo.com/duckchat/v1/chat"
     payload = {
         "model": "gpt-4o-mini",
@@ -118,78 +151,37 @@ def call_gemini_api(prompt, api_key, image_data=None):
         return res_data['candidates'][0]['content']['parts'][0]['text']
 
 
-def call_groq_api(prompt, api_key):
-    """Call Groq Cloud API (Llama 3.1 8B)."""
-    if not api_key:
-        raise ValueError("Groq API key missing")
-
-    url = "https://api.groq.com/openai/v1/chat/completions"
-    payload = {
-        "model": "llama-3.1-8b-instant",
-        "messages": [{"role": "user", "content": prompt}]
-    }
-    data = json.dumps(payload).encode('utf-8')
-    headers = {
-        'Authorization': f'Bearer {api_key}',
-        'Content-Type': 'application/json'
-    }
-    req = urllib.request.Request(url, data=data, headers=headers, method='POST')
-
-    with urllib.request.urlopen(req, timeout=12) as response:
-        res_data = json.loads(response.read().decode('utf-8'))
-        return res_data['choices'][0]['message']['content']
-
-
-def call_openrouter_api(prompt, api_key):
-    """Call OpenRouter Free Models API."""
-    if not api_key:
-        raise ValueError("OpenRouter API key missing")
-
-    url = "https://openrouter.ai/api/v1/chat/completions"
-    payload = {
-        "model": "meta-llama/llama-3.1-8b-instruct:free",
-        "messages": [{"role": "user", "content": prompt}]
-    }
-    data = json.dumps(payload).encode('utf-8')
-    headers = {
-        'Authorization': f'Bearer {api_key}',
-        'Content-Type': 'application/json'
-    }
-    req = urllib.request.Request(url, data=data, headers=headers, method='POST')
-
-    with urllib.request.urlopen(req, timeout=12) as response:
-        res_data = json.loads(response.read().decode('utf-8'))
-        return res_data['choices'][0]['message']['content']
-
-
 def generate_ai_response(prompt, requested_provider="auto", image_data=None):
     """
-    Generate accurate AI response with multi-level zero-fail failover, image support, and Skill_Data enrichment.
+    Generate accurate AI response with local Ollama priority, zero-fail failovers, and Skill_Data enrichment.
     """
-    # 1. Fetch skill context from Skill_Data (covers tech, creative, business, health, lifestyle, trades)
+    # 1. Fetch skill context from Skill_Data knowledge base
     skill_context = query_skill_bank_data(prompt)
     enriched_prompt = prompt
     if skill_context and "Skill Bank supports" not in skill_context:
-        enriched_prompt = f"Context from Skill Bank Global Knowledge Base:\n{skill_context}\n\nUser Question: {prompt}"
+        enriched_prompt = f"Skill Bank Context:\n{skill_context}\n\nUser Question: {prompt}\nPlease provide a helpful, friendly response formatted nicely in markdown."
 
     if image_data:
         enriched_prompt = f"[User attached an image / camera capture for analysis]\n{enriched_prompt}"
 
     gemini_key = getattr(settings, 'GEMINI_API_KEY', '')
     groq_key = getattr(settings, 'GROQ_API_KEY', '')
-    openrouter_key = getattr(settings, 'OPENROUTER_API_KEY', '')
 
     pipeline = []
+
+    # Priority 1: Local Ollama (Zero Key, Local PC)
+    pipeline.append(("Local Ollama (Llama 3.2)", lambda p: call_ollama_ai(p, model="llama3.2:1b", image_data=image_data)))
+    pipeline.append(("Local Ollama (Phi 3)", lambda p: call_ollama_ai(p, model="phi3:mini", image_data=image_data)))
+
+    # Priority 2: Cloud API keys if configured
     if gemini_key:
-        pipeline.append(("Google Gemini 1.5 Vision", lambda p: call_gemini_api(p, gemini_key, image_data=image_data)))
+        pipeline.append(("Google Gemini 1.5", lambda p: call_gemini_api(p, gemini_key, image_data=image_data)))
     if groq_key:
         pipeline.append(("Groq Llama 3", lambda p: call_groq_api(p, groq_key)))
-    if openrouter_key:
-        pipeline.append(("OpenRouter Llama 3", lambda p: call_openrouter_api(p, openrouter_key)))
 
-    # Add free public gateways (no key needed!)
-    pipeline.append(("Free AI (Pollinations)", call_pollinations_ai))
+    # Priority 3: Free Public Gateways (DuckDuckGo GPT-4o & Pollinations)
     pipeline.append(("Free AI (DuckDuckGo GPT-4o)", call_duckduckgo_ai))
+    pipeline.append(("Free AI (Pollinations)", call_pollinations_ai))
 
     errors = []
 
@@ -208,11 +200,11 @@ def generate_ai_response(prompt, requested_provider="auto", image_data=None):
             logger.warning(err_str)
             errors.append(err_str)
 
-    # Smart local Skill_Data fallback so questions about any skill ALWAYS get precise structured data!
+    # Priority 4: Local Skill_Data Knowledge fallback
     if skill_context:
         fallback_res = f"### 📚 Skill Bank Knowledge Response\n\n{skill_context}"
     else:
-        fallback_res = f"Here is what I found for **'{prompt}'**:\n\nFor full live AI completions, add your API key in `settings.py`!"
+        fallback_res = f"Here is what I found for **'{prompt}'**:\n\nSkill Bank connects learners worldwide to trade skills! Install & run Ollama (`ollama run llama3.2:1b`) for full offline local generation."
 
     return {
         "success": True,
