@@ -9,13 +9,8 @@
         max-width: 1400px;
         margin: 0 auto;
     }
-    .hero-section {
-        padding: 60px !important;
-    }
-    .stat-card-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 20px;
+    .dashboard-hero-pro {
+        padding: 48px 56px !important;
     }
 }
 
@@ -24,16 +19,11 @@
     .dashboard-bg {
         padding: 25px 24px !important;
     }
-    .hero-section {
-        padding: 40px 30px !important;
+    .dashboard-hero-pro {
+        padding: 36px 32px !important;
     }
-    .hero-title {
-        font-size: 38px !important;
-    }
-    .stat-card-grid {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 16px;
+    .hero-title-pro {
+        font-size: 32px !important;
     }
 }
 
@@ -42,28 +32,18 @@
     .dashboard-bg {
         padding: 20px 18px !important;
     }
-    .hero-section {
-        padding: 30px 24px !important;
+    .dashboard-hero-pro {
+        padding: 32px 24px !important;
         margin-bottom: 24px !important;
     }
-    .hero-title {
-        font-size: 32px !important;
+    .hero-title-pro {
+        font-size: 28px !important;
     }
-    .hero-text {
-        font-size: 17px !important;
+    .hero-text-pro {
+        font-size: 16px !important;
     }
-    .hero-image {
-        height: 240px !important;
-    }
-    .stat-card-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 14px;
-    }
-    .dashboard-card {
-        height: auto !important;
-        min-height: 140px;
-        padding: 18px !important;
+    .hero-illustration {
+        max-height: 200px !important;
     }
 }
 
@@ -91,36 +71,23 @@
         flex-shrink: 0;
     }
 
-    .hero-section {
-        padding: 24px 18px !important;
+    .dashboard-hero-pro {
+        padding: 28px 20px !important;
         text-align: center;
         border-radius: 20px !important;
     }
 
-    .hero-title {
-        font-size: 28px !important;
+    .hero-title-pro {
+        font-size: 26px !important;
     }
 
-    .hero-text {
+    .hero-text-pro {
         font-size: 15px !important;
     }
 
-    .hero-image {
-        height: 210px !important;
-        margin-top: 16px;
-    }
-
-    .stat-card-grid, .row {
-        display: grid !important;
-        grid-template-columns: repeat(2, 1fr) !important;
-        gap: 12px !important;
-        margin: 0 !important;
-        width: 100% !important;
-    }
-
-    .stat-card, .dashboard-card {
-        width: 100% !important;
-        margin-bottom: 0 !important;
+    .hero-illustration {
+        max-height: 180px !important;
+        margin-top: 20px;
     }
 }
 
@@ -133,37 +100,35 @@
     .sidebar-horizontal {
         padding: 8px 10px;
         gap: 4px;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        white-space: nowrap;
     }
 
     .sidebar-horizontal a {
         font-size: 0.78rem;
-        padding: 6px 10px;
+        padding: 6px 12px;
+        flex-shrink: 0;
     }
 
-    .hero-section {
-        padding: 20px 14px !important;
+    .dashboard-hero-pro {
+        padding: 24px 16px !important;
         text-align: center;
     }
 
-    .hero-title {
-        font-size: 24px !important;
+    .hero-title-pro {
+        font-size: 22px !important;
     }
 
-    .hero-image {
-        height: 180px !important;
+    .hero-illustration {
+        max-height: 160px !important;
+        margin-top: 16px;
     }
 
-    .stat-card-grid, .row {
-        display: grid !important;
-        grid-template-columns: 1fr !important;
-        gap: 10px !important;
-        margin: 0 !important;
-        width: 100% !important;
-    }
-
-    .hero-section .btn {
+    .daily-quote-card {
+        flex-direction: column;
+        text-align: center;
         width: 100%;
-        margin-bottom: 8px;
     }
 }
 
@@ -173,37 +138,26 @@
         padding: 8px 6px !important;
     }
 
-    h2, .h2 {
+    .dashboard-hero-pro {
+        padding: 20px 12px !important;
+    }
+
+    .hero-title-pro {
         font-size: 20px !important;
     }
 
-    .card-body {
-        padding: 12px !important;
-    }
-
-    .hero-section {
-        padding: 16px 10px !important;
-    }
-
-    .hero-title {
-        font-size: 22px !important;
-    }
-
-    .hero-text {
+    .hero-text-pro {
         font-size: 13px !important;
     }
 
-    .hero-image {
-        height: 150px !important;
+    .hero-illustration {
+        max-height: 140px !important;
     }
 
-    .stat-card h2, .dashboard-card h2 {
-        font-size: 22px !important;
-    }
-
-    .hero-section .btn {
+    .hero-btn-primary, .hero-btn-outline {
         width: 100%;
-        font-size: 0.82rem;
-        padding: 8px 12px;
+        justify-content: center;
+        font-size: 0.85rem;
+        padding: 10px 16px;
     }
 }

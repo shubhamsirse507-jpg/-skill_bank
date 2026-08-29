@@ -1,313 +1,398 @@
 {% extends 'user_dashboard/base.html' %}
 {% load static %}
 
+{% block title %}Dashboard — SkillBank{% endblock %}
+
 {% block content %}
+<div class="container-fluid px-lg-4 py-2">
 
-<div class="container mt-4">
+    <!-- ── 1. WELCOME HERO PRO ── -->
+    <div class="dashboard-hero-pro">
+        <div class="row align-items-center g-4">
+            <!-- Left Hero Content -->
+            <div class="col-lg-7">
+                <div class="hero-status-pill">
+                    <i class="fa-solid fa-bolt-lightning text-warning"></i> Skill Trader · Level 1
+                </div>
 
-    <div class="hero-section">
-
-        <div class="row align-items-center">
-
-            <!-- Left Content -->
-            <div class="col-lg-6">
-
-                <h1 class="hero-title">
+                <h1 class="hero-title-pro" id="dynamicGreeting" data-username="{{ user.first_name|default:user.username }}">
                     Welcome back, {{ user.first_name|default:user.username }}! 👋
                 </h1>
 
-                <p class="hero-text">
-                    Learn new skills, share your expertise, and connect
-                    with your community.
+                <p class="hero-text-pro">
+                    Learn new skills, share your unique expertise with peers worldwide, and trade knowledge without spending money.
                 </p>
 
-                <div class="mt-4 d-flex gap-3 flex-wrap">
-
-                    <a href="{% url 'skills' %}" class="btn btn-success btn-lg px-4 rounded-pill fw-bold">
-                        🔍 Browse Skills
-                    </a>
-
-                    <a href="{% url 'add_skill' %}" class="btn btn-outline-success btn-lg px-4 rounded-pill fw-bold">
-                        ➕ Add a Skill
-                    </a>
-
+                <!-- Daily Quote Box -->
+                <div class="daily-quote-card">
+                    <i class="fa-solid fa-quote-left daily-quote-icon"></i>
+                    <span id="dailyQuoteText">"The beautiful thing about learning is that no one can take it away from you." — B.B. King</span>
+                    <button class="quote-refresh-btn" id="quoteRefreshBtn" title="Get new inspiration">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                    </button>
                 </div>
 
+                <!-- Action Buttons -->
+                <div class="d-flex gap-3 flex-wrap align-items-center">
+                    <a href="{% url 'skills' %}" class="hero-btn-primary">
+                        <i class="fa-solid fa-compass"></i> Browse Skills
+                    </a>
+
+                    <a href="{% url 'add_skill' %}" class="hero-btn-outline">
+                        <i class="fa-solid fa-circle-plus"></i> Post a Skill
+                    </a>
+
+                    <a href="{% url 'live_session' %}" class="btn btn-outline-dark rounded-pill px-4 py-2 fw-bold d-inline-flex align-items-center gap-2" style="font-size:0.92rem;">
+                        <i class="fa-solid fa-video text-danger"></i> Live Room
+                    </a>
+                </div>
             </div>
 
-            <!-- Right Image -->
-            <div class="col-lg-6 text-center">
-
-                <img src="{% static 'user_dashboard/images/students.jpeg' %}"
-                     class="img-fluid hero-image rounded-4 shadow-sm"
-                     alt="Students Learning"
-                     onerror="this.style.display='none'">
-
+            <!-- Right Hero Illustration -->
+            <div class="col-lg-5 text-center">
+                <div class="hero-illustration-wrap">
+                    <img src="{% static 'user_dashboard/images/students.jpeg' %}"
+                         class="img-fluid hero-illustration"
+                         alt="Students Learning Together"
+                         onerror="this.style.display='none'">
+                    
+                    <div class="floating-learner-badge">
+                        <span class="badge bg-success rounded-pill p-1">●</span> 120+ Active Matches Today
+                    </div>
+                </div>
             </div>
-
         </div>
-
     </div>
 
-</div>
-
-<!-- Stat Cards -->
-<div class="row g-3 mt-2">
-
-    <div class="col-md-3 col-sm-6 col-12">
-        <a href="{% url 'profile' %}" class="text-decoration-none">
-            <div class="card stat-card shadow-sm border-0 rounded-4 h-100">
-                <div class="card-body text-center">
-                    <div class="icon fs-1">🧑‍🏫</div>
-                    <p class="fw-bold mb-1 text-dark">Skills Offered</p>
-                    <h3 class="text-success mb-0">{{ skills_offered_count|default:0 }}</h3>
-                </div>
-            </div>
-        </a>
-    </div>
-
-    <div class="col-md-3 col-sm-6 col-12">
-        <a href="{% url 'skills' %}" class="text-decoration-none">
-            <div class="card stat-card shadow-sm border-0 rounded-4 h-100">
-                <div class="card-body text-center">
-                    <div class="icon fs-1">📚</div>
-                    <p class="fw-bold mb-1 text-dark">Skills Requested</p>
-                    <h3 class="text-success mb-0">{{ skills_requested_count|default:0 }}</h3>
-                </div>
-            </div>
-        </a>
-    </div>
-
-    <div class="col-md-3 col-sm-6 col-12">
-        <a href="{% url 'messaging_index' %}" class="text-decoration-none">
-            <div class="card stat-card shadow-sm border-0 rounded-4 h-100">
-                <div class="card-body text-center">
-                    <div class="icon fs-1">⏳</div>
-                    <p class="fw-bold mb-1 text-dark">Pending Requests</p>
-                    <h3 class="text-success mb-0">{{ pending_requests_count|default:0 }}</h3>
-                </div>
-            </div>
-        </a>
-    </div>
-
-    <div class="col-md-3 col-sm-6 col-12">
-        <a href="{% url 'booking_list' %}" class="text-decoration-none">
-            <div class="card stat-card shadow-sm border-0 rounded-4 h-100">
-                <div class="card-body text-center">
-                    <div class="icon fs-1">⭐</div>
-                    <p class="fw-bold mb-1 text-dark">Completed Swaps</p>
-                    <h3 class="text-success mb-0">{{ completed_swaps_count|default:0 }}</h3>
-                </div>
-            </div>
-        </a>
-    </div>
-
-</div>
-
-<!-- Categories Section -->
-<div class="row mt-5">
-
-<h4 class="fw-bold mb-3">
-Explore Skills Categories
-</h4>
-
-<div class="row g-4 mt-1">
-
-    <div class="col-md-3">
-        <a href="{% url 'search_skills' %}?q=Design" class="text-decoration-none">
-            <div class="card skill-card shadow-sm border-0 rounded-4 p-3 h-100">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="fw-bold text-dark mb-1">Design</h6>
-                        <p class="text-success mb-0" style="font-size:12px;">UI/UX, Graphic Design</p>
-                    </div>
-                    <i class="bi bi-palette-fill text-warning fs-1"></i>
-                </div>
-            </div>
-        </a>
-    </div>
-
-    <div class="col-md-3">
-        <a href="{% url 'search_skills' %}?q=Coding" class="text-decoration-none">
-            <div class="card skill-card shadow-sm border-0 rounded-4 p-3 h-100">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="fw-bold text-dark mb-1">Coding</h6>
-                        <p class="text-success mb-0" style="font-size:12px;">Python, JavaScript, Java</p>
-                    </div>
-                    <i class="bi bi-code-slash text-primary fs-1"></i>
-                </div>
-            </div>
-        </a>
-    </div>
-
-    <div class="col-md-3">
-        <a href="{% url 'search_skills' %}?q=Music" class="text-decoration-none">
-            <div class="card skill-card shadow-sm border-0 rounded-4 p-3 h-100">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="fw-bold text-dark mb-1">Music</h6>
-                        <p class="text-success mb-0" style="font-size:12px;">Piano, Guitar, Drums</p>
-                    </div>
-                    <i class="bi bi-music-note-beamed text-danger fs-1"></i>
-                </div>
-            </div>
-        </a>
-    </div>
-
-    <div class="col-md-3">
-        <a href="{% url 'search_skills' %}?q=Fitness" class="text-decoration-none">
-            <div class="card skill-card shadow-sm border-0 rounded-4 p-3 h-100">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="fw-bold text-dark mb-1">Fitness</h6>
-                        <p class="text-success mb-0" style="font-size:12px;">Yoga, Running, Weights</p>
-                    </div>
-                    <i class="bi bi-heart-pulse-fill text-success fs-1"></i>
-                </div>
-            </div>
-        </a>
-    </div>
-
-    <div class="col-md-3">
-        <a href="{% url 'search_skills' %}?q=Cooking" class="text-decoration-none">
-            <div class="card skill-card shadow-sm border-0 rounded-4 p-3 h-100">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="fw-bold text-dark mb-1">Cooking</h6>
-                        <p class="text-success mb-0" style="font-size:12px;">Baking, Main Courses</p>
-                    </div>
-                    <i class="bi bi-cup-hot-fill text-warning fs-1"></i>
-                </div>
-            </div>
-        </a>
-    </div>
-
-    <div class="col-md-3">
-        <a href="{% url 'search_skills' %}?q=Language" class="text-decoration-none">
-            <div class="card skill-card shadow-sm border-0 rounded-4 p-3 h-100">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="fw-bold text-dark mb-1">Language</h6>
-                        <p class="text-success mb-0" style="font-size:12px;">Spanish, French, German</p>
-                    </div>
-                    <i class="bi bi-translate text-info fs-1"></i>
-                </div>
-            </div>
-        </a>
-    </div>
-
-    <div class="col-md-3">
-        <a href="{% url 'search_skills' %}?q=Photography" class="text-decoration-none">
-            <div class="card skill-card shadow-sm border-0 rounded-4 p-3 h-100">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="fw-bold text-dark mb-1">Photography</h6>
-                        <p class="text-success mb-0" style="font-size:12px;">Portrait, Editing</p>
-                    </div>
-                    <i class="bi bi-camera-fill text-secondary fs-1"></i>
-                </div>
-            </div>
-        </a>
-    </div>
-
-    <div class="col-md-3">
-        <a href="{% url 'search_skills' %}?q=Business" class="text-decoration-none">
-            <div class="card skill-card shadow-sm border-0 rounded-4 p-3 h-100">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="fw-bold text-dark mb-1">Business</h6>
-                        <p class="text-success mb-0" style="font-size:12px;">Marketing, Finance</p>
-                    </div>
-                    <i class="bi bi-bar-chart-fill text-success fs-1"></i>
-                </div>
-            </div>
-        </a>
-    </div>
-
-</div>
-
-</div>
-
-<!-- How It Works Section -->
-<div class="mt-5">
-
-    <h4 class="fw-bold mb-4">
-        How It Works
-    </h4>
-
-    <div class="row g-4">
-
-        <div class="col-md-3">
+    <!-- ── 2. METRIC STAT CARDS ── -->
+    <div class="row g-3 mb-4">
+        <!-- Skills Offered -->
+        <div class="col-xl-3 col-md-6 col-12">
             <a href="{% url 'profile' %}" class="text-decoration-none">
-                <div class="card shadow-sm border-0 rounded-4 p-4 text-center h-100">
-                    <i class="bi bi-person-plus-fill text-success fs-1"></i>
-                    <h5 class="mt-3 text-dark fw-bold">Create Profile</h5>
-                    <p class="text-muted small mb-0">
-                        Sign up and showcase the skills you can teach and what you want to learn.
-                    </p>
+                <div class="stat-card-pro">
+                    <div>
+                        <div class="stat-icon-halo halo-teal">
+                            <i class="fa-solid fa-chalkboard-user"></i>
+                        </div>
+                        <div class="stat-label-pro">Skills Offered</div>
+                        <div class="stat-number-pro stat-count" data-target="{{ skills_offered_count|default:0 }}">{{ skills_offered_count|default:0 }}</div>
+                    </div>
+                    <div class="stat-trend-pill">
+                        <i class="fa-solid fa-circle-check"></i> Ready to teach
+                    </div>
                 </div>
             </a>
         </div>
 
-        <div class="col-md-3">
+        <!-- Skills Requested -->
+        <div class="col-xl-3 col-md-6 col-12">
             <a href="{% url 'skills' %}" class="text-decoration-none">
-                <div class="card shadow-sm border-0 rounded-4 p-4 text-center h-100">
-                    <i class="bi bi-search text-primary fs-1"></i>
-                    <h5 class="mt-3 text-dark fw-bold">Browse Skills</h5>
-                    <p class="text-muted small mb-0">
-                        Search skill categories and discover people with matching interests.
-                    </p>
+                <div class="stat-card-pro">
+                    <div>
+                        <div class="stat-icon-halo halo-blue">
+                            <i class="fa-solid fa-book-open-reader"></i>
+                        </div>
+                        <div class="stat-label-pro">Skills Requested</div>
+                        <div class="stat-number-pro stat-count" data-target="{{ skills_requested_count|default:0 }}">{{ skills_requested_count|default:0 }}</div>
+                    </div>
+                    <div class="stat-trend-pill" style="color: #0284c7; background: #e0f2fe;">
+                        <i class="fa-solid fa-magnifying-glass"></i> Active targets
+                    </div>
                 </div>
             </a>
         </div>
 
-        <div class="col-md-3">
+        <!-- Pending Requests -->
+        <div class="col-xl-3 col-md-6 col-12">
             <a href="{% url 'messaging_index' %}" class="text-decoration-none">
-                <div class="card shadow-sm border-0 rounded-4 p-4 text-center h-100">
-                    <i class="bi bi-arrow-left-right text-warning fs-1"></i>
-                    <h5 class="mt-3 text-dark fw-bold">Exchange Skills</h5>
-                    <p class="text-muted small mb-0">
-                        Send exchange requests and chat with partners to arrange sessions.
-                    </p>
+                <div class="stat-card-pro">
+                    <div>
+                        <div class="stat-icon-halo halo-amber">
+                            <i class="fa-solid fa-hourglass-half"></i>
+                        </div>
+                        <div class="stat-label-pro">Pending Swaps</div>
+                        <div class="stat-number-pro stat-count" data-target="{{ pending_requests_count|default:0 }}">{{ pending_requests_count|default:0 }}</div>
+                    </div>
+                    <div class="stat-trend-pill" style="color: #d97706; background: #fef3c7;">
+                        <i class="fa-solid fa-clock"></i> In negotiation
+                    </div>
                 </div>
             </a>
         </div>
 
-        <div class="col-md-3">
-            <a href="{% url 'ratings:rating_dashboard' %}" class="text-decoration-none">
-                <div class="card shadow-sm border-0 rounded-4 p-4 text-center h-100">
-                    <i class="bi bi-trophy-fill text-danger fs-1"></i>
-                    <h5 class="mt-3 text-dark fw-bold">Learn & Grow</h5>
-                    <p class="text-muted small mb-0">
-                        Complete sessions, leave feedback, and earn positive reviews.
-                    </p>
+        <!-- Completed Swaps -->
+        <div class="col-xl-3 col-md-6 col-12">
+            <a href="{% url 'booking_list' %}" class="text-decoration-none">
+                <div class="stat-card-pro">
+                    <div>
+                        <div class="stat-icon-halo halo-emerald">
+                            <i class="fa-solid fa-award"></i>
+                        </div>
+                        <div class="stat-label-pro">Completed Swaps</div>
+                        <div class="stat-number-pro stat-count" data-target="{{ completed_swaps_count|default:0 }}">{{ completed_swaps_count|default:0 }}</div>
+                    </div>
+                    <div class="stat-trend-pill" style="color: #16a34a; background: #dcfce7;">
+                        <i class="fa-solid fa-star"></i> Verified exchanges
+                    </div>
                 </div>
             </a>
         </div>
+    </div>
 
+    <!-- ── 3. RECENT COMMUNITY SKILLS ── -->
+    {% if recent_skills %}
+    <div class="my-5">
+        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+            <div>
+                <h4 class="fw-bold mb-1" style="font-family: var(--font-head); color: #0f172a;">
+                    🔥 Newly Shared Skills in Community
+                </h4>
+                <p class="text-muted small mb-0">Discover what other learners have posted and request a direct swap.</p>
+            </div>
+            <a href="{% url 'skills' %}" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-bold">
+                View All Skills →
+            </a>
+        </div>
+
+        <div class="row g-3">
+            {% for sk in recent_skills %}
+            <div class="col-lg-4 col-md-6 col-12">
+                <div class="community-skill-card">
+                    <div>
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <span class="badge bg-light text-dark border rounded-pill px-2 py-1" style="font-size:0.75rem;">
+                                {{ sk.category.category_name|default:"General" }}
+                            </span>
+                            <span class="skill-level-badge level-{{ sk.level|lower|default:'beginner' }}">
+                                {{ sk.level|default:"Beginner" }}
+                            </span>
+                        </div>
+                        <h6 class="fw-bold text-dark mb-1" style="font-size:1.05rem;">{{ sk.title }}</h6>
+                        <p class="text-muted small mb-3" style="line-height:1.5;">
+                            {{ sk.description|truncatewords:14|default:"No description provided." }}
+                        </p>
+                    </div>
+
+                    <div class="d-flex align-items-center justify-content-between pt-2 border-top">
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="rounded-circle bg-light border d-flex align-items-center justify-content-center fw-bold text-success" style="width:30px; height:30px; font-size:12px;">
+                                {{ sk.user.username|slice:":1"|upper }}
+                            </div>
+                            <span class="small fw-semibold text-secondary">@{{ sk.user.username }}</span>
+                        </div>
+                        <a href="{% url 'request_skill' %}" class="btn btn-sm btn-success rounded-pill px-3 fw-bold" style="font-size:0.8rem;">
+                            Swap 🤝
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- ── 4. EXPLORE SKILL CATEGORIES ── -->
+    <div class="my-5">
+        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
+            <div>
+                <h4 class="fw-bold mb-1" style="font-family: var(--font-head); color: #0f172a;">
+                    🎯 Explore Skill Categories
+                </h4>
+                <p class="text-muted small mb-0">Browse specialized domains and discover your next learning milestone.</p>
+            </div>
+            <a href="{% url 'search_skills' %}" class="btn btn-sm btn-outline-dark rounded-pill px-3 fw-bold">
+                Search All →
+            </a>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                <a href="{% url 'search_skills' %}?q=Design" class="text-decoration-none">
+                    <div class="category-card-pro">
+                        <div>
+                            <div class="cat-title-pro">UI/UX & Design</div>
+                            <div class="cat-sub-pro">Figma, Graphics & 3D</div>
+                        </div>
+                        <div class="cat-icon-box">
+                            <i class="fa-solid fa-palette"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                <a href="{% url 'search_skills' %}?q=Coding" class="text-decoration-none">
+                    <div class="category-card-pro">
+                        <div>
+                            <div class="cat-title-pro">Coding & Tech</div>
+                            <div class="cat-sub-pro">Python, JS & AI</div>
+                        </div>
+                        <div class="cat-icon-box">
+                            <i class="fa-solid fa-code"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                <a href="{% url 'search_skills' %}?q=Music" class="text-decoration-none">
+                    <div class="category-card-pro">
+                        <div>
+                            <div class="cat-title-pro">Music & Instruments</div>
+                            <div class="cat-sub-pro">Guitar, Piano & Vocals</div>
+                        </div>
+                        <div class="cat-icon-box">
+                            <i class="fa-solid fa-music"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                <a href="{% url 'search_skills' %}?q=Fitness" class="text-decoration-none">
+                    <div class="category-card-pro">
+                        <div>
+                            <div class="cat-title-pro">Fitness & Wellness</div>
+                            <div class="cat-sub-pro">Yoga, HIIT & Nutrition</div>
+                        </div>
+                        <div class="cat-icon-box">
+                            <i class="fa-solid fa-heart-pulse"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                <a href="{% url 'search_skills' %}?q=Language" class="text-decoration-none">
+                    <div class="category-card-pro">
+                        <div>
+                            <div class="cat-title-pro">Languages</div>
+                            <div class="cat-sub-pro">Spanish, French & German</div>
+                        </div>
+                        <div class="cat-icon-box">
+                            <i class="fa-solid fa-language"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                <a href="{% url 'search_skills' %}?q=Cooking" class="text-decoration-none">
+                    <div class="category-card-pro">
+                        <div>
+                            <div class="cat-title-pro">Culinary & Baking</div>
+                            <div class="cat-sub-pro">Baking, Pasta & Prep</div>
+                        </div>
+                        <div class="cat-icon-box">
+                            <i class="fa-solid fa-kitchen-set"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                <a href="{% url 'search_skills' %}?q=Business" class="text-decoration-none">
+                    <div class="category-card-pro">
+                        <div>
+                            <div class="cat-title-pro">Business & Growth</div>
+                            <div class="cat-sub-pro">Marketing & Pitching</div>
+                        </div>
+                        <div class="cat-icon-box">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-xl-3 col-lg-4 col-md-6 col-12">
+                <a href="{% url 'search_skills' %}?q=Photography" class="text-decoration-none">
+                    <div class="category-card-pro">
+                        <div>
+                            <div class="cat-title-pro">Photography & Film</div>
+                            <div class="cat-sub-pro">Portraits & Editing</div>
+                        </div>
+                        <div class="cat-icon-box">
+                            <i class="fa-solid fa-camera"></i>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── 5. HOW IT WORKS QUICK STEPS ── -->
+    <div class="my-5">
+        <h4 class="fw-bold mb-4" style="font-family: var(--font-head); color: #0f172a;">
+            💡 Quick SkillBank Roadmap
+        </h4>
+
+        <div class="row g-3">
+            <div class="col-lg-3 col-md-6 col-12">
+                <a href="{% url 'profile' %}" class="text-decoration-none">
+                    <div class="stat-card-pro p-4 text-center">
+                        <div class="mx-auto stat-icon-halo halo-teal">
+                            <i class="fa-solid fa-user-plus"></i>
+                        </div>
+                        <h6 class="fw-bold text-dark mt-2 mb-1">1. Update Profile</h6>
+                        <p class="text-muted small mb-0">Showcase what you can teach and what you want to learn.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-12">
+                <a href="{% url 'skills' %}" class="text-decoration-none">
+                    <div class="stat-card-pro p-4 text-center">
+                        <div class="mx-auto stat-icon-halo halo-blue">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </div>
+                        <h6 class="fw-bold text-dark mt-2 mb-1">2. Search Matches</h6>
+                        <p class="text-muted small mb-0">Discover users whose learning desires match your skills.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-12">
+                <a href="{% url 'messaging_index' %}" class="text-decoration-none">
+                    <div class="stat-card-pro p-4 text-center">
+                        <div class="mx-auto stat-icon-halo halo-amber">
+                            <i class="fa-solid fa-comments"></i>
+                        </div>
+                        <h6 class="fw-bold text-dark mt-2 mb-1">3. Chat & Swap</h6>
+                        <p class="text-muted small mb-0">Agree on curriculum and connect via built-in video rooms.</p>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-lg-3 col-md-6 col-12">
+                <a href="{% url 'my_certificates' %}" class="text-decoration-none">
+                    <div class="stat-card-pro p-4 text-center">
+                        <div class="mx-auto stat-icon-halo halo-emerald">
+                            <i class="fa-solid fa-certificate"></i>
+                        </div>
+                        <h6 class="fw-bold text-dark mt-2 mb-1">4. Get Certified</h6>
+                        <p class="text-muted small mb-0">Earn official verified certificates for every milestone.</p>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── 6. CALL TO ACTION BANNER PRO ── -->
+    <div class="dashboard-cta-pro">
+        <h2 class="cta-title-pro">
+            Everyone is good at something.
+        </h2>
+
+        <p class="cta-desc-pro">
+            Start by listing one skill today. Someone in the community is looking for exactly what you know.
+        </p>
+
+        <div>
+            <a href="{% url 'add_skill' %}" class="btn btn-light btn-lg px-4 rounded-pill fw-bold text-success shadow-sm">
+                <i class="fa-solid fa-plus me-1"></i> Post Your Skill
+            </a>
+        </div>
     </div>
 
 </div>
-
-<!-- Call To Action Section -->
-<div class="card border-0 shadow-sm rounded-4 p-5 mt-5 text-center"
-     style="background: linear-gradient(135deg, #16a38b, #0d9488);">
-
-    <h2 class="fw-bold text-white">
-        Everyone is good at something.
-    </h2>
-
-    <p class="text-white mt-2 mb-4" style="font-size:18px; opacity:.9;">
-        Start by listing one skill. Someone out there is looking for exactly what you know.
-    </p>
-
-    <div>
-        <a href="{% url 'add_skill' %}" class="btn btn-light btn-lg px-4 rounded-pill fw-bold text-success shadow-sm">
-            ➕ Post Your Skill
-        </a>
-    </div>
-
-</div>
-
 {% endblock %}

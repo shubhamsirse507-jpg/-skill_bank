@@ -1,66 +1,123 @@
 {% load static %}
 
+<!-- Horizontal Top Bar Navigation for Desktop/Tablet -->
 <div class="sidebar-horizontal" id="sidebar">
 
     <a href="{% url 'home' %}" {% if request.resolver_match.url_name == 'home' %}class="active"{% endif %}>
-        🏠 Dashboard
+        <i class="fa-solid fa-house"></i> Dashboard
     </a>
 
     <a href="{% url 'search_skills' %}" {% if request.resolver_match.url_name == 'search_skills' %}class="active"{% endif %}>
-        🔍 Browse Skills
+        <i class="fa-solid fa-compass"></i> Browse Skills
     </a>
 
     <a href="{% url 'add_skill' %}" {% if request.resolver_match.url_name == 'add_skill' %}class="active"{% endif %}>
-        ➕ Add Skill
+        <i class="fa-solid fa-circle-plus"></i> Add Skill
     </a>
 
     <a href="{% url 'messaging_index' %}" {% if request.resolver_match.url_name == 'messaging_index' %}class="active"{% endif %}>
-        💬 Messages
+        <i class="fa-solid fa-comments"></i> Messages
     </a>
 
     <a href="{% url 'booking_list' %}" {% if request.resolver_match.url_name == 'booking_list' %}class="active"{% endif %}>
-        📅 Bookings
+        <i class="fa-solid fa-calendar-check"></i> Bookings
     </a>
 
     <a href="{% url 'my_certificates' %}" {% if request.resolver_match.url_name == 'my_certificates' or request.resolver_match.url_name == 'issue_certificate' or request.resolver_match.url_name == 'certificate_detail' %}class="active"{% endif %}>
-        📜 Certificates
+        <i class="fa-solid fa-certificate"></i> Certificates
     </a>
 
     <a href="{% url 'ratings:rating_dashboard' %}" {% if request.resolver_match.url_name == 'rating_dashboard' %}class="active"{% endif %}>
-        ⭐ Ratings
+        <i class="fa-solid fa-star"></i> Ratings
     </a>
 
     <a href="{% url 'profile' %}" {% if request.resolver_match.url_name == 'profile' %}class="active"{% endif %}>
-        👤 Profile
+        <i class="fa-solid fa-user"></i> Profile
     </a>
 
     <a href="{% url 'notifications' %}" {% if request.resolver_match.url_name == 'notifications' %}class="active"{% endif %}>
-        🔔 Notifications
+        <i class="fa-solid fa-bell"></i> Notifications
     </a>
 
     <a href="{% url 'live_session' %}" {% if request.resolver_match.url_name == 'live_session' %}class="active"{% endif %}>
-        🎥 Live Session
+        <i class="fa-solid fa-video"></i> Live Session
     </a>
 
     <a href="{% url 'batches' %}" {% if request.resolver_match.url_name == 'batches' or request.resolver_match.url_name == 'batches_direct' %}class="active"{% endif %}>
-        📚 Batches
+        <i class="fa-solid fa-layer-group"></i> Batches
     </a>
 
     {% if user.is_staff %}
-    <a href="{% url 'create_batch' %}" {% if request.resolver_match.url_name == 'create_batch' %}class="active"{% endif %} style="color: #0e7d73; font-weight: 700;">
-        ➕ Create Batch
+    <a href="{% url 'create_batch' %}" {% if request.resolver_match.url_name == 'create_batch' %}class="active"{% endif %} style="color: #6ddfd5; font-weight: 800;">
+        <i class="fa-solid fa-plus-circle"></i> Create Batch
     </a>
     {% endif %}
 
     <a href="{% url 'chatbot' %}" {% if request.resolver_match.url_name == 'chatbot' %}class="active"{% endif %}>
-        🤖 AI Chatbot
+        <i class="fa-solid fa-robot"></i> AI Chatbot
     </a>
 
     {% if user.is_staff %}
-    <a href="{% url 'admin_panel:dashboard' %}" style="color: #10b981;">
-        🛡️ Admin Panel
+    <a href="{% url 'admin_panel:dashboard' %}" style="color: #10b981; font-weight: 800;">
+        <i class="fa-solid fa-shield-halved"></i> Admin Panel
     </a>
     {% endif %}
 
+</div>
 
+<!-- Offcanvas Sidebar Menu for Mobile Screen -->
+<div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel" style="background: #0f172a; color: #fff; width: 290px;">
+    <div class="offcanvas-header border-bottom border-secondary pb-3">
+        <h5 class="offcanvas-title fw-bold d-flex align-items-center gap-2" id="sidebarMenuLabel" style="font-family: var(--font-head); color: #6ddfd5;">
+            <span class="db-brand-icon" style="background:#0c6c63; width:30px; height:30px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center;">S</span>
+            SkillBank Menu
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body p-0 pt-2">
+        <div class="list-group list-group-flush">
+            <a href="{% url 'home' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3 px-4 d-flex align-items-center gap-3 {% if request.resolver_match.url_name == 'home' %}active fw-bold{% endif %}" style="border-radius: 8px;">
+                <i class="fa-solid fa-house" style="width: 20px;"></i> Dashboard
+            </a>
+            <a href="{% url 'skills' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3 px-4 d-flex align-items-center gap-3 {% if request.resolver_match.url_name == 'skills' %}active fw-bold{% endif %}">
+                <i class="fa-solid fa-compass" style="width: 20px;"></i> Browse Skills
+            </a>
+            <a href="{% url 'add_skill' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3 px-4 d-flex align-items-center gap-3 {% if request.resolver_match.url_name == 'add_skill' %}active fw-bold{% endif %}">
+                <i class="fa-solid fa-circle-plus" style="width: 20px;"></i> Add Skill
+            </a>
+            <a href="{% url 'messaging_index' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3 px-4 d-flex align-items-center gap-3 {% if request.resolver_match.url_name == 'messaging_index' %}active fw-bold{% endif %}">
+                <i class="fa-solid fa-comments" style="width: 20px;"></i> Messages
+            </a>
+            <a href="{% url 'booking_list' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3 px-4 d-flex align-items-center gap-3 {% if request.resolver_match.url_name == 'booking_list' %}active fw-bold{% endif %}">
+                <i class="fa-solid fa-calendar-check" style="width: 20px;"></i> Bookings
+            </a>
+            <a href="{% url 'my_certificates' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3 px-4 d-flex align-items-center gap-3 {% if request.resolver_match.url_name == 'my_certificates' %}active fw-bold{% endif %}">
+                <i class="fa-solid fa-certificate" style="width: 20px;"></i> Certificates
+            </a>
+            <a href="{% url 'ratings:rating_dashboard' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3 px-4 d-flex align-items-center gap-3 {% if request.resolver_match.url_name == 'rating_dashboard' %}active fw-bold{% endif %}">
+                <i class="fa-solid fa-star" style="width: 20px;"></i> Ratings
+            </a>
+            <a href="{% url 'profile' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3 px-4 d-flex align-items-center gap-3 {% if request.resolver_match.url_name == 'profile' %}active fw-bold{% endif %}">
+                <i class="fa-solid fa-user" style="width: 20px;"></i> Profile
+            </a>
+            <a href="{% url 'live_session' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3 px-4 d-flex align-items-center gap-3 {% if request.resolver_match.url_name == 'live_session' %}active fw-bold{% endif %}">
+                <i class="fa-solid fa-video" style="width: 20px;"></i> Live Session
+            </a>
+            <a href="{% url 'batches' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3 px-4 d-flex align-items-center gap-3 {% if request.resolver_match.url_name == 'batches' %}active fw-bold{% endif %}">
+                <i class="fa-solid fa-layer-group" style="width: 20px;"></i> Batches
+            </a>
+            <a href="{% url 'chatbot' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3 px-4 d-flex align-items-center gap-3 {% if request.resolver_match.url_name == 'chatbot' %}active fw-bold{% endif %}">
+                <i class="fa-solid fa-robot" style="width: 20px;"></i> AI Chatbot
+            </a>
+            {% if user.is_staff %}
+            <a href="{% url 'admin_panel:dashboard' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3 px-4 d-flex align-items-center gap-3 text-warning">
+                <i class="fa-solid fa-shield-halved" style="width: 20px;"></i> Admin Panel
+            </a>
+            {% endif %}
+            <div class="border-top border-secondary my-2"></div>
+            <a href="{% url 'logout' %}" class="list-group-item list-group-item-action bg-transparent text-danger border-0 py-3 px-4 d-flex align-items-center gap-3">
+                <i class="fa-solid fa-right-from-bracket" style="width: 20px;"></i> Logout
+            </a>
+        </div>
+    </div>
 </div>
