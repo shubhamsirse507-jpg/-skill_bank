@@ -11,6 +11,7 @@ Complete, hardened Authentication module for Skill Bank:
 - Reset Password (Secure password update)
 """
 
+import logging
 import random
 from datetime import timedelta
 from django.shortcuts import render, redirect
@@ -23,6 +24,8 @@ from django.conf import settings
 from django.utils import timezone
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
+
+logger = logging.getLogger(__name__)
 
 from authentication.constants import AUTH_BACKGROUND_VIDEO_URL, BRAND_LOGO_IMAGE_NAME
 from authentication.models import OTPVerification
@@ -160,88 +163,98 @@ def login(request):
         return redirect('home')
 
     if request.method == 'POST':
-        username_or_email = request.POST.get('username', '').strip()
-        password = request.POST.get('password', '').strip()
-        next_url = request.GET.get('next') or request.POST.get('next')
-        if not next_url or next_url == 'user_dashboard':
-            next_url = 'home'
+        try:
+            username_or_email = request.POST.get('username', '').strip()
+            password = request.POST.get('password', '').strip()
+            next_url = request.GET.get('next') or request.POST.get('next')
+            if not next_url or next_url == 'user_dashboard':
+                next_url = 'home'
 
-        if not username_or_email or not password:
-            messages.error(request, 'Please provide both username/email and password.')
-            return render(request, 'authentication/login.html', {
-                'error': 'Please provide both username/email and password.',
-                'bg_video_url': AUTH_BACKGROUND_VIDEO_URL,
-                'brand_logo_image_name': BRAND_LOGO_IMAGE_NAME
-            })
-
-        # Allow login by email or username
-        user_obj = User.objects.filter(email__iexact=username_or_email).first()
-        username = user_obj.username if user_obj else username_or_email
-
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            if not user.is_active:
-                messages.error(request, 'Your account has been suspended or deactivated.')
+            if not username_or_email or not password:
+                messages.error(request, 'Please provide both username/email and password.')
                 return render(request, 'authentication/login.html', {
-                    'error': 'Your account has been suspended or deactivated.',
+                    'error': 'Please provide both username/email and password.',
                     'bg_video_url': AUTH_BACKGROUND_VIDEO_URL,
                     'brand_logo_image_name': BRAND_LOGO_IMAGE_NAME
                 })
 
-            # Check Two-Factor Authentication (2FA) status safely
-            is_2fa_enabled = True
-            try:
-                profile = UserProfile.objects.filter(user=user).first()
-                if profile is None:
-                    profile = UserProfile.objects.create(user=user)
-                is_2fa_enabled = getattr(profile, 'two_factor_enabled', True)
-            except Exception as ex:
-                print(f"[Profile 2FA Lookup Notice]: {ex}")
-                is_2fa_enabled = False
+            # Allow login by email or username
+            user_obj = User.objects.filter(email__iexact=username_or_email).first()
+            username = user_obj.username if user_obj else username_or_email
 
-            if is_2fa_enabled and user.email:
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                if not user.is_active:
+                    messages.error(request, 'Your account has been suspended or deactivated.')
+                    return render(request, 'authentication/login.html', {
+                        'error': 'Your account has been suspended or deactivated.',
+                        'bg_video_url': AUTH_BACKGROUND_VIDEO_URL,
+                        'brand_logo_image_name': BRAND_LOGO_IMAGE_NAME
+                    })
+
+                # Check Two-Factor Authentication (2FA) status safely
+                is_2fa_enabled = True
                 try:
-                    # Generate 6-digit 2FA OTP code
-                    otp = f"{random.randint(100000, 999999)}"
-                    expires = timezone.now() + timedelta(minutes=10)
+                    profile = UserProfile.objects.filter(user=user).first()
+                    if profile is None:
+                        profile = UserProfile.objects.create(user=user)
+                    is_2fa_enabled = getattr(profile, 'two_factor_enabled', True)
+                except Exception as ex:
+                    logger.warning("[Profile 2FA Lookup]: %s", ex)
+                    is_2fa_enabled = False
 
-                    # Invalidate previous unverified login OTPs for this user
-                    OTPVerification.objects.filter(
-                        user=user,
-                        purpose='Login',
-                        is_verified=False
-                    ).update(is_verified=True)
+                if is_2fa_enabled and user.email:
+                    try:
+                        # Generate 6-digit 2FA OTP code
+                        otp = f"{random.randint(100000, 999999)}"
+                        expires = timezone.now() + timedelta(minutes=10)
 
-                    OTPVerification.objects.create(
-                        user=user,
-                        otp_code=otp,
-                        purpose='Login',
-                        expires_at=expires
-                    )
+                        # Invalidate previous unverified login OTPs for this user
+                        OTPVerification.objects.filter(
+                            user=user,
+                            purpose='Login',
+                            is_verified=False
+                        ).update(is_verified=True)
 
-                    # Save 2FA state in session
-                    request.session['2fa_user_id'] = user.id
-                    request.session['2fa_email'] = user.email
-                    request.session['2fa_next'] = next_url
+                        OTPVerification.objects.create(
+                            user=user,
+                            otp_code=otp,
+                            purpose='Login',
+                            expires_at=expires
+                        )
 
-                    email_sent, sent_email = send_otp_email(user, otp, purpose='Login')
-                    if email_sent:
-                        messages.info(request, f'Two-Factor Authentication code sent to {sent_email}.')
-                    else:
-                        messages.success(request, f'2FA code generated for {sent_email}. (Verification Code: {otp})')
+                        # Save 2FA state in session
+                        request.session['2fa_user_id'] = user.id
+                        request.session['2fa_email'] = user.email
+                        request.session['2fa_next'] = next_url
 
-                    return redirect('verify_2fa')
-                except Exception as otp_ex:
-                    print(f"[2FA OTP dispatch fallback to direct login]: {otp_ex}")
+                        email_sent, sent_email = send_otp_email(user, otp, purpose='Login')
+                        if email_sent:
+                            messages.info(request, f'Two-Factor Authentication code sent to {sent_email}.')
+                        else:
+                            messages.success(request, f'2FA code generated for {sent_email}. (Verification Code: {otp})')
 
-            # Direct login if 2FA is disabled or user has no email or fallback
-            auth_login(request, user)
-            messages.success(request, f'Welcome back, {user.first_name or user.username}!')
-            return redirect(next_url)
-        else:
-            messages.error(request, 'Invalid username/email or password.')
+                        return redirect('verify_2fa')
+                    except Exception as otp_ex:
+                        logger.warning("[2FA OTP dispatch fallback to direct login]: %s", otp_ex)
+
+                # Direct login if 2FA is disabled or user has no email or fallback
+                auth_login(request, user)
+                messages.success(request, f'Welcome back, {user.first_name or user.username}!')
+                return redirect(next_url)
+            else:
+                messages.error(request, 'Invalid username/email or password.')
+                return render(request, 'authentication/login.html', {
+                    'error': 'Invalid username/email or password.',
+                    'bg_video_url': AUTH_BACKGROUND_VIDEO_URL,
+                    'brand_logo_image_name': BRAND_LOGO_IMAGE_NAME
+                })
+
+        except Exception as login_ex:
+            logger.exception("Unexpected error during login for request from %s: %s", request.META.get('REMOTE_ADDR', '?'), login_ex)
+            messages.error(request, 'An unexpected error occurred. Please try again.')
             return render(request, 'authentication/login.html', {
-                'error': 'Invalid username/email or password.',
+                'error': 'An unexpected error occurred. Please try again.',
                 'bg_video_url': AUTH_BACKGROUND_VIDEO_URL,
                 'brand_logo_image_name': BRAND_LOGO_IMAGE_NAME
             })
