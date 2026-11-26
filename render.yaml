@@ -33,5 +33,9 @@ services:
         sync: false
       - key: EMAIL_TIMEOUT
         value: "15"
+      - key: BREVO_API_KEY
+        sync: false
+      - key: BREVO_SENDER_EMAIL
+        sync: false
       - key: OTP_DEV_LOG
         value: "False"

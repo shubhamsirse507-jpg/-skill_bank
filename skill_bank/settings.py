@@ -265,6 +265,11 @@ else:
 EMAIL_TIMEOUT = int(os.environ.get('EMAIL_TIMEOUT', 15))  # 15s prevents cloud handshake timeouts
 OTP_DEV_LOG = os.environ.get('OTP_DEV_LOG', 'False').lower() == 'true'
 
+# Brevo (Sendinblue) HTTPS Transactional Email API (bypasses cloud SMTP port blocks)
+BREVO_API_KEY = os.environ.get('BREVO_API_KEY', '').strip()
+BREVO_SENDER_EMAIL = os.environ.get('BREVO_SENDER_EMAIL', EMAIL_HOST_USER or '').strip()
+BREVO_SENDER_NAME = os.environ.get('BREVO_SENDER_NAME', 'Skill Bank').strip()
+
 # ---------------------------------------------------------------------------
 # Security & Cloud Proxy Configuration
 # ---------------------------------------------------------------------------

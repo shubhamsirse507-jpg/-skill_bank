@@ -11,9 +11,12 @@ Complete, hardened Authentication module for Skill Bank:
 - Reset Password (Secure password update)
 """
 
+import json
 import logging
 import random
 import traceback as _traceback
+import urllib.error
+import urllib.request
 from datetime import timedelta
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
@@ -46,15 +49,17 @@ def send_otp_email(user, otp_code, purpose='Login'):
     backend = getattr(settings, 'EMAIL_BACKEND', '')
     host_user = getattr(settings, 'EMAIL_HOST_USER', '').strip()
     host_pass = getattr(settings, 'EMAIL_HOST_PASSWORD', '').strip()
+    brevo_api_key = getattr(settings, 'BREVO_API_KEY', '').strip()
 
-    # Never report success if a non-delivering backend is used in production or SMTP credentials are missing
+    # Never report success if no delivery channel exists (non-delivering backend in prod or missing creds)
     is_non_delivering = any(b in backend for b in ('console.EmailBackend', 'locmem.EmailBackend', 'dummy.EmailBackend'))
-    if is_non_delivering and not getattr(settings, 'DEBUG', False):
-        logger.error("[OTP Email Delivery] Non-delivering EMAIL_BACKEND (%s) configured with DEBUG=False.", backend)
-        return False, recipient_email
-    if 'smtp.EmailBackend' in backend and (not host_user or not host_pass):
-        logger.error("[OTP Email Delivery] SMTP backend configured but EMAIL_HOST_USER or EMAIL_HOST_PASSWORD is missing.")
-        return False, recipient_email
+    if not brevo_api_key:
+        if is_non_delivering and not getattr(settings, 'DEBUG', False):
+            logger.error("[OTP Email Delivery] Non-delivering EMAIL_BACKEND (%s) configured with DEBUG=False.", backend)
+            return False, recipient_email
+        if 'smtp.EmailBackend' in backend and (not host_user or not host_pass):
+            logger.error("[OTP Email Delivery] SMTP backend configured but EMAIL_HOST_USER or EMAIL_HOST_PASSWORD is missing.")
+            return False, recipient_email
 
     from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@skillbank.com')
     user_display = user.first_name or user.username
@@ -111,19 +116,55 @@ def send_otp_email(user, otp_code, purpose='Login'):
         """
 
     email_sent = False
-    # Attempt 1: Configured Django mail backend
-    try:
-        msg = EmailMultiAlternatives(
-            subject=subject,
-            body=plain_text,
-            from_email=from_email,
-            to=[recipient_email]
+
+    # Priority 1: Brevo HTTPS Transactional Email API (works on Render/cloud where SMTP ports are blocked)
+    if brevo_api_key:
+        sender_email = getattr(settings, 'BREVO_SENDER_EMAIL', '').strip() or host_user or 'noreply@skillbank.com'
+        sender_name = getattr(settings, 'BREVO_SENDER_NAME', 'Skill Bank').strip() or 'Skill Bank'
+        timeout_sec = int(getattr(settings, 'EMAIL_TIMEOUT', 15))
+        payload = json.dumps({
+            'sender': {'name': sender_name, 'email': sender_email},
+            'to': [{'email': recipient_email, 'name': user_display}],
+            'subject': subject,
+            'htmlContent': html_content,
+            'textContent': plain_text,
+        }).encode('utf-8')
+        req = urllib.request.Request(
+            'https://api.brevo.com/v3/smtp/email',
+            data=payload,
+            headers={
+                'accept': 'application/json',
+                'content-type': 'application/json',
+                'api-key': brevo_api_key,
+            },
+            method='POST',
         )
-        msg.attach_alternative(html_content, "text/html")
-        sent = msg.send(fail_silently=False)
-        email_sent = bool(sent and sent > 0)
-    except Exception as e1:
-        logger.error("[OTP Email Delivery] Primary SMTP dispatch failed for %s: %s", recipient_email, e1, exc_info=True)
+        try:
+            with urllib.request.urlopen(req, timeout=timeout_sec) as resp:
+                if 200 <= resp.status < 300:
+                    email_sent = True
+                else:
+                    logger.error("[OTP Email Delivery] Brevo API unexpected status %s for %s", resp.status, recipient_email)
+        except urllib.error.HTTPError as http_err:
+            err_body = http_err.read().decode('utf-8', 'ignore')
+            logger.error("[OTP Email Delivery] Brevo API HTTP %s for %s: %s", http_err.code, recipient_email, err_body)
+        except Exception as brevo_err:
+            logger.error("[OTP Email Delivery] Brevo API request failed for %s: %s", recipient_email, brevo_err, exc_info=True)
+
+    # Attempt 2: Configured Django mail backend (SMTP)
+    if not email_sent and (not is_non_delivering or getattr(settings, 'DEBUG', False)) and (host_user and host_pass or is_non_delivering):
+        try:
+            msg = EmailMultiAlternatives(
+                subject=subject,
+                body=plain_text,
+                from_email=from_email,
+                to=[recipient_email]
+            )
+            msg.attach_alternative(html_content, "text/html")
+            sent = msg.send(fail_silently=False)
+            email_sent = bool(sent and sent > 0)
+        except Exception as e1:
+            logger.error("[OTP Email Delivery] Primary SMTP dispatch failed for %s: %s", recipient_email, e1, exc_info=True)
 
     # Attempt 2: Fallback port (465 SSL or 587 TLS) if env SMTP credentials exist
     if not email_sent:
