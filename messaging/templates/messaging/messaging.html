@@ -15,6 +15,30 @@
     min-height: 600px;
 }
 
+@media (max-width: 480px) {
+    .messaging-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px !important;
+        margin: 12px auto !important;
+        padding: 0 10px !important;
+        min-height: unset !important;
+    }
+    .conversations-sidebar {
+        padding: 14px !important;
+        border-radius: 14px !important;
+    }
+    .chat-window {
+        padding: 14px !important;
+        border-radius: 14px !important;
+    }
+    .chat-body { max-height: 300px !important; }
+    .message-wrapper { max-width: 85% !important; font-size: 13px !important; }
+    .chat-input-form { gap: 6px !important; }
+    .chat-input { padding: 10px 12px !important; font-size: 14px !important; min-height: 44px; }
+    .chat-input-form button { min-height: 44px; min-width: 44px; }
+    .tab-btn { min-height: 36px; padding: 6px 10px !important; font-size: 11px !important; }
+}
+
 .conversations-sidebar {
     background: white;
     border-radius: 12px;

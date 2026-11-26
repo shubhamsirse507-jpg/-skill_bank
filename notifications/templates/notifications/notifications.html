@@ -218,6 +218,32 @@
   transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 9999;
 }
 .toast-notif.show { transform: translateY(0); opacity: 1; }
+
+/* ── Mobile Responsive ≤ 480px ── */
+@media (max-width: 480px) {
+  .nc-page { padding: 16px 10px 80px !important; }
+  .nc-hero { padding: 18px 16px !important; border-radius: 16px !important; flex-direction: column; align-items: flex-start; gap: 12px; }
+  .nc-hero h1 { font-size: 1.1rem !important; }
+  .nc-hero p  { font-size: 0.8rem !important; }
+  .nc-hero-icon { width: 40px !important; height: 40px !important; font-size: 1.1rem !important; }
+  .hero-actions { width: 100%; }
+  .hero-btn { font-size: 0.78rem !important; padding: 8px 12px !important; min-height: 44px; flex: 1; justify-content: center; }
+  .nc-hero-badges { width: 100%; }
+  .main-tabs { border-radius: 12px !important; padding: 4px !important; }
+  .main-tab-btn { min-width: unset !important; padding: 10px 8px !important; font-size: 0.78rem !important; min-height: 44px; }
+  .notif-card { padding: 12px 14px !important; border-radius: 12px !important; gap: 10px; }
+  .notif-title { font-size: 0.85rem !important; }
+  .notif-msg { font-size: 0.8rem !important; }
+  .notif-ts { font-size: 0.7rem !important; }
+  .notif-avatar { width: 36px !important; height: 36px !important; }
+  .msg-card { padding: 12px 14px !important; border-radius: 12px !important; gap: 10px; }
+  .msg-avatar { width: 38px !important; height: 38px !important; font-size: 0.9rem !important; }
+  .msg-name { font-size: 0.88rem !important; }
+  .rating-card { padding: 14px !important; border-radius: 12px !important; }
+  .cta-btn { min-height: 36px; padding: 7px 12px !important; }
+  .icon-btn { width: 36px !important; height: 36px !important; }
+  .toast-notif { right: 10px !important; left: 10px !important; bottom: 80px !important; }
+}
 </style>
 {% endblock %}
 

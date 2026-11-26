@@ -289,10 +289,16 @@
             <!-- Bell -->
             <a href="{% url 'notifications' %}"
                class="sb-icon-btn"
-               title="Notifications"
-               aria-label="Notifications">
-                <i class="bi bi-bell"></i>
+               title="Notifications{% if nav_unread_notifications %} ({{ nav_unread_notifications }} unread){% endif %}"
+               aria-label="Notifications{% if nav_unread_notifications %} — {{ nav_unread_notifications }} unread{% endif %}">
+                <i class="bi bi-bell{% if nav_unread_notifications %}-fill{% endif %}"></i>
+                {% if nav_unread_notifications %}
+                <span class="sb-badge has-count" aria-label="{{ nav_unread_notifications }} unread notifications">
+                    {{ nav_unread_notifications }}
+                </span>
+                {% else %}
                 <span class="sb-badge" id="sb-bell-badge" aria-live="polite"></span>
+                {% endif %}
             </a>
 
             <!-- Batches (desktop only) -->
@@ -306,10 +312,16 @@
             <!-- Messages -->
             <a href="{% url 'messaging_index' %}"
                class="sb-icon-btn"
-               title="Messages"
-               aria-label="Messages">
-                <i class="bi bi-chat-dots"></i>
+               title="Messages{% if nav_unread_messages %} ({{ nav_unread_messages }} unread){% endif %}"
+               aria-label="Messages{% if nav_unread_messages %} — {{ nav_unread_messages }} unread{% endif %}">
+                <i class="bi bi-chat-dots{% if nav_unread_messages %}-fill{% endif %}"></i>
+                {% if nav_unread_messages %}
+                <span class="sb-badge has-count" aria-label="{{ nav_unread_messages }} unread messages">
+                    {{ nav_unread_messages }}
+                </span>
+                {% else %}
                 <span class="sb-badge" id="sb-chat-badge" aria-live="polite"></span>
+                {% endif %}
             </a>
 
             <!-- Avatar / Profile dropdown -->

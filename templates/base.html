@@ -196,7 +196,11 @@
 
                 <!-- Search bar (center) -->
                 <form class="nav-search d-flex flex-grow-1 mx-lg-4 my-2 my-lg-0" action="/browse/" method="GET">
-                    <input class="form-control w-100" type="search" name="q" placeholder="🔍 Search skills..." value="{{ request.GET.q }}">
+                    <div class="position-relative w-100">
+                        <i class="bi bi-search position-absolute" style="left:14px; top:50%; transform:translateY(-50%); color:#0e7d73; font-size:0.85rem; pointer-events:none;"></i>
+                        <input class="form-control w-100" type="search" name="q" placeholder="Search skills…"
+                               value="{{ request.GET.q }}" style="padding-left:38px;">
+                    </div>
                 </form>
 
                 <!-- Right icons -->
@@ -209,13 +213,25 @@
                     </a>
 
                     <!-- Notifications bell -->
-                    <a href="/notifications/" class="nav-icon-btn" title="Alerts">
-                        <i class="bi bi-bell"></i>
+                    <a href="/notifications/" class="nav-icon-btn position-relative" title="Alerts">
+                        <i class="bi bi-bell{% if nav_unread_notifications %}-fill{% endif %}"></i>
+                        {% if nav_unread_notifications %}
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill"
+                              style="background:#0e7d73; font-size:0.6rem; min-width:16px; padding:2px 4px; border:2px solid #fff;">
+                            {{ nav_unread_notifications }}
+                        </span>
+                        {% endif %}
                     </a>
 
                     <!-- Messages -->
-                    <a href="/messaging/" class="nav-icon-btn" title="Messages">
-                        <i class="bi bi-chat-dots"></i>
+                    <a href="/messaging/" class="nav-icon-btn position-relative" title="Messages">
+                        <i class="bi bi-chat-dots{% if nav_unread_messages %}-fill{% endif %}"></i>
+                        {% if nav_unread_messages %}
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill"
+                              style="background:#0e7d73; font-size:0.6rem; min-width:16px; padding:2px 4px; border:2px solid #fff;">
+                            {{ nav_unread_messages }}
+                        </span>
+                        {% endif %}
                     </a>
 
                     <!-- Profile / Auth -->
