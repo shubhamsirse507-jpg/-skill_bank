@@ -19,6 +19,12 @@
     <link rel="stylesheet" href="{% static 'user_dashboard/css/dashboard.css' %}">
     <link rel="stylesheet" href="{% static 'user_dashboard/css/responsive.css' %}">
     {% block extra_css %}{% endblock %}
+
+    <style>
+        /* Global: floating chat button never overlaps content */
+        body { padding-bottom: 80px; }
+        @media (min-width: 769px) { body { padding-bottom: 0; } }
+    </style>
 </head>
 
 <body>
@@ -27,7 +33,7 @@
 
     <div class="container-fluid p-0">
 
-        <!-- Horizontal Sidebar -->
+        <!-- Horizontal Sidebar / Mobile dropdown menu -->
         {% include 'user_dashboard/sidebar.html' %}
 
         <!-- Dashboard Content -->

@@ -1,20 +1,42 @@
 {% load static %}
 
 <style>
-/* Dashboard navbar logo — permanent fix for all devices */
+/* ================================================================
+   SkillBank Navbar — Mobile-first, sticky, brand-consistent
+   ================================================================ */
+
+/* --- Base navbar --- */
+.sb-navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1050;
+    background: #ffffff;
+    box-shadow: 0 2px 12px rgba(12,108,99,0.10);
+    padding: 0;
+}
+.sb-navbar-inner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    flex-wrap: wrap;
+}
+
+/* --- Logo --- */
 .db-navbar-brand {
     display: flex !important;
     align-items: center !important;
     gap: 8px !important;
     text-decoration: none !important;
     font-family: 'Outfit', -apple-system, sans-serif !important;
-    font-size: 1.35rem !important;
+    font-size: 1.3rem !important;
     font-weight: 900 !important;
     color: #0e7d73 !important;
+    white-space: nowrap;
 }
 .db-brand-icon {
     background: #0e7d73 !important;
-    color: #ffffff !important;
+    color: #fff !important;
     width: 34px !important;
     height: 34px !important;
     min-width: 34px !important;
@@ -24,101 +46,339 @@
     justify-content: center !important;
     font-size: 16px !important;
     font-weight: 800 !important;
-    line-height: 1 !important;
     flex-shrink: 0 !important;
 }
-@media (max-width: 575.98px) {
-    .db-navbar-brand { font-size: 1.1rem !important; }
-    .db-brand-icon { width: 28px !important; height: 28px !important; min-width: 28px !important; font-size: 13px !important; border-radius: 7px !important; }
+
+/* --- Hamburger (mobile only) --- */
+.sb-hamburger {
+    display: none;
+    background: none;
+    border: none;
+    padding: 6px;
+    cursor: pointer;
+    color: #0e7d73;
+    min-width: 44px;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    flex-shrink: 0;
+    transition: background 0.2s;
 }
-@media (max-width: 399.98px) {
-    .db-navbar-brand { font-size: 0.95rem !important; }
-    .db-brand-icon { width: 26px !important; height: 26px !important; min-width: 26px !important; border-radius: 6px !important; }
+.sb-hamburger:hover, .sb-hamburger:focus-visible {
+    background: rgba(14,125,115,0.10);
+    outline: 2px solid #0e7d73;
+    outline-offset: 2px;
+}
+.sb-hamburger .bi { font-size: 1.6rem; line-height: 1; }
+
+/* --- Search bar row (below logo row on mobile) --- */
+.sb-search-row {
+    width: 100%;
+    padding: 0 16px 10px;
+}
+.sb-search-row form { width: 100%; }
+.sb-search-row input {
+    border-radius: 100px;
+    border: 1.5px solid #d1d5db;
+    padding: 8px 16px 8px 40px;
+    font-size: 0.9rem;
+    width: 100%;
+    background: #f8fafc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%230e7d73' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.85-3.85zm-5.242 1.1a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z'/%3E%3C/svg%3E") no-repeat 14px center;
+    background-size: 15px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.sb-search-row input:focus {
+    outline: none;
+    border-color: #0e7d73;
+    box-shadow: 0 0 0 3px rgba(14,125,115,0.15);
+}
+
+/* --- Right icons group --- */
+.sb-nav-right {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: auto;
+}
+
+/* --- Icon buttons (bell, chat) --- */
+.sb-icon-btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
+    border-radius: 10px;
+    color: #374151;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+    border: none;
+    background: none;
+    padding: 4px;
+}
+.sb-icon-btn:hover, .sb-icon-btn:focus-visible {
+    background: rgba(14,125,115,0.10);
+    color: #0e7d73;
+    outline: 2px solid #0e7d73;
+    outline-offset: 2px;
+}
+.sb-icon-btn .bi { font-size: 1.35rem; line-height: 1; }
+
+/* --- Unread badge on bell / chat --- */
+.sb-badge {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 3px;
+    font-size: 0.65rem;
+    font-weight: 800;
+    line-height: 16px;
+    text-align: center;
+    border-radius: 100px;
+    background: #0e7d73;
+    color: #fff;
+    border: 2px solid #fff;
+    display: none;  /* shown by JS when count > 0 */
+}
+.sb-badge.has-count { display: block; }
+
+/* --- Avatar button --- */
+.sb-avatar-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2.5px solid #0e7d73;
+    background: #0e7d73;
+    color: #fff;
+    font-weight: 800;
+    font-size: 1rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+    flex-shrink: 0;
+}
+.sb-avatar-btn:hover, .sb-avatar-btn:focus-visible {
+    box-shadow: 0 0 0 3px rgba(14,125,115,0.3);
+    outline: none;
+}
+.sb-avatar-btn img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+/* --- Desktop search (inside main row, hidden on mobile) --- */
+.sb-search-desktop { flex: 1; min-width: 0; }
+.sb-search-desktop input {
+    border-radius: 100px;
+    border: 1.5px solid #d1d5db;
+    padding: 8px 16px 8px 40px;
+    font-size: 0.9rem;
+    width: 100%;
+    background: #f8fafc url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%230e7d73' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.85-3.85zm-5.242 1.1a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z'/%3E%3C/svg%3E") no-repeat 14px center;
+    background-size: 15px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.sb-search-desktop input:focus {
+    outline: none;
+    border-color: #0e7d73;
+    box-shadow: 0 0 0 3px rgba(14,125,115,0.15);
+}
+
+/* ================================================================
+   MOBILE overrides ≤ 768px
+   ================================================================ */
+@media (max-width: 768px) {
+    .sb-hamburger { display: inline-flex; }
+    .sb-search-desktop { display: none; }   /* search moves to separate row */
+    .sb-navbar-inner { flex-wrap: nowrap; padding: 8px 12px; }
+    .db-navbar-brand { font-size: 1.1rem !important; }
+    .db-brand-icon  { width: 28px !important; height: 28px !important; min-width: 28px !important; font-size: 13px !important; border-radius: 7px !important; }
+    .sb-batches-link { display: none !important; }   /* hide desktop-only Batches link */
+}
+
+@media (min-width: 769px) {
+    .sb-search-row { display: none; }   /* search is in main row on desktop */
+    .sb-hamburger  { display: none !important; }
+}
+
+/* Dropdown menu for profile avatar (desktop) */
+.sb-dropdown { position: relative; }
+.sb-dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    top: calc(100% + 8px);
+    min-width: 200px;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    border: 1px solid #e5e7eb;
+    padding: 6px;
+    z-index: 1200;
+    animation: fadeInDown 0.18s ease both;
+}
+.sb-dropdown:focus-within .sb-dropdown-menu,
+.sb-dropdown.open .sb-dropdown-menu { display: block; }
+.sb-dropdown-menu a {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 14px; border-radius: 9px;
+    font-size: 0.88rem; font-weight: 600;
+    color: #374151; text-decoration: none;
+    transition: background 0.15s;
+    white-space: nowrap;
+    min-height: 44px;
+}
+.sb-dropdown-menu a:hover { background: #f0fdfa; color: #0e7d73; }
+.sb-dropdown-menu a.text-danger:hover { background: #fff5f5; color: #dc2626 !important; }
+.sb-dropdown-menu .divider { height: 1px; background: #f3f4f6; margin: 4px 0; }
+.sb-dropdown-name {
+    padding: 8px 14px 4px;
+    font-size: 0.8rem; font-weight: 700;
+    color: #0e7d73; letter-spacing: 0.3px;
+}
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 </style>
 
-<nav class="navbar bg-white shadow-sm py-3">
-    <div class="container-fluid">
+<nav class="sb-navbar" id="sb-navbar" role="navigation" aria-label="Main navigation">
 
-        <div class="row align-items-center w-100">
+    <!-- ── Row 1: Hamburger | Logo | [Search desktop] | Icons | Avatar ── -->
+    <div class="sb-navbar-inner">
 
-           <!-- Logo + Hamburger -->
-<div class="col-8 col-md-3 d-flex align-items-center">
+        <!-- Hamburger (mobile) -->
+        <button class="sb-hamburger"
+                id="sb-menu-toggle"
+                type="button"
+                aria-expanded="false"
+                aria-controls="sb-mobile-menu"
+                aria-label="Toggle navigation menu">
+            <i class="bi bi-list" id="sb-hamburger-icon"></i>
+        </button>
 
-    <!-- Mobile Sidebar Toggle -->
-    <button class="btn d-lg-none me-2"
-            type="button"
-            data-bs-toggle="offcanvas"
-            data-bs-target="#sidebarMenu"
-            aria-controls="sidebarMenu">
+        <!-- Logo -->
+        <a class="db-navbar-brand" href="{% url 'home' %}">
+            <span class="db-brand-icon" aria-hidden="true">S</span>
+            <span>SkillBank</span>
+        </a>
 
-        <i class="bi bi-list fs-2"></i>
+        <!-- Search — desktop only (hidden on mobile, shown in row 2) -->
+        <div class="sb-search-desktop" role="search">
+            <form action="{% url 'search_skills' %}" method="GET">
+                <input type="search" name="q"
+                       placeholder="Search skills…"
+                       value="{{ request.GET.q }}"
+                       aria-label="Search skills">
+            </form>
+        </div>
 
-    </button>
+        <!-- Right icons -->
+        <div class="sb-nav-right">
 
-    <!-- Logo — permanently visible on all devices -->
-    <a class="db-navbar-brand" href="{% url 'home' %}">
-        <span class="db-brand-icon" aria-hidden="true">S</span>
-        <span>SkillBank</span>
-    </a>
+            <!-- Bell -->
+            <a href="{% url 'notifications' %}"
+               class="sb-icon-btn"
+               title="Notifications"
+               aria-label="Notifications">
+                <i class="bi bi-bell"></i>
+                <span class="sb-badge" id="sb-bell-badge" aria-live="polite"></span>
+            </a>
 
-</div>
+            <!-- Batches (desktop only) -->
+            <a href="{% url 'batches' %}"
+               class="sb-icon-btn sb-batches-link"
+               title="Batches"
+               aria-label="Batches">
+                <i class="bi bi-collection-play"></i>
+            </a>
 
-            <!-- Search -->
-            <div class="col-12 col-md-6 order-3 order-md-2 mt-3 mt-md-0">
-                <form action="{% url 'search_skills' %}" method="GET">
-                    <input class="form-control rounded-pill"
-                           type="search"
-                           name="q"
-                           placeholder="🔍 Search skills..."
-                           value="{{ request.GET.q }}">
-                </form>
-            </div>
+            <!-- Messages -->
+            <a href="{% url 'messaging_index' %}"
+               class="sb-icon-btn"
+               title="Messages"
+               aria-label="Messages">
+                <i class="bi bi-chat-dots"></i>
+                <span class="sb-badge" id="sb-chat-badge" aria-live="polite"></span>
+            </a>
 
-            <!-- Right Icons -->
-            <div class="col-4 col-md-3 order-2 order-md-3 d-flex justify-content-end align-items-center gap-2">
+            <!-- Avatar / Profile dropdown -->
+            <div class="sb-dropdown" id="sb-avatar-dropdown">
+                <button class="sb-avatar-btn"
+                        type="button"
+                        title="{{ user.username }}"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                        id="sb-avatar-btn">
+                    {% if user.profile.avatar_preset_url %}
+                        <img src="{{ user.profile.avatar_preset_url }}"
+                             alt="{{ user.username }}"
+                             onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">
+                        <span style="display:none;">{{ user.username|slice:":1"|upper }}</span>
+                    {% else %}
+                        {{ user.username|slice:":1"|upper }}
+                    {% endif %}
+                </button>
 
-                <!-- Notifications Bell -->
-                <a href="{% url 'notifications' %}" class="btn position-relative" title="Notifications">
-                    <i class="bi bi-bell fs-4"></i>
-                </a>
-
-                <!-- Batches -->
-                <a href="{% url 'batches' %}" class="btn d-none d-md-inline-flex align-items-center gap-1 fw-semibold" title="Batches" style="color:#0e7d73;">
-                    <i class="bi bi-collection-play fs-5"></i>
-                    <span class="d-none d-lg-inline" style="font-size:0.9rem;">Batches</span>
-                </a>
-
-                <!-- Messages -->
-                <a href="{% url 'messaging_index' %}" class="btn" title="Messages">
-                    <i class="bi bi-chat-dots fs-4"></i>
-                </a>
-
-                <!-- Profile Dropdown -->
-                <div class="dropdown">
-                  <a href="#" data-bs-toggle="dropdown" class="profile-avatar" title="{{ user.username }}">
-                    <i class="bi bi-person-circle" style="font-size:35px;"></i>
-                  </a>
-
-                    <ul class="dropdown-menu dropdown-menu-end">
-                        <li><span class="dropdown-item-text fw-bold">{{ user.get_full_name|default:user.username }}</span></li>
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item" href="{% url 'profile' %}"><i class="bi bi-person me-2"></i>My Profile</a></li>
-                        <li><a class="dropdown-item" href="{% url 'booking_list' %}"><i class="bi bi-calendar-check me-2"></i>My Bookings</a></li>
-                        <li><a class="dropdown-item" href="{% url 'my_certificates' %}"><i class="bi bi-award me-2"></i>My Certificates</a></li>
-                        <li><a class="dropdown-item" href="{% url 'ratings:rating_dashboard' %}"><i class="bi bi-star me-2"></i>My Ratings</a></li>
-                        {% if user.is_staff %}
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-primary" href="{% url 'admin_panel:dashboard' %}"><i class="bi bi-shield-check me-2"></i>Admin Panel</a></li>
-                        {% endif %}
-                        <li><hr class="dropdown-divider"></li>
-                        <li><a class="dropdown-item text-danger" href="{% url 'logout' %}"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
-                    </ul>
+                <div class="sb-dropdown-menu" role="menu" aria-labelledby="sb-avatar-btn">
+                    <div class="sb-dropdown-name">{{ user.get_full_name|default:user.username }}</div>
+                    <div class="divider"></div>
+                    <a href="{% url 'profile' %}" role="menuitem"><i class="bi bi-person-circle"></i> My Profile</a>
+                    <a href="{% url 'booking_list' %}" role="menuitem"><i class="bi bi-calendar-check"></i> My Bookings</a>
+                    <a href="{% url 'my_certificates' %}" role="menuitem"><i class="bi bi-award"></i> Certificates</a>
+                    <a href="{% url 'ratings:rating_dashboard' %}" role="menuitem"><i class="bi bi-star"></i> My Ratings</a>
+                    {% if user.is_staff %}
+                    <div class="divider"></div>
+                    <a href="{% url 'admin_panel:dashboard' %}" role="menuitem" style="color:#0e7d73;"><i class="bi bi-shield-check"></i> Admin Panel</a>
+                    {% endif %}
+                    <div class="divider"></div>
+                    <a href="{% url 'logout' %}" class="text-danger" role="menuitem"><i class="bi bi-box-arrow-right"></i> Logout</a>
                 </div>
-
             </div>
 
         </div>
-
     </div>
+
+    <!-- ── Row 2: Search (mobile only) ── -->
+    <div class="sb-search-row" role="search">
+        <form action="{% url 'search_skills' %}" method="GET">
+            <input type="search" name="q"
+                   placeholder="Search skills…"
+                   value="{{ request.GET.q }}"
+                   aria-label="Search skills">
+        </form>
+    </div>
+
 </nav>
+
+<!-- Backdrop for mobile menu -->
+<div class="sb-menu-backdrop" id="sb-menu-backdrop" aria-hidden="true"></div>
+
+<script>
+(function () {
+    // Avatar dropdown toggle
+    var avatarDropdown = document.getElementById('sb-avatar-dropdown');
+    var avatarBtn      = document.getElementById('sb-avatar-btn');
+    if (avatarBtn && avatarDropdown) {
+        avatarBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            var open = avatarDropdown.classList.toggle('open');
+            avatarBtn.setAttribute('aria-expanded', open);
+        });
+        document.addEventListener('click', function () {
+            avatarDropdown.classList.remove('open');
+            if (avatarBtn) avatarBtn.setAttribute('aria-expanded', 'false');
+        });
+    }
+})();
+</script>

@@ -1,8 +1,23 @@
 /* =======================================================
-  SkillBank User Dashboard Multi-Breakpoint Responsive Rules
-======================================================= */
+   SkillBank User Dashboard — Multi-Breakpoint Responsive
+   ALL new mobile fixes live in @media (max-width: 480px)
+   Desktop layout is UNCHANGED above 769px.
+   ======================================================= */
 
-/* 1. Desktop Widescreen & Large (>= 1200px) */
+/* ── Global box-sizing guard ── */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* ── No horizontal scroll anywhere ── */
+html, body {
+    overflow-x: hidden;
+    max-width: 100%;
+}
+
+/* =======================================================
+   1. Desktop Widescreen & Large (>= 1200px) — unchanged
+   ======================================================= */
 @media (min-width: 1200px) {
     .dashboard-bg {
         padding: 30px 40px !important;
@@ -14,7 +29,9 @@
     }
 }
 
-/* 2. Desktop Standard (992px - 1199.98px) */
+/* =======================================================
+   2. Desktop Standard (992px - 1199.98px) — unchanged
+   ======================================================= */
 @media (min-width: 992px) and (max-width: 1199.98px) {
     .dashboard-bg {
         padding: 25px 24px !important;
@@ -27,7 +44,9 @@
     }
 }
 
-/* 3. Tablet Landscape / Laptop Small (768px - 991.98px) */
+/* =======================================================
+   3. Tablet Landscape / Laptop Small (768px - 991.98px) — unchanged
+   ======================================================= */
 @media (min-width: 768px) and (max-width: 991.98px) {
     .dashboard-bg {
         padding: 20px 18px !important;
@@ -47,117 +66,227 @@
     }
 }
 
-/* 4. Tablet Portrait (576px - 767.98px) */
+/* =======================================================
+   4. Tablet Portrait (576px - 767.98px)
+   ======================================================= */
 @media (min-width: 576px) and (max-width: 767.98px) {
     .dashboard-bg {
         padding: 15px 12px !important;
     }
-    
-    .sidebar-horizontal {
-        flex-direction: row;
-        justify-content: flex-start;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        white-space: nowrap;
-        padding: 10px 14px;
-        gap: 6px;
-        margin: 10px 0 20px;
-        border-radius: 12px;
-    }
-
-    .sidebar-horizontal a {
-        font-size: 0.82rem;
-        padding: 7px 14px;
-        flex-shrink: 0;
-    }
-
     .dashboard-hero-pro {
         padding: 28px 20px !important;
         text-align: center;
         border-radius: 20px !important;
     }
-
-    .hero-title-pro {
-        font-size: 26px !important;
-    }
-
-    .hero-text-pro {
-        font-size: 15px !important;
-    }
-
-    .hero-illustration {
-        max-height: 180px !important;
-        margin-top: 20px;
-    }
+    .hero-title-pro   { font-size: 26px !important; }
+    .hero-text-pro    { font-size: 15px !important; }
+    .hero-illustration { max-height: 180px !important; margin-top: 20px; }
 }
 
-/* 5. Mobile Standard (400px - 575.98px) */
+/* =======================================================
+   5. Mobile Standard (400px - 575.98px)
+   ======================================================= */
 @media (min-width: 400px) and (max-width: 575.98px) {
     .dashboard-bg {
         padding: 12px 10px !important;
     }
-
-    .sidebar-horizontal {
-        padding: 8px 10px;
-        gap: 4px;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        white-space: nowrap;
-    }
-
-    .sidebar-horizontal a {
-        font-size: 0.78rem;
-        padding: 6px 12px;
-        flex-shrink: 0;
-    }
-
     .dashboard-hero-pro {
         padding: 24px 16px !important;
         text-align: center;
     }
-
-    .hero-title-pro {
-        font-size: 22px !important;
-    }
-
-    .hero-illustration {
-        max-height: 160px !important;
-        margin-top: 16px;
-    }
-
-    .daily-quote-card {
+    .hero-title-pro    { font-size: 22px !important; }
+    .hero-illustration { max-height: 160px !important; margin-top: 16px; }
+    .daily-quote-card  {
         flex-direction: column;
         text-align: center;
         width: 100%;
     }
 }
 
-/* 6. Extra Small Mobile (< 400px) */
+/* =======================================================
+   6. Extra Small Mobile (< 400px) — unchanged
+   ======================================================= */
 @media (max-width: 399.98px) {
-    .dashboard-bg {
-        padding: 8px 6px !important;
-    }
-
+    .dashboard-bg { padding: 8px 6px !important; }
     .dashboard-hero-pro {
         padding: 20px 12px !important;
     }
-
-    .hero-title-pro {
-        font-size: 20px !important;
-    }
-
-    .hero-text-pro {
-        font-size: 13px !important;
-    }
-
-    .hero-illustration {
-        max-height: 140px !important;
-    }
-
+    .hero-title-pro   { font-size: 20px !important; }
+    .hero-text-pro    { font-size: 13px !important; }
+    .hero-illustration { max-height: 140px !important; }
     .hero-btn-primary, .hero-btn-outline {
         width: 100%;
         justify-content: center;
         font-size: 0.85rem;
         padding: 10px 16px;
+    }
+}
+
+/* =======================================================
+   7. MOBILE FIXES — max-width: 480px
+      Only styles inside this block were added/changed.
+   ======================================================= */
+@media (max-width: 480px) {
+
+    /* ── 7a. Layout & overflow ── */
+    .container-fluid {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+    }
+    .dashboard-bg {
+        padding: 12px 10px !important;
+        /* Bottom padding so floating chat button never covers content */
+        padding-bottom: 88px !important;
+    }
+
+    /* ── 7b. Hero banner ── */
+    .dashboard-hero-pro {
+        padding: 20px 14px !important;
+        text-align: left;
+        border-radius: 18px !important;
+        margin-bottom: 20px !important;
+    }
+    .hero-title-pro   { font-size: 20px !important; letter-spacing: -0.5px !important; }
+    .hero-text-pro    { font-size: 13px !important; }
+    .hero-illustration { display: none; }  /* hide image on tiny screens */
+    .floating-learner-badge { display: none; }
+
+    /* ── 7c. Hero action buttons — stack on mobile ── */
+    .dashboard-hero-pro .d-flex.gap-3 {
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+    .hero-btn-primary, .hero-btn-outline,
+    .dashboard-hero-pro .btn {
+        width: 100% !important;
+        justify-content: center !important;
+        font-size: 0.88rem !important;
+        padding: 11px 16px !important;
+        min-height: 44px;
+    }
+
+    /* ── 7d. Stat cards — 2 per row ── */
+    .row.g-3 > .col-xl-3.col-md-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+    }
+    .stat-card-pro {
+        padding: 14px 12px !important;
+    }
+    .stat-number-pro { font-size: 1.6rem !important; }
+    .stat-label-pro  { font-size: 0.75rem !important; }
+    .stat-trend-pill { font-size: 0.72rem !important; padding: 4px 8px !important; }
+
+    /* ── 7e. Category + community cards — full width ── */
+    .col-xl-3.col-lg-4.col-md-6,
+    .col-lg-4.col-md-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    /* ── 7f. Daily quote card ── */
+    .daily-quote-card {
+        flex-direction: column !important;
+        text-align: left !important;
+        gap: 8px !important;
+        padding: 12px !important;
+    }
+
+    /* ── 7g. CTA banner ── */
+    .dashboard-cta-pro {
+        padding: 28px 16px !important;
+        margin-top: 24px !important;
+        border-radius: 18px !important;
+    }
+    .cta-title-pro  { font-size: 1.4rem !important; }
+    .cta-desc-pro   { font-size: 0.9rem !important; }
+
+    /* ── 7h. Profile page ── */
+    .profile-container {
+        padding: 0 10px !important;
+        margin-top: 12px !important;   /* reduce gap between header and profile card */
+    }
+    .profile-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+    .sidebar-card {
+        padding: 18px 14px !important;
+    }
+    .main-avatar-img {
+        width: 90px !important;
+        height: 90px !important;
+    }
+    /* Progress bar: ensure filled portion matches percentage, never clipped */
+    .progress-bar-bg {
+        width: 100% !important;
+        overflow: hidden !important;
+    }
+    .progress-bar-fill {
+        max-width: 100% !important;
+    }
+    /* Avatar green dot: proper bottom-right placement */
+    .avatar-wrapper { display: inline-block; position: relative; }
+    .status-badge {
+        position: absolute !important;
+        bottom: 4px !important;
+        right: 4px !important;
+        width: 16px !important;
+        height: 16px !important;
+        border: 3px solid #fff !important;
+    }
+    /* Form grid: single column on mobile */
+    .form-grid {
+        grid-template-columns: 1fr !important;
+    }
+    .glass-card { padding: 16px 12px !important; }
+
+    /* ── 7i. Floating chat button ── */
+    /* Skye chat bubble (class from landing: .skye-toggle-btn or similar) */
+    .skye-toggle-btn,
+    [class*="chat-btn"],
+    [class*="chat-toggle"],
+    [id*="chat-btn"],
+    [id*="skye-toggle"] {
+        width: 48px !important;
+        height: 48px !important;
+        bottom: 20px !important;
+        right: 16px !important;
+        font-size: 1.1rem !important;
+    }
+
+    /* ── 7j. Section headings & section-level spacing ── */
+    .my-5 { margin-top: 24px !important; margin-bottom: 24px !important; }
+    h4.fw-bold { font-size: 1rem !important; }
+
+    /* ── 7k. Focus styles ── */
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible {
+        outline: 2px solid #0e7d73 !important;
+        outline-offset: 2px !important;
+        border-radius: 6px;
+    }
+
+    /* ── 7l. Ensure tap targets are >= 44px ── */
+    .btn, a.btn, button {
+        min-height: 44px;
+    }
+    .btn-sm {
+        min-height: 38px;  /* keep sm smaller but still comfortable */
+    }
+}
+
+/* =======================================================
+   8. VERY SMALL (< 360px) extra squeeze
+   ======================================================= */
+@media (max-width: 360px) {
+    .sb-navbar-inner { padding: 7px 10px !important; gap: 6px !important; }
+    .db-brand-icon  { width: 24px !important; height: 24px !important; min-width: 24px !important; border-radius: 6px !important; font-size: 11px !important; }
+    .db-navbar-brand { font-size: 0.9rem !important; }
+    .dashboard-bg   { padding: 8px 6px !important; padding-bottom: 88px !important; }
+    .row.g-3 > .col-xl-3.col-md-6 {
+        flex: 0 0 100%;
+        max-width: 100%;
     }
 }

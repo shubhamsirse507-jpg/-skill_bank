@@ -1,123 +1,416 @@
 {% load static %}
 
-<!-- Horizontal Top Bar Navigation for Desktop/Tablet -->
-<div class="sidebar-horizontal" id="sidebar">
+<!-- ================================================================
+     SkillBank Sidebar — Desktop horizontal bar + Mobile dropdown grid
+     ================================================================ -->
+
+<style>
+/* ── DESKTOP horizontal bar ── */
+.sidebar-horizontal {
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 4px;
+    background: linear-gradient(135deg, #0f172a 0%, #0c3832 100%);
+    padding: 10px 20px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    position: sticky;
+    top: 60px;   /* below navbar */
+    z-index: 1040;
+}
+.sidebar-horizontal::-webkit-scrollbar { display: none; }
+
+.sidebar-horizontal a {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: rgba(255,255,255,0.80);
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 10px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: background 0.2s, color 0.2s;
+    min-height: 36px;
+}
+.sidebar-horizontal a:hover {
+    background: rgba(255,255,255,0.12);
+    color: #6ddfd5;
+}
+.sidebar-horizontal a.active {
+    background: linear-gradient(135deg, #0c6c63, #14b8a6);
+    color: #fff;
+    font-weight: 700;
+}
+.sidebar-horizontal a i { font-size: 0.95rem; width: 18px; text-align: center; flex-shrink: 0; }
+
+/* ── MOBILE menu panel ── (closed by default) */
+#sb-mobile-menu {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1100;
+    background: linear-gradient(160deg, #0f172a 0%, #0c3832 100%);
+    padding: 60px 16px 20px;  /* top padding = header height */
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35);
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
+    animation: sbMenuSlideIn 0.22s cubic-bezier(0.16,1,0.3,1) both;
+    max-height: 92vh;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+#sb-mobile-menu::-webkit-scrollbar { display: none; }
+#sb-mobile-menu.sb-menu-open { display: block; }
+
+@keyframes sbMenuSlideIn {
+    from { opacity: 0; transform: translateY(-18px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Menu header inside panel ── */
+.sb-menu-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.10);
+}
+.sb-menu-title {
+    color: #6ddfd5;
+    font-weight: 800;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Outfit', sans-serif;
+}
+.sb-menu-close {
+    background: rgba(255,255,255,0.08);
+    border: none;
+    color: #fff;
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem;
+    transition: background 0.2s;
+}
+.sb-menu-close:hover, .sb-menu-close:focus-visible {
+    background: rgba(255,255,255,0.18);
+    outline: 2px solid #6ddfd5;
+    outline-offset: 2px;
+}
+
+/* ── 2-column nav grid ── */
+.sb-menu-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+/* ── Individual menu item ── */
+.sb-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    color: rgba(255,255,255,0.80);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: background 0.18s, color 0.18s;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+.sb-menu-item:focus-visible {
+    outline: 2px solid #6ddfd5;
+    outline-offset: 2px;
+}
+.sb-menu-item:hover {
+    background: rgba(255,255,255,0.10);
+    color: #6ddfd5;
+}
+.sb-menu-item.active {
+    background: linear-gradient(135deg, #0c6c63, #14b8a6);
+    color: #fff !important;
+    font-weight: 700;
+}
+.sb-menu-item i {
+    font-size: 1rem;
+    width: 20px;
+    min-width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+}
+.sb-menu-item span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+
+/* ── Full-width divider row ── */
+.sb-menu-divider {
+    grid-column: 1 / -1;
+    height: 1px;
+    background: rgba(255,255,255,0.10);
+    margin: 4px 0;
+}
+
+/* ── Logout spans full width ── */
+.sb-menu-logout {
+    grid-column: 1 / -1;
+    color: #f87171;
+}
+.sb-menu-logout:hover { background: rgba(248,113,113,0.12); color: #fca5a5; }
+
+/* ── Backdrop ── */
+.sb-menu-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.45);
+    z-index: 1090;
+    animation: sbFadeIn 0.18s ease both;
+}
+.sb-menu-backdrop.active { display: block; }
+@keyframes sbFadeIn { from { opacity:0; } to { opacity:1; } }
+
+/* ── Hide mobile menu on desktop ── */
+@media (min-width: 769px) {
+    #sb-mobile-menu { display: none !important; }
+    .sb-menu-backdrop { display: none !important; }
+}
+/* ── Hide desktop sidebar on mobile ── */
+@media (max-width: 768px) {
+    .sidebar-horizontal { display: none !important; }
+}
+</style>
+
+<!-- ═══ DESKTOP: horizontal top-bar ═══ -->
+<div class="sidebar-horizontal" id="sidebar" role="navigation" aria-label="Section navigation">
 
     <a href="{% url 'home' %}" {% if request.resolver_match.url_name == 'home' %}class="active"{% endif %}>
         <i class="fa-solid fa-house"></i> Dashboard
     </a>
-
     <a href="{% url 'search_skills' %}" {% if request.resolver_match.url_name == 'search_skills' %}class="active"{% endif %}>
         <i class="fa-solid fa-compass"></i> Browse Skills
     </a>
-
     <a href="{% url 'add_skill' %}" {% if request.resolver_match.url_name == 'add_skill' %}class="active"{% endif %}>
         <i class="fa-solid fa-circle-plus"></i> Add Skill
     </a>
-
     <a href="{% url 'messaging_index' %}" {% if request.resolver_match.url_name == 'messaging_index' %}class="active"{% endif %}>
         <i class="fa-solid fa-comments"></i> Messages
     </a>
-
     <a href="{% url 'booking_list' %}" {% if request.resolver_match.url_name == 'booking_list' %}class="active"{% endif %}>
         <i class="fa-solid fa-calendar-check"></i> Bookings
     </a>
-
     <a href="{% url 'my_certificates' %}" {% if request.resolver_match.url_name == 'my_certificates' or request.resolver_match.url_name == 'issue_certificate' or request.resolver_match.url_name == 'certificate_detail' %}class="active"{% endif %}>
         <i class="fa-solid fa-certificate"></i> Certificates
     </a>
-
     <a href="{% url 'ratings:rating_dashboard' %}" {% if request.resolver_match.url_name == 'rating_dashboard' %}class="active"{% endif %}>
         <i class="fa-solid fa-star"></i> Ratings
     </a>
-
     <a href="{% url 'profile' %}" {% if request.resolver_match.url_name == 'profile' %}class="active"{% endif %}>
         <i class="fa-solid fa-user"></i> Profile
     </a>
-
     <a href="{% url 'notifications' %}" {% if request.resolver_match.url_name == 'notifications' %}class="active"{% endif %}>
         <i class="fa-solid fa-bell"></i> Notifications
     </a>
-
     <a href="{% url 'live_session' %}" {% if request.resolver_match.url_name == 'live_session' %}class="active"{% endif %}>
         <i class="fa-solid fa-video"></i> Live Session
     </a>
-
     <a href="{% url 'batches' %}" {% if request.resolver_match.url_name == 'batches' or request.resolver_match.url_name == 'batches_direct' %}class="active"{% endif %}>
         <i class="fa-solid fa-layer-group"></i> Batches
     </a>
-
     {% if user.is_staff %}
-    <a href="{% url 'create_batch' %}" {% if request.resolver_match.url_name == 'create_batch' %}class="active"{% endif %} style="color: #6ddfd5; font-weight: 800;">
+    <a href="{% url 'create_batch' %}" {% if request.resolver_match.url_name == 'create_batch' %}class="active"{% endif %} style="color:#6ddfd5; font-weight:800;">
         <i class="fa-solid fa-plus-circle"></i> Create Batch
     </a>
     {% endif %}
-
     <a href="{% url 'chatbot' %}" {% if request.resolver_match.url_name == 'chatbot' %}class="active"{% endif %}>
         <i class="fa-solid fa-robot"></i> AI Chatbot
     </a>
-
     {% if user.is_staff %}
-    <a href="{% url 'admin_panel:dashboard' %}" style="color: #10b981; font-weight: 800;">
+    <a href="{% url 'admin_panel:dashboard' %}" style="color:#10b981; font-weight:800;">
         <i class="fa-solid fa-shield-halved"></i> Admin Panel
     </a>
     {% endif %}
 
 </div>
 
-<!-- Offcanvas Sidebar Menu for Mobile Screen -->
-<div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel" style="background: #0f172a; color: #fff; width: 290px;">
-    <div class="offcanvas-header border-bottom border-secondary pb-3">
-        <h5 class="offcanvas-title fw-bold d-flex align-items-center gap-2" id="sidebarMenuLabel" style="font-family: var(--font-head); color: #6ddfd5;">
-            <span class="db-brand-icon" style="background:#0c6c63; width:30px; height:30px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center;">S</span>
+<!-- ═══ MOBILE: custom dropdown overlay ═══ -->
+<div id="sb-mobile-menu"
+     role="dialog"
+     aria-modal="true"
+     aria-label="Navigation menu">
+
+    <div class="sb-menu-header">
+        <div class="sb-menu-title">
+            <span style="background:#0c6c63; width:28px; height:28px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; font-weight:800; color:#fff; font-size:14px;">S</span>
             SkillBank Menu
-        </h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body p-0 pt-2">
-        <div class="list-group list-group-flush">
-            <a href="{% url 'home' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3 px-4 d-flex align-items-center gap-3 {% if request.resolver_match.url_name == 'home' %}active fw-bold{% endif %}" style="border-radius: 8px;">
-                <i class="fa-solid fa-house" style="width: 20px;"></i> Dashboard
-            </a>
-            <a href="{% url 'skills' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3 px-4 d-flex align-items-center gap-3 {% if request.resolver_match.url_name == 'skills' %}active fw-bold{% endif %}">
-                <i class="fa-solid fa-compass" style="width: 20px;"></i> Browse Skills
-            </a>
-            <a href="{% url 'add_skill' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3 px-4 d-flex align-items-center gap-3 {% if request.resolver_match.url_name == 'add_skill' %}active fw-bold{% endif %}">
-                <i class="fa-solid fa-circle-plus" style="width: 20px;"></i> Add Skill
-            </a>
-            <a href="{% url 'messaging_index' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3 px-4 d-flex align-items-center gap-3 {% if request.resolver_match.url_name == 'messaging_index' %}active fw-bold{% endif %}">
-                <i class="fa-solid fa-comments" style="width: 20px;"></i> Messages
-            </a>
-            <a href="{% url 'booking_list' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3 px-4 d-flex align-items-center gap-3 {% if request.resolver_match.url_name == 'booking_list' %}active fw-bold{% endif %}">
-                <i class="fa-solid fa-calendar-check" style="width: 20px;"></i> Bookings
-            </a>
-            <a href="{% url 'my_certificates' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3 px-4 d-flex align-items-center gap-3 {% if request.resolver_match.url_name == 'my_certificates' %}active fw-bold{% endif %}">
-                <i class="fa-solid fa-certificate" style="width: 20px;"></i> Certificates
-            </a>
-            <a href="{% url 'ratings:rating_dashboard' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3 px-4 d-flex align-items-center gap-3 {% if request.resolver_match.url_name == 'rating_dashboard' %}active fw-bold{% endif %}">
-                <i class="fa-solid fa-star" style="width: 20px;"></i> Ratings
-            </a>
-            <a href="{% url 'profile' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3 px-4 d-flex align-items-center gap-3 {% if request.resolver_match.url_name == 'profile' %}active fw-bold{% endif %}">
-                <i class="fa-solid fa-user" style="width: 20px;"></i> Profile
-            </a>
-            <a href="{% url 'live_session' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3 px-4 d-flex align-items-center gap-3 {% if request.resolver_match.url_name == 'live_session' %}active fw-bold{% endif %}">
-                <i class="fa-solid fa-video" style="width: 20px;"></i> Live Session
-            </a>
-            <a href="{% url 'batches' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3 px-4 d-flex align-items-center gap-3 {% if request.resolver_match.url_name == 'batches' %}active fw-bold{% endif %}">
-                <i class="fa-solid fa-layer-group" style="width: 20px;"></i> Batches
-            </a>
-            <a href="{% url 'chatbot' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3 px-4 d-flex align-items-center gap-3 {% if request.resolver_match.url_name == 'chatbot' %}active fw-bold{% endif %}">
-                <i class="fa-solid fa-robot" style="width: 20px;"></i> AI Chatbot
-            </a>
-            {% if user.is_staff %}
-            <a href="{% url 'admin_panel:dashboard' %}" class="list-group-item list-group-item-action bg-transparent text-white border-0 py-3 px-4 d-flex align-items-center gap-3 text-warning">
-                <i class="fa-solid fa-shield-halved" style="width: 20px;"></i> Admin Panel
-            </a>
-            {% endif %}
-            <div class="border-top border-secondary my-2"></div>
-            <a href="{% url 'logout' %}" class="list-group-item list-group-item-action bg-transparent text-danger border-0 py-3 px-4 d-flex align-items-center gap-3">
-                <i class="fa-solid fa-right-from-bracket" style="width: 20px;"></i> Logout
-            </a>
         </div>
+        <button class="sb-menu-close sb-menu-close-btn"
+                type="button"
+                aria-label="Close navigation menu">
+            <i class="bi bi-x-lg"></i>
+        </button>
     </div>
+
+    <nav class="sb-menu-grid" aria-label="Mobile navigation">
+
+        <a class="sb-menu-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}"
+           href="{% url 'home' %}">
+            <i class="fa-solid fa-house"></i><span>Dashboard</span>
+        </a>
+
+        <a class="sb-menu-item {% if request.resolver_match.url_name == 'search_skills' %}active{% endif %}"
+           href="{% url 'search_skills' %}">
+            <i class="fa-solid fa-compass"></i><span>Browse Skills</span>
+        </a>
+
+        <a class="sb-menu-item {% if request.resolver_match.url_name == 'add_skill' %}active{% endif %}"
+           href="{% url 'add_skill' %}">
+            <i class="fa-solid fa-circle-plus"></i><span>Add Skill</span>
+        </a>
+
+        <a class="sb-menu-item {% if request.resolver_match.url_name == 'messaging_index' %}active{% endif %}"
+           href="{% url 'messaging_index' %}">
+            <i class="fa-solid fa-comments"></i><span>Messages</span>
+        </a>
+
+        <a class="sb-menu-item {% if request.resolver_match.url_name == 'booking_list' %}active{% endif %}"
+           href="{% url 'booking_list' %}">
+            <i class="fa-solid fa-calendar-check"></i><span>Bookings</span>
+        </a>
+
+        <a class="sb-menu-item {% if request.resolver_match.url_name == 'my_certificates' or request.resolver_match.url_name == 'issue_certificate' %}active{% endif %}"
+           href="{% url 'my_certificates' %}">
+            <i class="fa-solid fa-certificate"></i><span>Certificates</span>
+        </a>
+
+        <a class="sb-menu-item {% if request.resolver_match.url_name == 'rating_dashboard' %}active{% endif %}"
+           href="{% url 'ratings:rating_dashboard' %}">
+            <i class="fa-solid fa-star"></i><span>Ratings</span>
+        </a>
+
+        <a class="sb-menu-item {% if request.resolver_match.url_name == 'profile' %}active{% endif %}"
+           href="{% url 'profile' %}">
+            <i class="fa-solid fa-user"></i><span>Profile</span>
+        </a>
+
+        <a class="sb-menu-item {% if request.resolver_match.url_name == 'notifications' %}active{% endif %}"
+           href="{% url 'notifications' %}">
+            <i class="fa-solid fa-bell"></i><span>Notifications</span>
+        </a>
+
+        <a class="sb-menu-item {% if request.resolver_match.url_name == 'live_session' %}active{% endif %}"
+           href="{% url 'live_session' %}">
+            <i class="fa-solid fa-video"></i><span>Live Session</span>
+        </a>
+
+        <a class="sb-menu-item {% if request.resolver_match.url_name == 'batches' or request.resolver_match.url_name == 'batches_direct' %}active{% endif %}"
+           href="{% url 'batches' %}">
+            <i class="fa-solid fa-layer-group"></i><span>Batches</span>
+        </a>
+
+        <a class="sb-menu-item {% if request.resolver_match.url_name == 'chatbot' %}active{% endif %}"
+           href="{% url 'chatbot' %}">
+            <i class="fa-solid fa-robot"></i><span>AI Chatbot</span>
+        </a>
+
+        {% if user.is_staff %}
+        <a class="sb-menu-item" href="{% url 'admin_panel:dashboard' %}" style="color:#10b981;">
+            <i class="fa-solid fa-shield-halved"></i><span>Admin Panel</span>
+        </a>
+        {% endif %}
+
+        <div class="sb-menu-divider"></div>
+
+        <a class="sb-menu-item sb-menu-logout" href="{% url 'logout' %}">
+            <i class="fa-solid fa-right-from-bracket"></i><span>Logout</span>
+        </a>
+
+    </nav>
 </div>
+
+<script>
+(function () {
+    'use strict';
+
+    var toggle   = document.getElementById('sb-menu-toggle');
+    var menu     = document.getElementById('sb-mobile-menu');
+    var backdrop = document.getElementById('sb-menu-backdrop');
+    var hamIcon  = document.getElementById('sb-hamburger-icon');
+
+    if (!toggle || !menu || !backdrop) return;
+
+    function openMenu() {
+        menu.classList.add('sb-menu-open');
+        backdrop.classList.add('active');
+        toggle.setAttribute('aria-expanded', 'true');
+        if (hamIcon) {
+            hamIcon.classList.remove('bi-list');
+            hamIcon.classList.add('bi-x-lg');
+        }
+        document.body.style.overflow = 'hidden';
+        menu.querySelector('.sb-menu-close-btn').focus();
+    }
+
+    function closeMenu() {
+        menu.classList.remove('sb-menu-open');
+        backdrop.classList.remove('active');
+        toggle.setAttribute('aria-expanded', 'false');
+        if (hamIcon) {
+            hamIcon.classList.remove('bi-x-lg');
+            hamIcon.classList.add('bi-list');
+        }
+        document.body.style.overflow = '';
+        toggle.focus();
+    }
+
+    toggle.addEventListener('click', function () {
+        if (menu.classList.contains('sb-menu-open')) {
+            closeMenu();
+        } else {
+            openMenu();
+        }
+    });
+
+    // Close on backdrop tap
+    backdrop.addEventListener('click', closeMenu);
+
+    // Close on X button inside menu
+    var closeBtn = menu.querySelector('.sb-menu-close-btn');
+    if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+
+    // Close when any nav link is tapped
+    menu.querySelectorAll('.sb-menu-item').forEach(function (link) {
+        link.addEventListener('click', closeMenu);
+    });
+
+    // Close on Esc
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && menu.classList.contains('sb-menu-open')) {
+            closeMenu();
+        }
+    });
+
+    // On resize to desktop, force close
+    window.addEventListener('resize', function () {
+        if (window.innerWidth > 768 && menu.classList.contains('sb-menu-open')) {
+            closeMenu();
+        }
+    });
+})();
+</script>
