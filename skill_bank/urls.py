@@ -10,10 +10,44 @@ from django.conf.urls.static import static
 import search.views
 import bookings.views
 import payments.views
+from django.http import JsonResponse
+from django.db import connection
 
 from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
+
+
+def health_check(request):
+    """
+    /health/ — Render health probe & diagnostic endpoint.
+    Returns 200 JSON with DB status so we can confirm migrations ran.
+    """
+    import sys
+    import django
+    db_ok = False
+    db_tables = []
+    db_error = None
+    try:
+        db_tables = connection.introspection.table_names()
+        db_ok = True
+    except Exception as e:
+        db_error = str(e)
+
+    return JsonResponse({
+        'status': 'ok' if db_ok else 'db_error',
+        'python': sys.version,
+        'django': django.get_version(),
+        'debug': settings.DEBUG,
+        'db_ok': db_ok,
+        'db_error': db_error,
+        'key_tables': {
+            'django_session': 'django_session' in db_tables,
+            'auth_user': 'auth_user' in db_tables,
+            'profiles_userprofile': 'profiles_userprofile' in db_tables,
+            'authentication_otpverification': 'authentication_otpverification' in db_tables,
+        },
+    }, status=200 if db_ok else 500)
 
 # ---------------------------------------------------------------------------
 # Swagger / OpenAPI schema
@@ -34,6 +68,11 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
+    # -----------------------------------------------------------------------
+    # Health check / Render deploy probe
+    # -----------------------------------------------------------------------
+    path('health/', health_check, name='health_check'),
+
     # -----------------------------------------------------------------------
     # Django Admin
     # -----------------------------------------------------------------------

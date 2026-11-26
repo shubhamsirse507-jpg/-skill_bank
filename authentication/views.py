@@ -13,6 +13,7 @@ Complete, hardened Authentication module for Skill Bank:
 
 import logging
 import random
+import traceback as _traceback
 from datetime import timedelta
 from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
@@ -22,7 +23,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.mail import EmailMultiAlternatives, get_connection
 from django.conf import settings
 from django.utils import timezone
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.views.decorators.http import require_POST
 
 logger = logging.getLogger(__name__)
@@ -223,10 +224,19 @@ def login(request):
                             expires_at=expires
                         )
 
-                        # Save 2FA state in session
-                        request.session['2fa_user_id'] = user.id
-                        request.session['2fa_email'] = user.email
-                        request.session['2fa_next'] = next_url
+                        # Save 2FA state in session (guard against session-write failures on Render)
+                        try:
+                            request.session['2fa_user_id'] = user.id
+                            request.session['2fa_email'] = user.email
+                            request.session['2fa_next'] = next_url
+                            request.session.save()
+                        except Exception as sess_ex:
+                            logger.warning("[2FA] Session write failed — falling back to direct login: %s", sess_ex)
+                            print(f"[2FA-SESSION-FAIL] {sess_ex}", flush=True)
+                            # Can't store 2FA state → log in directly
+                            auth_login(request, user)
+                            messages.success(request, f'Welcome back, {user.first_name or user.username}! (2FA session unavailable)')
+                            return redirect(next_url)
 
                         email_sent, sent_email = send_otp_email(user, otp, purpose='Login')
                         if email_sent:
@@ -237,6 +247,7 @@ def login(request):
                         return redirect('verify_2fa')
                     except Exception as otp_ex:
                         logger.warning("[2FA OTP dispatch fallback to direct login]: %s", otp_ex)
+                        print(f"[2FA-OTP-FAIL] {_traceback.format_exc()}", flush=True)
 
                 # Direct login if 2FA is disabled or user has no email or fallback
                 auth_login(request, user)
@@ -251,13 +262,29 @@ def login(request):
                 })
 
         except Exception as login_ex:
-            logger.exception("Unexpected error during login for request from %s: %s", request.META.get('REMOTE_ADDR', '?'), login_ex)
+            # Log the FULL traceback so it appears in Render/Gunicorn stdout logs
+            tb_str = _traceback.format_exc()
+            logger.exception(
+                "LOGIN 500 — request from %s\nFull traceback:\n%s",
+                request.META.get('REMOTE_ADDR', '?'),
+                tb_str,
+            )
+            # Also print so it appears in Render dashboard logs regardless of log level
+            print(f"[LOGIN-500] {login_ex}\n{tb_str}", flush=True)
             messages.error(request, 'An unexpected error occurred. Please try again.')
-            return render(request, 'authentication/login.html', {
-                'error': 'An unexpected error occurred. Please try again.',
-                'bg_video_url': AUTH_BACKGROUND_VIDEO_URL,
-                'brand_logo_image_name': BRAND_LOGO_IMAGE_NAME
-            })
+            try:
+                return render(request, 'authentication/login.html', {
+                    'error': 'An unexpected error occurred. Please try again.',
+                    'bg_video_url': AUTH_BACKGROUND_VIDEO_URL,
+                    'brand_logo_image_name': BRAND_LOGO_IMAGE_NAME
+                })
+            except Exception:
+                # Last-resort: return a plain HTTP response so the user sees something
+                return HttpResponse(
+                    'Login error — please go back and try again.',
+                    status=500,
+                    content_type='text/plain',
+                )
 
     return render(request, 'authentication/login.html', {
         'bg_video_url': AUTH_BACKGROUND_VIDEO_URL,
