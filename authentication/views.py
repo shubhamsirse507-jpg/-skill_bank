@@ -43,6 +43,19 @@ def send_otp_email(user, otp_code, purpose='Login'):
     if not recipient_email:
         return False, ''
 
+    backend = getattr(settings, 'EMAIL_BACKEND', '')
+    host_user = getattr(settings, 'EMAIL_HOST_USER', '').strip()
+    host_pass = getattr(settings, 'EMAIL_HOST_PASSWORD', '').strip()
+
+    # Never report success if a non-delivering backend is used in production or SMTP credentials are missing
+    is_non_delivering = any(b in backend for b in ('console.EmailBackend', 'locmem.EmailBackend', 'dummy.EmailBackend'))
+    if is_non_delivering and not getattr(settings, 'DEBUG', False):
+        logger.error("[OTP Email Delivery] Non-delivering EMAIL_BACKEND (%s) configured with DEBUG=False.", backend)
+        return False, recipient_email
+    if 'smtp.EmailBackend' in backend and (not host_user or not host_pass):
+        logger.error("[OTP Email Delivery] SMTP backend configured but EMAIL_HOST_USER or EMAIL_HOST_PASSWORD is missing.")
+        return False, recipient_email
+
     from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@skillbank.com')
     user_display = user.first_name or user.username
 
