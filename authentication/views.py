@@ -35,23 +35,24 @@ from profiles.models import UserProfile
 
 def send_otp_email(user, otp_code, purpose='Login'):
     """
-    Sends a formatted OTP email to the user with dual-channel (Port 465 SSL / Port 587 TLS) fallback.
+    Sends a formatted OTP email to the user using configured environment SMTP credentials
+    with Port 587 TLS / Port 465 SSL fallback. Never hardcodes secrets or leaks OTP to clients.
     Returns (email_sent: bool, recipient_email: str).
     """
     recipient_email = user.email.strip() if user.email else ''
     if not recipient_email:
         return False, ''
 
-    from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'skillbank2026@gmail.com')
+    from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@skillbank.com')
     user_display = user.first_name or user.username
 
     if purpose == 'Login':
-        subject = f"Your SkillBank 2FA Login Code: {otp_code}"
+        subject = "Your SkillBank verification code"
         plain_text = (
             f"Hello {user_display},\n\n"
-            f"Your Two-Factor Authentication (2FA) code for logging into SkillBank is: {otp_code}\n\n"
+            f"Your Two-Factor Authentication (2FA) verification code for SkillBank is: {otp_code}\n\n"
             f"This code will expire in 10 minutes.\n"
-            f"If you did not attempt to log in, please secure your account immediately.\n\n"
+            f"If you didn't request this, you can safely ignore this email.\n\n"
             f"— The SkillBank Team"
         )
         html_content = f"""
@@ -61,22 +62,22 @@ def send_otp_email(user, otp_code, purpose='Login'):
                 <h2 style="color: #0c6c63; margin-top: 10px; font-size: 22px; font-weight: 700;">Skill Bank Security</h2>
             </div>
             <p style="color: #334155; font-size: 15px; line-height: 1.5;">Hello <strong>{user_display}</strong>,</p>
-            <p style="color: #475569; font-size: 14px; line-height: 1.6;">Use the following 6-digit Two-Factor Authentication code to complete your login:</p>
+            <p style="color: #475569; font-size: 14px; line-height: 1.6;">Use the following 6-digit verification code to complete your sign-in:</p>
             <div style="text-align: center; margin: 26px 0;">
                 <span style="display: inline-block; font-size: 32px; font-weight: 800; letter-spacing: 8px; color: #0c6c63; background: #e8f7f5; padding: 12px 28px; border-radius: 10px; border: 2px dashed #0c6c63;">{otp_code}</span>
             </div>
-            <p style="color: #64748b; font-size: 13px; line-height: 1.5;">This verification code is valid for <strong>10 minutes</strong>. Never share this code with anyone.</p>
+            <p style="color: #64748b; font-size: 13px; line-height: 1.5;">This verification code expires in <strong>10 minutes</strong>. Never share this code with anyone.</p>
             <hr style="border: none; border-top: 1px solid #f1f5f9; margin: 20px 0;">
-            <p style="color: #94a3b8; font-size: 12px; text-align: center;">If you did not request this login, please change your password immediately.</p>
+            <p style="color: #94a3b8; font-size: 12px; text-align: center;">If you didn't request this, you can safely ignore this email.</p>
         </div>
         """
     else:  # ForgotPassword / Registration
-        subject = f"Your SkillBank Password Reset OTP: {otp_code}"
+        subject = "Your SkillBank verification code"
         plain_text = (
             f"Hello {user_display},\n\n"
             f"Your OTP code for resetting your SkillBank password is: {otp_code}\n\n"
             f"This code will expire in 10 minutes.\n"
-            f"If you did not request a password reset, you can safely ignore this email.\n\n"
+            f"If you didn't request this, you can safely ignore this email.\n\n"
             f"— The SkillBank Team"
         )
         html_content = f"""
@@ -90,14 +91,14 @@ def send_otp_email(user, otp_code, purpose='Login'):
             <div style="text-align: center; margin: 26px 0;">
                 <span style="display: inline-block; font-size: 32px; font-weight: 800; letter-spacing: 8px; color: #0c6c63; background: #e8f7f5; padding: 12px 28px; border-radius: 10px; border: 2px dashed #0c6c63;">{otp_code}</span>
             </div>
-            <p style="color: #64748b; font-size: 13px; line-height: 1.5;">This code will expire in <strong>10 minutes</strong>.</p>
+            <p style="color: #64748b; font-size: 13px; line-height: 1.5;">This code expires in <strong>10 minutes</strong>.</p>
             <hr style="border: none; border-top: 1px solid #f1f5f9; margin: 20px 0;">
-            <p style="color: #94a3b8; font-size: 12px; text-align: center;">If you didn't request a password reset, you can safely ignore this email.</p>
+            <p style="color: #94a3b8; font-size: 12px; text-align: center;">If you didn't request this, you can safely ignore this email.</p>
         </div>
         """
 
     email_sent = False
-    # Attempt 1: Standard configured Django mail dispatch (Port 465 SSL default)
+    # Attempt 1: Configured Django mail backend
     try:
         msg = EmailMultiAlternatives(
             subject=subject,
@@ -109,42 +110,45 @@ def send_otp_email(user, otp_code, purpose='Login'):
         sent = msg.send(fail_silently=False)
         email_sent = bool(sent and sent > 0)
     except Exception as e1:
-        print(f"[OTP Email Delivery] Primary SMTP dispatch attempt failed: {e1}")
+        logger.error("[OTP Email Delivery] Primary SMTP dispatch failed for %s: %s", recipient_email, e1, exc_info=True)
 
-    # Attempt 2: Fallback explicitly with Port 465 SSL connection
+    # Attempt 2: Fallback port (465 SSL or 587 TLS) if env SMTP credentials exist
     if not email_sent:
-        try:
-            host_user = getattr(settings, 'EMAIL_HOST_USER', 'skillbank2026@gmail.com').strip()
-            raw_pass = getattr(settings, 'EMAIL_HOST_PASSWORD', 'saqgbxqlkvbjgavw')
-            host_pass = str(raw_pass).replace(' ', '').strip()
+        host_user = getattr(settings, 'EMAIL_HOST_USER', '').strip()
+        host_pass = getattr(settings, 'EMAIL_HOST_PASSWORD', '').strip()
+        email_host = getattr(settings, 'EMAIL_HOST', 'smtp.gmail.com')
+        timeout_sec = int(getattr(settings, 'EMAIL_TIMEOUT', 12))
+        if host_user and host_pass:
+            fallback_port = 465 if int(getattr(settings, 'EMAIL_PORT', 587)) != 465 else 587
+            use_ssl = fallback_port == 465
+            use_tls = fallback_port == 587
+            try:
+                conn = get_connection(
+                    backend='django.core.mail.backends.smtp.EmailBackend',
+                    host=email_host,
+                    port=fallback_port,
+                    username=host_user,
+                    password=host_pass,
+                    use_ssl=use_ssl,
+                    use_tls=use_tls,
+                    timeout=timeout_sec,
+                )
+                msg_fb = EmailMultiAlternatives(
+                    subject=subject,
+                    body=plain_text,
+                    from_email=from_email,
+                    to=[recipient_email],
+                    connection=conn
+                )
+                msg_fb.attach_alternative(html_content, "text/html")
+                sent_fb = msg_fb.send(fail_silently=False)
+                email_sent = bool(sent_fb and sent_fb > 0)
+            except Exception as e2:
+                logger.error("[OTP Email Delivery] Fallback port %s failed for %s: %s", fallback_port, recipient_email, e2, exc_info=True)
 
-            ssl_conn = get_connection(
-                backend='django.core.mail.backends.smtp.EmailBackend',
-                host='smtp.gmail.com',
-                port=465,
-                username=host_user,
-                password=host_pass,
-                use_ssl=True,
-                timeout=12
-            )
-            msg_ssl = EmailMultiAlternatives(
-                subject=subject,
-                body=plain_text,
-                from_email=from_email,
-                to=[recipient_email],
-                connection=ssl_conn
-            )
-            msg_ssl.attach_alternative(html_content, "text/html")
-            sent_ssl = msg_ssl.send(fail_silently=False)
-            email_sent = bool(sent_ssl and sent_ssl > 0)
-            if email_sent:
-                print(f"[OTP Email Delivery] Successfully dispatched via Port 465 SSL fallback!")
-        except Exception as e2:
-            print(f"[OTP Email Delivery] Port 465 SSL fallback failed: {e2}")
-
-    print(f"\n==========================================")
-    print(f" [OTP DISPATCH] Purpose: {purpose} | User: {user.username} | Email: {recipient_email} | Code: {otp_code} | SMTP Sent: {email_sent}")
-    print(f"==========================================\n")
+    # Explicit opt-in dev-only server console log (never sent to client)
+    if getattr(settings, 'DEBUG', False) and getattr(settings, 'OTP_DEV_LOG', False):
+        logger.debug("[DEV OTP LOG] Purpose=%s User=%s Code=%s", purpose, user.username, otp_code)
 
     return email_sent, recipient_email
 
@@ -206,8 +210,8 @@ def login(request):
 
                 if is_2fa_enabled and user.email:
                     try:
-                        # Generate 6-digit 2FA OTP code
-                        otp = f"{random.randint(100000, 999999)}"
+                        # Generate cryptographically secure 6-digit 2FA OTP code & store only its hash
+                        otp = OTPVerification.generate_otp()
                         expires = timezone.now() + timedelta(minutes=10)
 
                         # Invalidate previous unverified login OTPs for this user
@@ -219,7 +223,7 @@ def login(request):
 
                         OTPVerification.objects.create(
                             user=user,
-                            otp_code=otp,
+                            otp_code=OTPVerification.hash_otp(otp),
                             purpose='Login',
                             expires_at=expires
                         )
@@ -232,22 +236,27 @@ def login(request):
                             request.session.save()
                         except Exception as sess_ex:
                             logger.warning("[2FA] Session write failed — falling back to direct login: %s", sess_ex)
-                            print(f"[2FA-SESSION-FAIL] {sess_ex}", flush=True)
-                            # Can't store 2FA state → log in directly
                             auth_login(request, user)
-                            messages.success(request, f'Welcome back, {user.first_name or user.username}! (2FA session unavailable)')
+                            messages.success(request, f'Welcome back, {user.first_name or user.username}!')
                             return redirect(next_url)
 
                         email_sent, sent_email = send_otp_email(user, otp, purpose='Login')
+                        masked = OTPVerification.mask_email(sent_email)
                         if email_sent:
-                            messages.info(request, f'Two-Factor Authentication code sent to {sent_email}.')
+                            messages.info(request, f'A 6-digit code has been sent to {masked}.')
                         else:
-                            messages.success(request, f'2FA code generated for {sent_email}. (Verification Code: {otp})')
+                            logger.error("Failed to send 2FA OTP email to %s for user %s", sent_email, user.username)
+                            messages.error(request, "We couldn't send the code. Please try again.")
 
                         return redirect('verify_2fa')
                     except Exception as otp_ex:
-                        logger.warning("[2FA OTP dispatch fallback to direct login]: %s", otp_ex)
-                        print(f"[2FA-OTP-FAIL] {_traceback.format_exc()}", flush=True)
+                        logger.error("[2FA OTP dispatch error for user %s]: %s", user.username, otp_ex, exc_info=True)
+                        messages.error(request, "We couldn't send the code. Please try again.")
+                        return render(request, 'authentication/login.html', {
+                            'error': "We couldn't send the code. Please try again.",
+                            'bg_video_url': AUTH_BACKGROUND_VIDEO_URL,
+                            'brand_logo_image_name': BRAND_LOGO_IMAGE_NAME
+                        })
 
                 # Direct login if 2FA is disabled or user has no email or fallback
                 auth_login(request, user)
@@ -295,9 +304,11 @@ def login(request):
 def verify_2fa(request):
     """
     Renders and verifies the 6-digit Two-Factor Authentication code for login.
+    Enforces constant-time hash comparison, single-use invalidation, and 5-attempt lockout.
     """
     user_id = request.session.get('2fa_user_id')
     email = request.session.get('2fa_email', '')
+    masked_email = OTPVerification.mask_email(email)
     next_url = request.session.get('2fa_next', 'home')
 
     if not user_id:
@@ -321,29 +332,45 @@ def verify_2fa(request):
             d6 = request.POST.get('d6', '')
             submitted_otp = f"{d1}{d2}{d3}{d4}{d5}{d6}".strip()
 
-        if not submitted_otp or len(submitted_otp) != 6:
+        if not submitted_otp or len(submitted_otp) != 6 or not submitted_otp.isdigit():
             messages.error(request, 'Please enter a valid 6-digit 2FA code.')
             return render(request, 'authentication/verify_2fa.html', {
                 'bg_video_url': AUTH_BACKGROUND_VIDEO_URL,
                 'brand_logo_image_name': BRAND_LOGO_IMAGE_NAME,
-                'email': email,
+                'email': masked_email,
+                'masked_email': masked_email,
                 'user': user,
             })
 
         otp_record = OTPVerification.objects.filter(
             user=user,
-            otp_code=submitted_otp,
             purpose='Login',
             is_verified=False
         ).order_by('-created_at').first()
 
         if not otp_record:
-            messages.error(request, 'Invalid 2FA code. Please check and try again.')
+            messages.error(request, 'No active verification code found. Please click Resend Code.')
         elif otp_record.is_expired():
+            otp_record.is_verified = True
+            otp_record.save(update_fields=['is_verified'])
             messages.error(request, 'The 2FA code has expired. Please click Resend Code.')
+        elif otp_record.is_locked():
+            otp_record.is_verified = True
+            otp_record.save(update_fields=['is_verified'])
+            messages.error(request, 'Too many failed attempts. Please click Resend Code for a new code.')
+        elif not otp_record.verify_code(submitted_otp):
+            otp_record.failed_attempts += 1
+            if otp_record.failed_attempts >= OTPVerification.MAX_FAILED_ATTEMPTS:
+                otp_record.is_verified = True
+                otp_record.save(update_fields=['failed_attempts', 'is_verified'])
+                messages.error(request, 'Too many failed attempts. Please click Resend Code for a new code.')
+            else:
+                otp_record.save(update_fields=['failed_attempts'])
+                remaining = OTPVerification.MAX_FAILED_ATTEMPTS - otp_record.failed_attempts
+                messages.error(request, f'Invalid 2FA code. {remaining} attempt(s) remaining.')
         else:
             otp_record.is_verified = True
-            otp_record.save()
+            otp_record.save(update_fields=['is_verified'])
 
             request.session.pop('2fa_user_id', None)
             request.session.pop('2fa_email', None)
@@ -356,7 +383,8 @@ def verify_2fa(request):
     return render(request, 'authentication/verify_2fa.html', {
         'bg_video_url': AUTH_BACKGROUND_VIDEO_URL,
         'brand_logo_image_name': BRAND_LOGO_IMAGE_NAME,
-        'email': email,
+        'email': masked_email,
+        'masked_email': masked_email,
         'user': user,
     })
 
@@ -365,6 +393,7 @@ def verify_2fa(request):
 def resend_2fa_otp(request):
     """
     AJAX / POST endpoint to generate and resend a new 2FA Login code.
+    Enforces a 30-second server-side cooldown and never exposes the OTP in JSON.
     """
     user_id = request.session.get('2fa_user_id')
     if not user_id:
@@ -374,30 +403,50 @@ def resend_2fa_otp(request):
     if not user:
         return JsonResponse({'status': 'error', 'message': 'User not found.'}, status=404)
 
+    # Server-side 30-second cooldown check
+    latest_otp = OTPVerification.objects.filter(
+        user=user,
+        purpose='Login'
+    ).order_by('-created_at').first()
+    if latest_otp:
+        elapsed = (timezone.now() - latest_otp.created_at).total_seconds()
+        if elapsed < OTPVerification.RESEND_COOLDOWN_SECONDS:
+            wait_secs = int(OTPVerification.RESEND_COOLDOWN_SECONDS - elapsed) + 1
+            return JsonResponse({
+                'status': 'error',
+                'message': f'Please wait {wait_secs}s before requesting a new code.',
+                'retry_after': wait_secs,
+            }, status=429)
+
     OTPVerification.objects.filter(
         user=user,
         purpose='Login',
         is_verified=False
     ).update(is_verified=True)
 
-    otp = f"{random.randint(100000, 999999)}"
+    otp = OTPVerification.generate_otp()
     expires = timezone.now() + timedelta(minutes=10)
 
     OTPVerification.objects.create(
         user=user,
-        otp_code=otp,
+        otp_code=OTPVerification.hash_otp(otp),
         purpose='Login',
         expires_at=expires
     )
 
     email_sent, sent_email = send_otp_email(user, otp, purpose='Login')
-    message = f"New 2FA code sent to {sent_email}." if email_sent else f"New 2FA code generated for {sent_email}. (Code: {otp})"
+    if not email_sent:
+        logger.error("Failed to resend 2FA OTP email to %s for user %s", sent_email, user.username)
+        return JsonResponse({
+            'status': 'error',
+            'message': "We couldn't send the code. Please try again."
+        }, status=502)
 
+    masked = OTPVerification.mask_email(sent_email)
     return JsonResponse({
         'status': 'success',
-        'message': message,
-        'email_sent': email_sent,
-        'dev_code': otp if not email_sent else None
+        'message': f'A 6-digit code has been sent to {masked}.',
+        'email_sent': True,
     })
 
 
@@ -540,12 +589,12 @@ def forgot_password(request):
             is_verified=False
         ).update(is_verified=True)
 
-        otp = f"{random.randint(100000, 999999)}"
+        otp = OTPVerification.generate_otp()
         expires = timezone.now() + timedelta(minutes=10)
 
         OTPVerification.objects.create(
             user=user,
-            otp_code=otp,
+            otp_code=OTPVerification.hash_otp(otp),
             purpose='ForgotPassword',
             expires_at=expires
         )
@@ -554,18 +603,23 @@ def forgot_password(request):
         request.session['otp_user_id'] = user.id
 
         email_sent, sent_email = send_otp_email(user, otp, purpose='ForgotPassword')
+        masked = OTPVerification.mask_email(sent_email)
 
-        if email_sent:
-            user_msg = f'OTP sent successfully to {sent_email}.'
-        else:
-            user_msg = f'OTP generated for {sent_email}. (Verification OTP: {otp})'
+        if not email_sent:
+            logger.error("Failed to send password reset OTP email to %s", sent_email)
+            err_msg = "We couldn't send the code. Please try again."
+            if is_ajax:
+                return JsonResponse({'status': 'error', 'message': err_msg}, status=502)
+            messages.error(request, err_msg)
+            return redirect('forgot_password')
+
+        user_msg = f'A 6-digit code has been sent to {masked}.'
 
         if is_ajax:
             return JsonResponse({
                 'status': 'success',
                 'message': user_msg,
-                'email_sent': email_sent,
-                'dev_code': otp if not email_sent else None
+                'email_sent': True,
             })
 
         messages.success(request, user_msg)
@@ -614,18 +668,32 @@ def verify_otp(request):
 
         otp_record = OTPVerification.objects.filter(
             user=user_id,
-            otp_code=submitted_otp,
             purpose='ForgotPassword',
             is_verified=False
         ).order_by('-created_at').first()
 
         if not otp_record:
-            messages.error(request, 'Invalid OTP code. Please check and try again.')
+            messages.error(request, 'No active OTP found. Please request a new one.')
         elif otp_record.is_expired():
+            otp_record.is_verified = True
+            otp_record.save(update_fields=['is_verified'])
             messages.error(request, 'OTP has expired. Please request a new one.')
+        elif otp_record.is_locked():
+            otp_record.is_verified = True
+            otp_record.save(update_fields=['is_verified'])
+            messages.error(request, 'Too many failed attempts. Please request a new OTP.')
+        elif not otp_record.verify_code(submitted_otp):
+            otp_record.failed_attempts += 1
+            if otp_record.failed_attempts >= OTPVerification.MAX_FAILED_ATTEMPTS:
+                otp_record.is_verified = True
+                otp_record.save(update_fields=['failed_attempts', 'is_verified'])
+                messages.error(request, 'Too many failed attempts. Please request a new OTP.')
+            else:
+                otp_record.save(update_fields=['failed_attempts'])
+                messages.error(request, 'Invalid OTP code. Please check and try again.')
         else:
             otp_record.is_verified = True
-            otp_record.save()
+            otp_record.save(update_fields=['is_verified'])
             request.session['otp_verified_user_id'] = user_id
             messages.success(request, 'OTP verified! Set your new password.')
             return redirect('reset_password')

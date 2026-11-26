@@ -103,7 +103,7 @@ class LoginAPIView(APIView):
         is_2fa = getattr(profile, 'two_factor_enabled', True)
 
         if is_2fa and user.email:
-            otp = f"{random.randint(100000, 999999)}"
+            otp = OTPVerification.generate_otp()
             expires = timezone.now() + timedelta(minutes=10)
 
             OTPVerification.objects.filter(
@@ -114,7 +114,7 @@ class LoginAPIView(APIView):
 
             OTPVerification.objects.create(
                 user=user,
-                otp_code=otp,
+                otp_code=OTPVerification.hash_otp(otp),
                 purpose='Login',
                 expires_at=expires
             )
@@ -122,13 +122,15 @@ class LoginAPIView(APIView):
             # Send email
             from authentication.views import send_otp_email
             email_sent, sent_email = send_otp_email(user, otp, purpose='Login')
+            if not email_sent:
+                return api_error('email_send_failed', "We couldn't send the code. Please try again.", status_code=502)
 
+            masked = OTPVerification.mask_email(sent_email)
             return api_success({
                 'two_factor_required': True,
                 'user_id': user.id,
-                'email': sent_email,
-                'message': 'Two-Factor Authentication code sent to your email.',
-                'dev_code': otp if not email_sent else None
+                'email': masked,
+                'message': f'A 6-digit code has been sent to {masked}.',
             })
 
         refresh = RefreshToken.for_user(user)
@@ -164,19 +166,34 @@ class Verify2FAAPIView(APIView):
 
         otp_record = OTPVerification.objects.filter(
             user=user,
-            otp_code=otp,
             purpose='Login',
             is_verified=False
         ).order_by('-created_at').first()
 
         if not otp_record:
-            return api_error('invalid_otp', 'Invalid 2FA code.', status_code=400)
+            return api_error('invalid_otp', 'No active 2FA code found.', status_code=400)
 
         if otp_record.is_expired():
+            otp_record.is_verified = True
+            otp_record.save(update_fields=['is_verified'])
             return api_error('expired_otp', '2FA code has expired.', status_code=400)
 
+        if otp_record.is_locked():
+            otp_record.is_verified = True
+            otp_record.save(update_fields=['is_verified'])
+            return api_error('otp_locked', 'Too many failed attempts. Please request a new code.', status_code=429)
+
+        if not otp_record.verify_code(otp):
+            otp_record.failed_attempts += 1
+            if otp_record.failed_attempts >= OTPVerification.MAX_FAILED_ATTEMPTS:
+                otp_record.is_verified = True
+                otp_record.save(update_fields=['failed_attempts', 'is_verified'])
+                return api_error('otp_locked', 'Too many failed attempts. Please request a new code.', status_code=429)
+            otp_record.save(update_fields=['failed_attempts'])
+            return api_error('invalid_otp', 'Invalid 2FA code.', status_code=400)
+
         otp_record.is_verified = True
-        otp_record.save()
+        otp_record.save(update_fields=['is_verified'])
 
         refresh = RefreshToken.for_user(user)
         return api_success({
@@ -207,24 +224,26 @@ class ForgotPasswordAPIView(APIView):
             is_verified=False
         ).update(is_verified=True)
 
-        otp = f"{random.randint(100000, 999999)}"
+        otp = OTPVerification.generate_otp()
         expires = timezone.now() + timedelta(minutes=10)
 
         OTPVerification.objects.create(
             user=user,
-            otp_code=otp,
+            otp_code=OTPVerification.hash_otp(otp),
             purpose='ForgotPassword',
             expires_at=expires
         )
 
         from authentication.views import send_otp_email
         email_sent, sent_email = send_otp_email(user, otp, purpose='ForgotPassword')
+        if not email_sent:
+            return api_error('email_send_failed', "We couldn't send the code. Please try again.", status_code=502)
 
+        masked = OTPVerification.mask_email(sent_email)
         return api_success({
-            'message': f'Password reset OTP sent to {sent_email}.',
+            'message': f'A 6-digit code has been sent to {masked}.',
             'user_id': user.id,
-            'email': sent_email,
-            'dev_code': otp if not email_sent else None
+            'email': masked,
         })
 
 
@@ -250,7 +269,6 @@ class VerifyOTPAPIView(APIView):
 
         otp_record = OTPVerification.objects.filter(
             user=user,
-            otp_code=otp,
             purpose='ForgotPassword',
             is_verified=False
         ).order_by('-created_at').first()
@@ -259,10 +277,26 @@ class VerifyOTPAPIView(APIView):
             return api_error('invalid_otp', 'Invalid OTP code.', status_code=400)
 
         if otp_record.is_expired():
+            otp_record.is_verified = True
+            otp_record.save(update_fields=['is_verified'])
             return api_error('expired_otp', 'OTP code has expired.', status_code=400)
 
+        if otp_record.is_locked():
+            otp_record.is_verified = True
+            otp_record.save(update_fields=['is_verified'])
+            return api_error('otp_locked', 'Too many failed attempts. Please request a new code.', status_code=429)
+
+        if not otp_record.verify_code(otp):
+            otp_record.failed_attempts += 1
+            if otp_record.failed_attempts >= OTPVerification.MAX_FAILED_ATTEMPTS:
+                otp_record.is_verified = True
+                otp_record.save(update_fields=['failed_attempts', 'is_verified'])
+                return api_error('otp_locked', 'Too many failed attempts. Please request a new code.', status_code=429)
+            otp_record.save(update_fields=['failed_attempts'])
+            return api_error('invalid_otp', 'Invalid OTP code.', status_code=400)
+
         otp_record.is_verified = True
-        otp_record.save()
+        otp_record.save(update_fields=['is_verified'])
 
         return api_success({
             'message': 'OTP verified successfully.',

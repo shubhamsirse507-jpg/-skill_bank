@@ -239,17 +239,31 @@ CORS_ALLOWED_ORIGINS = [
 ]
 CORS_ALLOW_CREDENTIALS = True
 
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'skillbank2026@gmail.com').strip()
-_raw_email_pass = os.environ.get('EMAIL_HOST_PASSWORD', 'saqg bxql kvbj gavw')
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '').strip()
+_raw_email_pass = os.environ.get('EMAIL_HOST_PASSWORD', '')
 EMAIL_HOST_PASSWORD = _raw_email_pass.replace(' ', '').strip()
-DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL', f"Skill Bank <{EMAIL_HOST_USER}>")
-_default_email_backend = 'django.core.mail.backends.smtp.EmailBackend' if (EMAIL_HOST_PASSWORD and EMAIL_HOST_USER) else 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = os.environ.get(
+    'DEFAULT_FROM_EMAIL',
+    f"Skill Bank <{EMAIL_HOST_USER}>" if EMAIL_HOST_USER else 'noreply@skillbank.com'
+)
+_default_email_backend = (
+    'django.core.mail.backends.smtp.EmailBackend'
+    if (EMAIL_HOST_PASSWORD and EMAIL_HOST_USER)
+    else 'django.core.mail.backends.console.EmailBackend'
+)
 EMAIL_BACKEND = os.environ.get('EMAIL_BACKEND', _default_email_backend)
 EMAIL_HOST = os.environ.get('EMAIL_HOST', 'smtp.gmail.com')
-EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 465))
-EMAIL_USE_TLS = os.environ.get('EMAIL_USE_TLS', 'False').lower() == 'true'
-EMAIL_USE_SSL = os.environ.get('EMAIL_USE_SSL', 'True').lower() == 'true'
+EMAIL_PORT = int(os.environ.get('EMAIL_PORT', 587))
+_env_use_tls = os.environ.get('EMAIL_USE_TLS', '').strip().lower()
+_env_use_ssl = os.environ.get('EMAIL_USE_SSL', '').strip().lower()
+if EMAIL_PORT == 465 and _env_use_tls != 'true':
+    EMAIL_USE_SSL = True if _env_use_ssl != 'false' else False
+    EMAIL_USE_TLS = False
+else:
+    EMAIL_USE_TLS = True if _env_use_tls != 'false' else False
+    EMAIL_USE_SSL = False
 EMAIL_TIMEOUT = int(os.environ.get('EMAIL_TIMEOUT', 15))  # 15s prevents cloud handshake timeouts
+OTP_DEV_LOG = os.environ.get('OTP_DEV_LOG', 'False').lower() == 'true'
 
 # ---------------------------------------------------------------------------
 # Security & Cloud Proxy Configuration
