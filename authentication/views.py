@@ -1,4 +1,4 @@
-﻿"""
+"""
 authentication/views.py
 Complete, hardened Authentication module for Skill-Verse:
 - Login (Credentials verification + Two-Factor Authentication via OTP)
