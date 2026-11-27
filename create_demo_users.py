@@ -1,4 +1,4 @@
-﻿import os
+import os
 import django
 from datetime import date, time
 

@@ -1,4 +1,4 @@
-﻿"""
+"""
 management/commands/seed_dummy_users.py
 
 Creates 3 dummy accounts in the SQLite database:
