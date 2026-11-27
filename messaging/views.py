@@ -1,4 +1,4 @@
-﻿from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -299,6 +299,11 @@ def update_exchange_status(request, exchange_id, action):
         messages.info(request, 'Skill exchange rejected.')
     elif action == 'complete':
         exchange.status = 'completed'
+        try:
+            from bookings.models import Booking
+            Booking.objects.filter(request=exchange, status='scheduled').update(status='completed')
+        except Exception:
+            pass
         messages.success(request, 'Skill exchange marked as completed!')
     elif action == 'cancel':
         exchange.status = 'cancelled'

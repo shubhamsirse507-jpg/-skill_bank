@@ -96,23 +96,29 @@ class BookingSerializer(serializers.ModelSerializer):
         read_only_fields = ['created_at']
 
 
+def _validate_rating_score(value):
+    if not (1 <= value <= 5):
+        raise serializers.ValidationError("Rating must be between 1 and 5.")
+    return value
+
+
 class ReviewRatingSerializer(serializers.ModelSerializer):
     reviewer = UserSerializer(read_only=True)
     reviewed_user = UserSerializer(read_only=True)
+    tag_list = serializers.ReadOnlyField()
+    rating = serializers.IntegerField(validators=[_validate_rating_score])
+    communication_rating = serializers.IntegerField(default=5, validators=[_validate_rating_score])
+    clarity_rating = serializers.IntegerField(default=5, validators=[_validate_rating_score])
+    punctuality_rating = serializers.IntegerField(default=5, validators=[_validate_rating_score])
 
     class Meta:
         model = ReviewRating
         fields = [
             'id', 'booking', 'reviewer', 'reviewed_user', 'rating',
             'communication_rating', 'clarity_rating', 'punctuality_rating',
-            'comment', 'tags', 'would_recommend', 'created_at'
+            'comment', 'tags', 'tag_list', 'would_recommend', 'created_at'
         ]
-        read_only_fields = ['reviewer', 'created_at']
-
-    def validate_rating(self, value):
-        if not (1 <= value <= 5):
-            raise serializers.ValidationError("Rating must be between 1 and 5.")
-        return value
+        read_only_fields = ['reviewer', 'reviewed_user', 'created_at']
 
 
 class NotificationSerializer(serializers.ModelSerializer):

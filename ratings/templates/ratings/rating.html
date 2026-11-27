@@ -1,36 +1,132 @@
-﻿{% extends 'user_dashboard/base.html' %}
+{% extends 'user_dashboard/base.html' %}
 {% load static %}
 
 {% block title %}Review & Rating Hub — Skill-Verse{% endblock %}
 
 {% block extra_css %}
 <style>
-.rating-grid {
-    display: grid;
-    grid-template-columns: 320px 1fr;
-    gap: 20px;
+.rating-page-header {
     max-width: 1200px;
-    margin: 30px auto;
+    margin: 24px auto 14px auto;
     padding: 0 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
 }
 
-.summary-card {
-    background: white;
-    border-radius: 12px;
+.rating-grid {
+    display: grid;
+    grid-template-columns: 340px 1fr;
+    gap: 24px;
+    max-width: 1200px;
+    margin: 16px auto 40px auto;
+    padding: 0 20px;
+    align-items: start;
+}
+
+.summary-card,
+.form-card,
+.review-card {
+    background: #ffffff;
+    border-radius: 16px;
     padding: 24px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    border: 1px solid rgba(12, 108, 99, 0.12);
+    box-shadow: 0 6px 20px rgba(12, 108, 99, 0.06);
 }
 
 .score-number {
-    font-size: 48px;
+    font-size: 52px;
     font-weight: 800;
-    color: #1E3A8A;
+    line-height: 1;
+    color: #0c6c63;
 }
 
 .stars-row {
     color: #f59e0b;
     font-size: 18px;
-    margin: 8px 0;
+    margin: 10px 0 6px 0;
+    display: flex;
+    justify-content: center;
+    gap: 4px;
+}
+
+.stars-row .star-empty {
+    color: #d1d5db;
+}
+
+.rating-bars {
+    margin: 18px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: #4b5563;
+}
+
+.bar-label {
+    width: 34px;
+    font-weight: 600;
+}
+
+.bar-track {
+    flex: 1;
+    height: 8px;
+    background: #f1f5f9;
+    border-radius: 999px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #f59e0b, #fbbf24);
+    border-radius: 999px;
+}
+
+.sub-metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.metric-pill {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 10px 6px;
+    text-align: center;
+}
+
+.metric-val {
+    font-size: 16px;
+    font-weight: 800;
+    color: #1E3A8A;
+}
+
+.metric-lbl {
+    font-size: 11px;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+.recommend-banner {
+    margin-top: 16px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #065f46;
 }
 
 .reviews-section {
@@ -39,147 +135,457 @@
     gap: 20px;
 }
 
-.review-card {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+.form-grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.sub-rating-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.form-label-strong {
+    display: block;
+    font-weight: 600;
+    font-size: 13px;
+    color: #1f2937;
+    margin-bottom: 6px;
+}
+
+.rating-input-control {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #cbd5e1;
+    font-size: 14px;
+    background: #fff;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.rating-input-control:focus {
+    outline: none;
+    border-color: #0c6c63;
+    box-shadow: 0 0 0 3px rgba(12, 108, 99, 0.12);
+}
+
+.star-picker {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 0;
 }
 
 .star-picker i {
-    font-size: 24px;
+    font-size: 26px;
     color: #d1d5db;
     cursor: pointer;
-    transition: color 0.2s;
+    transition: color 0.15s, transform 0.15s;
+}
+
+.star-picker i:hover {
+    transform: scale(1.1);
 }
 
 .star-picker i.selected {
     color: #f59e0b;
 }
 
-.tag-chip {
-    display: inline-block;
+.score-pill-group {
+    display: flex;
+    gap: 6px;
+}
+
+.score-pill-btn {
+    flex: 1;
+    padding: 7px 0;
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.score-pill-btn.active {
+    background: #0c6c63;
+    border-color: #0c6c63;
+    color: #ffffff;
+}
+
+.quick-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+}
+
+.quick-tag-btn {
     padding: 4px 10px;
-    background: #f3f4f6;
-    border-radius: 12px;
     font-size: 12px;
-    color: #4b5563;
+    border-radius: 999px;
+    border: 1px solid #cbd5e1;
+    background: #f8fafc;
+    color: #334155;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.quick-tag-btn.active,
+.quick-tag-btn:hover {
+    background: #e6faf7;
+    border-color: #0c6c63;
+    color: #0c6c63;
+}
+
+.submit-review-btn {
+    background: linear-gradient(135deg, #0c6c63, #14b8a6);
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 22px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.15s, box-shadow 0.15s;
+}
+
+.submit-review-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(12, 108, 99, 0.25);
+}
+
+.submit-review-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}
+
+.filter-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.filter-tab {
+    padding: 7px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    border: 1px solid #cbd5e1;
+    background: #fff;
+    color: #475569;
+}
+
+.filter-tab.active {
+    background: #0c6c63;
+    border-color: #0c6c63;
+    color: #fff;
+}
+
+.tag-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    background: #f1f5f9;
+    border-radius: 999px;
+    font-size: 12px;
+    color: #334155;
     margin-right: 6px;
     margin-top: 6px;
+}
+
+.empty-session-notice {
+    background: #f8fafc;
+    border: 1px dashed #94a3b8;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+@media (max-width: 900px) {
+    .rating-grid {
+        grid-template-columns: 1fr;
+    }
+    .form-grid-2,
+    .sub-rating-grid {
+        grid-template-columns: 1fr;
+    }
 }
 </style>
 {% endblock %}
 
 {% block content %}
-<div style="max-width: 1200px; margin: 30px auto 10px auto; padding: 0 20px;">
-    <h1 style="font-size: 28px; font-weight: 800; color: #1f2937;">
-        Platform Trust & Quality Ratings
-    </h1>
-    <p style="color: #6b7280; margin-top: 4px;">
-        Community ratings and verified feedback after completed skill exchange sessions.
-    </p>
+<div class="rating-page-header">
+    <div>
+        <h1 style="font-size: 28px; font-weight: 800; color: #0f172a; margin: 0;">
+            Platform Trust &amp; Quality Ratings
+        </h1>
+        <p style="color: #64748b; margin: 4px 0 0 0;">
+            Community ratings and verified feedback after skill exchange sessions.
+        </p>
+    </div>
 </div>
+
+{% if messages %}
+<div style="max-width: 1200px; margin: 0 auto 12px auto; padding: 0 20px;">
+    {% for message in messages %}
+    <div class="alert alert-{% if message.tags == 'error' %}danger{% elif message.tags %}{{ message.tags }}{% else %}info{% endif %} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
 
 <div class="rating-grid">
     <!-- Left Column: Summary Stats -->
     <div class="summary-card">
-        <h3 style="font-size: 18px; font-weight: 700; color: #1E3A8A;">Overall Rating</h3>
-        <div style="text-align: center; margin: 20px 0;">
+        <h3 style="font-size: 18px; font-weight: 700; color: #1E3A8A; margin: 0;">Overall Rating</h3>
+        <div style="text-align: center; margin: 20px 0 12px 0;">
             <div class="score-number">{{ avg_rating }}</div>
-            <div class="stars-row">
-                <i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>
+            <div class="stars-row" aria-label="Average rating {{ avg_rating }} out of 5">
+                {% if avg_rating >= 1 %}<i class="fa-solid fa-star"></i>{% elif avg_rating >= 0.5 %}<i class="fa-solid fa-star-half-stroke"></i>{% else %}<i class="fa-regular fa-star star-empty"></i>{% endif %}
+                {% if avg_rating >= 2 %}<i class="fa-solid fa-star"></i>{% elif avg_rating >= 1.5 %}<i class="fa-solid fa-star-half-stroke"></i>{% else %}<i class="fa-regular fa-star star-empty"></i>{% endif %}
+                {% if avg_rating >= 3 %}<i class="fa-solid fa-star"></i>{% elif avg_rating >= 2.5 %}<i class="fa-solid fa-star-half-stroke"></i>{% else %}<i class="fa-regular fa-star star-empty"></i>{% endif %}
+                {% if avg_rating >= 4 %}<i class="fa-solid fa-star"></i>{% elif avg_rating >= 3.5 %}<i class="fa-solid fa-star-half-stroke"></i>{% else %}<i class="fa-regular fa-star star-empty"></i>{% endif %}
+                {% if avg_rating >= 5 %}<i class="fa-solid fa-star"></i>{% elif avg_rating >= 4.5 %}<i class="fa-solid fa-star-half-stroke"></i>{% else %}<i class="fa-regular fa-star star-empty"></i>{% endif %}
             </div>
-            <div style="font-size: 13px; color: #6b7280;">Based on {{ total_reviews }} verified reviews</div>
+            <div style="font-size: 13px; color: #64748b;">Based on {{ total_reviews }} verified review{{ total_reviews|pluralize }}</div>
         </div>
 
-        <div style="border-top: 1px solid #e5e7eb; padding-top: 15px;">
-            <h4 style="font-size: 14px; font-weight: 700; color: #4b5563; margin-bottom: 10px;">Sub-metrics</h4>
-            <p style="font-size: 13px; margin: 6px 0;">Communication: <strong>{{ avg_comm }} / 5</strong></p>
-            <p style="font-size: 13px; margin: 6px 0;">Clarity: <strong>{{ avg_clarity }} / 5</strong></p>
-            <p style="font-size: 13px; margin: 6px 0;">Punctuality: <strong>{{ avg_punc }} / 5</strong></p>
-            <p style="font-size: 13px; margin: 6px 0;">Recommendation Rate: <strong>{{ recommend_pct }}%</strong></p>
+        <div class="rating-bars">
+            {% for row in star_breakdown %}
+            <div class="bar-row">
+                <span class="bar-label">{{ row.star }} ★</span>
+                <div class="bar-track">
+                    <div class="bar-fill" style="width: {{ row.percent }}%;"></div>
+                </div>
+                <span style="width: 24px; text-align: right; color: #64748b;">{{ row.count }}</span>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div style="border-top: 1px solid #e2e8f0; padding-top: 14px;">
+            <h4 style="font-size: 13px; font-weight: 700; color: #475569; margin: 0;">Sub-metrics</h4>
+            <div class="sub-metrics-grid">
+                <div class="metric-pill">
+                    <div class="metric-val">{{ avg_comm }}</div>
+                    <div class="metric-lbl">Communication</div>
+                </div>
+                <div class="metric-pill">
+                    <div class="metric-val">{{ avg_clarity }}</div>
+                    <div class="metric-lbl">Clarity</div>
+                </div>
+                <div class="metric-pill">
+                    <div class="metric-val">{{ avg_punc }}</div>
+                    <div class="metric-lbl">Punctuality</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="recommend-banner">
+            <i class="fa-solid fa-thumbs-up" style="font-size: 18px;"></i>
+            <div>
+                <div style="font-weight: 700; font-size: 13px;">{{ recommend_pct }}% Recommendation Rate</div>
+                <div style="font-size: 12px; opacity: 0.85;">Users who would exchange again</div>
+            </div>
         </div>
     </div>
 
     <!-- Right Column: Submit Form & Feed -->
     <div class="reviews-section">
-        {% if unreviewed_bookings %}
-        <div class="card-theme" id="reviewFormContainer">
-            <h3 style="font-size: 18px; font-weight: 700; color: #1E3A8A; margin-bottom: 15px;">
-                <i class="fa-solid fa-pen-to-square" style="color: #0e7d73;"></i> Leave a Review
+        <div class="form-card" id="reviewFormContainer">
+            <h3 style="font-size: 18px; font-weight: 700; color: #1E3A8A; margin: 0 0 14px 0;">
+                <i class="fa-solid fa-pen-to-square" style="color: #0c6c63;"></i> Leave a Review
             </h3>
+
+            {% if not unreviewed_bookings %}
+            <div class="empty-session-notice">
+                <div style="font-size: 13px; color: #334155;">
+                    <strong>No unreviewed sessions ready yet.</strong>
+                    Book or complete a skill exchange session to submit a verified review.
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <a href="{% url 'booking_list' %}" class="btn btn-sm btn-outline-secondary">My Bookings</a>
+                    <a href="{% url 'search_skills' %}" class="btn btn-sm btn-success" style="background: #0c6c63; border-color: #0c6c63;">Browse Skills</a>
+                </div>
+            </div>
+            {% endif %}
 
             <form method="POST" action="{% url 'ratings:rating_dashboard' %}">
                 {% csrf_token %}
 
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; font-weight: 600; margin-bottom: 5px;">Select Completed Session</label>
-                    <select name="booking_id" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
+                <div style="margin-bottom: 16px;">
+                    <label for="bookingSelect" class="form-label-strong">Select Session to Review</label>
+                    <select id="bookingSelect" name="booking_id" class="rating-input-control" {% if not unreviewed_bookings %}disabled{% else %}required{% endif %}>
                         {% for bk in unreviewed_bookings %}
-                        <option value="{{ bk.id }}">
-                            {{ bk.request.title }} ({{ bk.scheduled_date }})
+                        <option value="{{ bk.id }}" {% if selected_booking_id == bk.id|stringformat:"s" %}selected{% endif %}>
+                            {{ bk.request.title }} — with {% if bk.request.requester == current_user %}{{ bk.request.receiver.username }}{% else %}{{ bk.request.requester.username }}{% endif %} ({{ bk.scheduled_date }} • {{ bk.get_status_display }})
                         </option>
+                        {% empty %}
+                        <option value="">No unreviewed bookings available</option>
                         {% endfor %}
                     </select>
                 </div>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div class="form-grid-2">
                     <div>
-                        <label style="display: block; font-weight: 600; margin-bottom: 5px;">Overall Rating (1 to 5 Stars)</label>
+                        <label class="form-label-strong">Overall Rating (1 to 5 Stars)</label>
                         <div class="star-picker" id="starPicker">
-                            <i class="fa-solid fa-star selected" data-val="1"></i>
-                            <i class="fa-solid fa-star selected" data-val="2"></i>
-                            <i class="fa-solid fa-star selected" data-val="3"></i>
-                            <i class="fa-solid fa-star selected" data-val="4"></i>
-                            <i class="fa-solid fa-star selected" data-val="5"></i>
+                            <i class="fa-solid fa-star selected" data-val="1" title="1 star"></i>
+                            <i class="fa-solid fa-star selected" data-val="2" title="2 stars"></i>
+                            <i class="fa-solid fa-star selected" data-val="3" title="3 stars"></i>
+                            <i class="fa-solid fa-star selected" data-val="4" title="4 stars"></i>
+                            <i class="fa-solid fa-star selected" data-val="5" title="5 stars"></i>
                         </div>
                         <input type="hidden" name="rating" id="ratingInput" value="5">
                     </div>
 
                     <div>
-                        <label style="display: block; font-weight: 600; margin-bottom: 5px;">Tags / Highlights</label>
-                        <input type="text" name="tags" placeholder="e.g. Great Communicator, Patient" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
+                        <label for="tagsInput" class="form-label-strong">Tags / Highlights</label>
+                        <input id="tagsInput" type="text" name="tags" class="rating-input-control" placeholder="e.g. Great Communicator, Patient" {% if not unreviewed_bookings %}disabled{% endif %}>
+                        <div class="quick-tags">
+                            <button type="button" class="quick-tag-btn" data-tag="Great Communicator" {% if not unreviewed_bookings %}disabled{% endif %}>Great Communicator</button>
+                            <button type="button" class="quick-tag-btn" data-tag="Patient" {% if not unreviewed_bookings %}disabled{% endif %}>Patient</button>
+                            <button type="button" class="quick-tag-btn" data-tag="Clear Explanations" {% if not unreviewed_bookings %}disabled{% endif %}>Clear Explanations</button>
+                            <button type="button" class="quick-tag-btn" data-tag="Punctual" {% if not unreviewed_bookings %}disabled{% endif %}>Punctual</button>
+                        </div>
                     </div>
                 </div>
 
-                <div style="margin-bottom: 15px;">
-                    <label style="display: block; font-weight: 600; margin-bottom: 5px;">Detailed Feedback</label>
-                    <textarea name="comment" rows="3" required style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;" placeholder="Share your experience..."></textarea>
+                <div class="sub-rating-grid">
+                    <div>
+                        <label class="form-label-strong">Communication</label>
+                        <input type="hidden" name="communication_rating" id="commInput" value="5">
+                        <div class="score-pill-group" data-target="commInput">
+                            <button type="button" class="score-pill-btn" data-score="1">1</button>
+                            <button type="button" class="score-pill-btn" data-score="2">2</button>
+                            <button type="button" class="score-pill-btn" data-score="3">3</button>
+                            <button type="button" class="score-pill-btn" data-score="4">4</button>
+                            <button type="button" class="score-pill-btn active" data-score="5">5</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label-strong">Clarity</label>
+                        <input type="hidden" name="clarity_rating" id="clarityInput" value="5">
+                        <div class="score-pill-group" data-target="clarityInput">
+                            <button type="button" class="score-pill-btn" data-score="1">1</button>
+                            <button type="button" class="score-pill-btn" data-score="2">2</button>
+                            <button type="button" class="score-pill-btn" data-score="3">3</button>
+                            <button type="button" class="score-pill-btn" data-score="4">4</button>
+                            <button type="button" class="score-pill-btn active" data-score="5">5</button>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label-strong">Punctuality</label>
+                        <input type="hidden" name="punctuality_rating" id="puncInput" value="5">
+                        <div class="score-pill-group" data-target="puncInput">
+                            <button type="button" class="score-pill-btn" data-score="1">1</button>
+                            <button type="button" class="score-pill-btn" data-score="2">2</button>
+                            <button type="button" class="score-pill-btn" data-score="3">3</button>
+                            <button type="button" class="score-pill-btn" data-score="4">4</button>
+                            <button type="button" class="score-pill-btn active" data-score="5">5</button>
+                        </div>
+                    </div>
                 </div>
 
-                <button type="submit" class="btn-primary">Submit Feedback</button>
+                <div style="margin-bottom: 16px;">
+                    <label for="commentInput" class="form-label-strong">Detailed Feedback</label>
+                    <textarea id="commentInput" name="comment" rows="3" class="rating-input-control" required placeholder="Share what you learned and how the session went..." {% if not unreviewed_bookings %}disabled{% endif %}></textarea>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+                    <label style="display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: #334155; cursor: pointer;">
+                        <input type="checkbox" name="would_recommend" checked {% if not unreviewed_bookings %}disabled{% endif %}>
+                        I would recommend this user for future exchanges
+                    </label>
+                    <button type="submit" class="submit-review-btn" {% if not unreviewed_bookings %}disabled{% endif %}>
+                        <i class="fa-solid fa-paper-plane"></i> Submit Feedback
+                    </button>
+                </div>
             </form>
         </div>
-        {% endif %}
+
+        <!-- Filter Tabs -->
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <h3 style="font-size: 18px; font-weight: 700; color: #0f172a; margin: 0;">Verified Reviews</h3>
+            <div class="filter-tabs">
+                <a href="{% url 'ratings:rating_dashboard' %}?tab=all" class="filter-tab {% if tab == 'all' %}active{% endif %}">All Reviews</a>
+                <a href="{% url 'ratings:rating_dashboard' %}?tab=received" class="filter-tab {% if tab == 'received' %}active{% endif %}">Received by Me</a>
+                <a href="{% url 'ratings:rating_dashboard' %}?tab=given" class="filter-tab {% if tab == 'given' %}active{% endif %}">Given by Me</a>
+            </div>
+        </div>
 
         <!-- Reviews List -->
         {% for review in reviews %}
         <div class="review-card">
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; flex-wrap: wrap; margin-bottom: 10px;">
                 <div>
                     <strong style="font-size: 16px; color: #1f2937;">{{ review.reviewer.username }}</strong>
-                    <span style="font-size: 13px; color: #6b7280;">reviewed <strong>{{ review.reviewed_user.username }}</strong></span>
-                    <div style="font-size: 12px; color: #9ca3af;">{{ review.created_at|date:"F d, Y" }}</div>
+                    <span style="font-size: 13px; color: #64748b;">reviewed <strong>{{ review.reviewed_user.username }}</strong></span>
+                    <div style="font-size: 12px; color: #94a3b8; margin-top: 2px;">
+                        {{ review.created_at|date:"F d, Y" }} &bull; {{ review.booking.request.title }}
+                    </div>
                 </div>
-                <div style="color: #f59e0b; font-weight: bold; font-size: 18px;">
-                    {{ review.rating }} ★
+                <div style="text-align: right;">
+                    <div style="color: #f59e0b; font-weight: 700; font-size: 15px;">
+                        {% for i in "12345"|make_list %}
+                            {% if forloop.counter <= review.rating %}
+                                <i class="fa-solid fa-star"></i>
+                            {% else %}
+                                <i class="fa-regular fa-star" style="color: #d1d5db;"></i>
+                            {% endif %}
+                        {% endfor %}
+                        <span style="color: #0f172a; margin-left: 4px;">{{ review.rating }}.0</span>
+                    </div>
+                    {% if review.would_recommend %}
+                    <span style="display: inline-block; margin-top: 4px; font-size: 11px; color: #065f46; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 999px; padding: 2px 8px;">
+                        <i class="fa-solid fa-thumbs-up"></i> Recommended
+                    </span>
+                    {% endif %}
                 </div>
             </div>
 
-            <p style="color: #374151; font-size: 14px; margin-bottom: 10px;">"{{ review.comment }}"</p>
+            {% if review.comment %}
+            <p style="color: #334155; font-size: 14px; margin: 0 0 10px 0;">"{{ review.comment }}"</p>
+            {% endif %}
+
+            <div style="display: flex; flex-wrap: wrap; gap: 8px; font-size: 12px; color: #64748b; margin-bottom: 6px;">
+                <span>Communication: <strong>{{ review.communication_rating }}/5</strong></span>
+                <span>&bull;</span>
+                <span>Clarity: <strong>{{ review.clarity_rating }}/5</strong></span>
+                <span>&bull;</span>
+                <span>Punctuality: <strong>{{ review.punctuality_rating }}/5</strong></span>
+            </div>
 
             {% if review.tag_list %}
-                <div>
-                    {% for tag in review.tag_list %}
-                        <span class="tag-chip"><i class="fa-solid fa-check"></i> {{ tag }}</span>
-                    {% endfor %}
-                </div>
+            <div>
+                {% for tag in review.tag_list %}
+                <span class="tag-chip"><i class="fa-solid fa-check"></i> {{ tag }}</span>
+                {% endfor %}
+            </div>
             {% endif %}
         </div>
         {% empty %}
-        <div class="review-card" style="text-align: center; padding: 40px; color: #9ca3af;">
+        <div class="review-card" style="text-align: center; padding: 40px; color: #94a3b8;">
             <i class="fa-regular fa-star fa-3x" style="margin-bottom: 10px;"></i>
-            <p>No ratings published yet.</p>
+            <p style="margin: 0;">No ratings published yet.</p>
         </div>
         {% endfor %}
     </div>
@@ -193,16 +599,42 @@
 
     stars.forEach(star => {
         star.addEventListener('click', function () {
-            const val = parseInt(this.getAttribute('data-val'));
+            const val = parseInt(this.getAttribute('data-val'), 10);
             ratingInput.value = val;
 
             stars.forEach((s, idx) => {
-                if (idx < val) {
-                    s.classList.add('selected');
-                } else {
-                    s.classList.remove('selected');
-                }
+                s.classList.toggle('selected', idx < val);
             });
+        });
+    });
+
+    document.querySelectorAll('.score-pill-group').forEach(group => {
+        const targetInput = document.getElementById(group.getAttribute('data-target'));
+        const buttons = group.querySelectorAll('.score-pill-btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', function () {
+                const score = this.getAttribute('data-score');
+                if (targetInput) targetInput.value = score;
+                buttons.forEach(b => b.classList.toggle('active', b === this));
+            });
+        });
+    });
+
+    const tagsInput = document.getElementById('tagsInput');
+    document.querySelectorAll('.quick-tag-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            if (!tagsInput || tagsInput.disabled) return;
+            const tag = this.getAttribute('data-tag');
+            const current = tagsInput.value.split(',').map(t => t.trim()).filter(Boolean);
+            const idx = current.indexOf(tag);
+            if (idx >= 0) {
+                current.splice(idx, 1);
+                this.classList.remove('active');
+            } else {
+                current.push(tag);
+                this.classList.add('active');
+            }
+            tagsInput.value = current.join(', ');
         });
     });
 </script>

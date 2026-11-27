@@ -476,17 +476,35 @@ class BookingViewSet(viewsets.ModelViewSet):
 # ---------------------------------------------------------------------------
 # Ratings API
 # ---------------------------------------------------------------------------
+class IsReviewerOrReadOnly(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        return request.user and (obj.reviewer == request.user or request.user.is_staff)
+
+
 class ReviewRatingViewSet(viewsets.ModelViewSet):
     serializer_class = ReviewRatingSerializer
+    permission_classes = [permissions.IsAuthenticated, IsReviewerOrReadOnly]
 
     def get_queryset(self):
         return ReviewRating.objects.select_related('reviewer', 'reviewed_user', 'booking').all()
 
     def perform_create(self, serializer):
+        from rest_framework.exceptions import PermissionDenied, ValidationError
         booking = serializer.validated_data['booking']
         reviewer = self.request.user
+        if reviewer not in (booking.request.requester, booking.request.receiver):
+            raise PermissionDenied('You are not a participant in this booking.')
+        if booking.status == 'cancelled':
+            raise ValidationError({'booking': 'Cancelled bookings cannot be reviewed.'})
+        if ReviewRating.objects.filter(booking=booking, reviewer=reviewer).exists():
+            raise ValidationError({'booking': 'You have already reviewed this booking.'})
         reviewed_user = booking.request.receiver if reviewer == booking.request.requester else booking.request.requester
         serializer.save(reviewer=reviewer, reviewed_user=reviewed_user)
+        if booking.status != 'completed':
+            booking.status = 'completed'
+            booking.save(update_fields=['status'])
 
 
 # ---------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-﻿from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
@@ -24,14 +24,47 @@ def booking_list(request):
                 'request', 'request__requester', 'request__receiver', 'request__skill'
             )
         )
+        from ratings.models import ReviewRating
+        reviewed_booking_ids = set(
+            ReviewRating.objects.filter(
+                reviewer=request.user, booking__in=bookings
+            ).values_list('booking_id', flat=True)
+        )
     except Exception as e:
         error_msg = str(e)
         bookings = []
+        reviewed_booking_ids = set()
 
     return render(request, 'bookings/booking_list.html', {
         'bookings': bookings,
+        'reviewed_booking_ids': reviewed_booking_ids,
         'error_msg': error_msg,
     })
+
+
+@login_required
+def complete_booking(request, booking_id):
+    """Marks a scheduled booking as completed by one of its participants."""
+    if request.method != 'POST':
+        return redirect('booking_list')
+
+    booking = get_object_or_404(
+        Booking.objects.select_related('request', 'request__requester', 'request__receiver'),
+        id=booking_id,
+    )
+    if request.user not in (booking.request.requester, booking.request.receiver):
+        messages.error(request, 'You are not authorized to update this booking.')
+        return redirect('booking_list')
+
+    if booking.status == 'cancelled':
+        messages.error(request, 'Cancelled bookings cannot be marked completed.')
+        return redirect('booking_list')
+
+    if booking.status != 'completed':
+        booking.status = 'completed'
+        booking.save(update_fields=['status'])
+        messages.success(request, 'Session marked as completed! You can now leave a review.')
+    return redirect('booking_list')
 
 
 @login_required

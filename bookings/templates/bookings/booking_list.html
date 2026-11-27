@@ -1,4 +1,4 @@
-﻿{% extends 'user_dashboard/base.html' %}
+{% extends 'user_dashboard/base.html' %}
 
 {% block title %}My Bookings — Skill-Verse{% endblock %}
 
@@ -244,15 +244,27 @@
                         {{ booking.get_status_display }}
                     </span>
                     {% if booking.status == 'completed' %}
-                    <div>
-                        <a href="{% url 'ratings:rating_dashboard' %}" class="review-btn">
+                    <div style="margin-top: 8px;">
+                        {% if booking.id in reviewed_booking_ids %}
+                        <span class="status-badge status-completed" style="font-size: 0.75rem;">
+                            <i class="fa-solid fa-check"></i> Reviewed
+                        </span>
+                        {% else %}
+                        <a href="{% url 'ratings:rating_dashboard' %}?booking_id={{ booking.id }}" class="review-btn">
                             <i class="fa-solid fa-star"></i> Leave Review
                         </a>
+                        {% endif %}
                     </div>
                     {% endif %}
                     {% if booking.status == 'scheduled' %}
-                    <div style="margin-top: 8px;">
-                        <a href="{% url 'messaging_index' %}" class="review-btn" style="background:#f0fdf4; border-color:#86efac; color:#166534;">
+                    <div style="margin-top: 8px; display: flex; flex-direction: column; gap: 6px; align-items: flex-end;">
+                        <form method="POST" action="{% url 'complete_booking' booking.id %}" style="margin: 0;">
+                            {% csrf_token %}
+                            <button type="submit" class="review-btn" style="background:#ecfdf5; border-color:#6ee7b7; color:#065f46; cursor:pointer; margin-top:0;">
+                                <i class="fa-solid fa-circle-check"></i> Mark Completed
+                            </button>
+                        </form>
+                        <a href="{% url 'messaging_index' %}" class="review-btn" style="background:#f0fdf4; border-color:#86efac; color:#166534; margin-top:0;">
                             <i class="fa-solid fa-comments"></i> Open Chat
                         </a>
                     </div>
