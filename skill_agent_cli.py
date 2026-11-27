@@ -1,4 +1,4 @@
-﻿"""
+"""
 Skill-Verse Autonomous AI Agent (100% Keyless with Local Ollama)
 Zero API Keys Required • Runs completely locally on your PC
 """

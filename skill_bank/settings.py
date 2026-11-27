@@ -1,4 +1,4 @@
-﻿"""
+"""
 Django settings for Skill Exchange Platform (single, canonical project).
 Reads all sensitive values from .env via python-dotenv.
 """
