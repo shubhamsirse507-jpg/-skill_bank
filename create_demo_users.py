@@ -24,13 +24,13 @@ def setup_demo_accounts():
     demo_user, _ = User.objects.get_or_create(
         username='demouser',
         defaults={
-            'email': 'Skill-Verse2026@gmail.com',
+            'email': 'skillbank2026@gmail.com',
             'first_name': 'Alex',
             'last_name': 'Morgan',
             'is_active': True,
         }
     )
-    demo_user.email = 'Skill-Verse2026@gmail.com'
+    demo_user.email = 'skillbank2026@gmail.com'
     demo_user.set_password('DemoPassword123!')
     demo_user.save()
 
