@@ -1,6 +1,6 @@
-{% load static %}
+﻿{% load static %}
 <!-- =========================================================================
-     SkillBank Shared Mobile Header & Dropdown Menu (<= 768px)
+     Skill-Verse Shared Mobile Header & Dropdown Menu (<= 768px)
      Hidden on desktop (> 768px) so desktop layout stays untouched.
      ========================================================================= -->
 <style>
@@ -388,7 +388,7 @@
 <header class="sb-mobile-header" role="banner">
     <a class="sb-mh-brand" href="{% if user.is_authenticated %}{% url 'home' %}{% else %}/{% endif %}">
         <span class="sb-mh-logo-icon" aria-hidden="true">S</span>
-        <span>SkillBank</span>
+        <span>Skill-Verse</span>
     </a>
 
     <button type="button"
@@ -428,7 +428,7 @@
         </span>
         <div class="sb-md-user-info">
             <div class="sb-md-user-name">{{ user.get_full_name|default:user.username }}</div>
-            <div class="sb-md-user-role">Skill Bank Member</div>
+            <div class="sb-md-user-role">Skill-Verse Member</div>
         </div>
         <i class="fa-solid fa-chevron-right" style="color:#94a3b8; font-size:0.8rem;"></i>
     </a>

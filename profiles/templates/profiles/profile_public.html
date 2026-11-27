@@ -1,7 +1,7 @@
-{% extends 'user_dashboard/base.html' %}
+﻿{% extends 'user_dashboard/base.html' %}
 {% load static %}
 
-{% block title %}{{ target_user.first_name|default:target_user.username }}'s Profile | Skill Bank{% endblock %}
+{% block title %}{{ target_user.first_name|default:target_user.username }}'s Profile | Skill-Verse{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -140,7 +140,7 @@
             <img src="{{ profile_obj.avatar_url }}" alt="{{ target_user.username }}" class="public-avatar">
             <div class="public-info">
                 <h2>{{ target_user.first_name|default:target_user.username }} {{ target_user.last_name }}</h2>
-                <p>{{ profile_obj.headline|default:"Skill Bank Member" }}</p>
+                <p>{{ profile_obj.headline|default:"Skill-Verse Member" }}</p>
                 {% if profile_obj.city or profile_obj.country %}
                     <span class="location-badge">📍 {{ profile_obj.city }}, {{ profile_obj.country }} ({{ profile_obj.work_preference }})</span>
                 {% endif %}

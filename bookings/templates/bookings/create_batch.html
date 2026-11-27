@@ -1,7 +1,7 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Create Batch — SkillBank{% endblock %}
+{% block title %}Create Batch — Skill-Verse{% endblock %}
 
 {% block content %}
 <style>
@@ -225,7 +225,7 @@
         <div class="form-header">
             <div class="badge-pill">🏫 Teacher/Admin Only</div>
             <h1>Create a New Batch</h1>
-            <p>Schedule a live group class and let students enroll with SkillBank credits.</p>
+            <p>Schedule a live group class and let students enroll with Skill-Verse credits.</p>
         </div>
 
         <!-- Error Messages -->
@@ -330,7 +330,7 @@
                 <div class="icon-prefix">
                     <span class="prefix-icon">🔗</span>
                     <input type="url" id="meeting_link" name="meeting_link"
-                           value="{{ form_data.meeting_link|default:'https://meet.jit.si/SkillBankBatchRoom' }}"
+                           value="{{ form_data.meeting_link|default:'https://meet.jit.si/Skill-VerseBatchRoom' }}"
                            placeholder="https://meet.google.com/xxx or https://meet.jit.si/...">
                 </div>
                 <div class="input-hint">Paste your Google Meet, Zoom, or Jitsi link. A default Jitsi room is prefilled.</div>

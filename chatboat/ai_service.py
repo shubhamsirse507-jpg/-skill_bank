@@ -1,4 +1,4 @@
-import json
+﻿import json
 import urllib.request
 import urllib.parse
 import urllib.error
@@ -158,8 +158,8 @@ def generate_ai_response(prompt, requested_provider="auto", image_data=None):
     # 1. Fetch skill context from Skill_Data knowledge base
     skill_context = query_skill_bank_data(prompt)
     enriched_prompt = prompt
-    if skill_context and "Skill Bank supports" not in skill_context:
-        enriched_prompt = f"Skill Bank Context:\n{skill_context}\n\nUser Question: {prompt}\nPlease provide a helpful, friendly response formatted nicely in markdown."
+    if skill_context and "Skill-Verse supports" not in skill_context:
+        enriched_prompt = f"Skill-Verse Context:\n{skill_context}\n\nUser Question: {prompt}\nPlease provide a helpful, friendly response formatted nicely in markdown."
 
     if image_data:
         enriched_prompt = f"[User attached an image / camera capture for analysis]\n{enriched_prompt}"
@@ -202,13 +202,13 @@ def generate_ai_response(prompt, requested_provider="auto", image_data=None):
 
     # Priority 4: Local Skill_Data Knowledge fallback
     if skill_context:
-        fallback_res = f"### 📚 Skill Bank Knowledge Response\n\n{skill_context}"
+        fallback_res = f"### 📚 Skill-Verse Knowledge Response\n\n{skill_context}"
     else:
-        fallback_res = f"Here is what I found for **'{prompt}'**:\n\nSkill Bank connects learners worldwide to trade skills! Install & run Ollama (`ollama run llama3.2:1b`) for full offline local generation."
+        fallback_res = f"Here is what I found for **'{prompt}'**:\n\nSkill-Verse connects learners worldwide to trade skills! Install & run Ollama (`ollama run llama3.2:1b`) for full offline local generation."
 
     return {
         "success": True,
-        "provider_used": "Skill Bank Knowledge Base",
+        "provider_used": "Skill-Verse Knowledge Base",
         "response": fallback_res,
         "errors": errors
     }

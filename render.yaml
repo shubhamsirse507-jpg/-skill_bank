@@ -1,7 +1,7 @@
-# render.yaml — Blueprint deployment config for Render.com
+﻿# render.yaml — Blueprint deployment config for Render.com
 services:
   - type: web
-    name: skillbank-platform
+    name: Skill-Verse-platform
     env: python
     region: singapore
     buildCommand: "./build.sh"

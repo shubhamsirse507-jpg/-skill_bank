@@ -1,6 +1,6 @@
-"""
+﻿"""
 authentication/views.py
-Complete, hardened Authentication module for Skill Bank:
+Complete, hardened Authentication module for Skill-Verse:
 - Login (Credentials verification + Two-Factor Authentication via OTP)
 - Verify 2FA Login OTP
 - Resend 2FA Login OTP
@@ -61,23 +61,23 @@ def send_otp_email(user, otp_code, purpose='Login'):
             logger.error("[OTP Email Delivery] SMTP backend configured but EMAIL_HOST_USER or EMAIL_HOST_PASSWORD is missing.")
             return False, recipient_email
 
-    from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@skillbank.com')
+    from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@Skill-Verse.com')
     user_display = user.first_name or user.username
 
     if purpose == 'Login':
-        subject = "Your SkillBank verification code"
+        subject = "Your Skill-Verse verification code"
         plain_text = (
             f"Hello {user_display},\n\n"
-            f"Your Two-Factor Authentication (2FA) verification code for SkillBank is: {otp_code}\n\n"
+            f"Your Two-Factor Authentication (2FA) verification code for Skill-Verse is: {otp_code}\n\n"
             f"This code will expire in 10 minutes.\n"
             f"If you didn't request this, you can safely ignore this email.\n\n"
-            f"— The SkillBank Team"
+            f"— The Skill-Verse Team"
         )
         html_content = f"""
         <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 24px; background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0;">
             <div style="text-align: center; margin-bottom: 20px;">
                 <div style="display: inline-block; background: #0c6c63; color: #ffffff; width: 48px; height: 48px; line-height: 48px; font-size: 24px; font-weight: 800; border-radius: 12px; text-align: center;">S</div>
-                <h2 style="color: #0c6c63; margin-top: 10px; font-size: 22px; font-weight: 700;">Skill Bank Security</h2>
+                <h2 style="color: #0c6c63; margin-top: 10px; font-size: 22px; font-weight: 700;">Skill-Verse Security</h2>
             </div>
             <p style="color: #334155; font-size: 15px; line-height: 1.5;">Hello <strong>{user_display}</strong>,</p>
             <p style="color: #475569; font-size: 14px; line-height: 1.6;">Use the following 6-digit verification code to complete your sign-in:</p>
@@ -90,13 +90,13 @@ def send_otp_email(user, otp_code, purpose='Login'):
         </div>
         """
     else:  # ForgotPassword / Registration
-        subject = "Your SkillBank verification code"
+        subject = "Your Skill-Verse verification code"
         plain_text = (
             f"Hello {user_display},\n\n"
-            f"Your OTP code for resetting your SkillBank password is: {otp_code}\n\n"
+            f"Your OTP code for resetting your Skill-Verse password is: {otp_code}\n\n"
             f"This code will expire in 10 minutes.\n"
             f"If you didn't request this, you can safely ignore this email.\n\n"
-            f"— The SkillBank Team"
+            f"— The Skill-Verse Team"
         )
         html_content = f"""
         <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 520px; margin: 0 auto; padding: 24px; background: #ffffff; border-radius: 12px; border: 1px solid #e2e8f0;">
@@ -105,7 +105,7 @@ def send_otp_email(user, otp_code, purpose='Login'):
                 <h2 style="color: #0c6c63; margin-top: 10px; font-size: 22px; font-weight: 700;">Password Reset Request</h2>
             </div>
             <p style="color: #334155; font-size: 15px; line-height: 1.5;">Hello <strong>{user_display}</strong>,</p>
-            <p style="color: #475569; font-size: 14px; line-height: 1.6;">You recently requested to reset your password for your SkillBank account. Enter the verification code below to proceed:</p>
+            <p style="color: #475569; font-size: 14px; line-height: 1.6;">You recently requested to reset your password for your Skill-Verse account. Enter the verification code below to proceed:</p>
             <div style="text-align: center; margin: 26px 0;">
                 <span style="display: inline-block; font-size: 32px; font-weight: 800; letter-spacing: 8px; color: #0c6c63; background: #e8f7f5; padding: 12px 28px; border-radius: 10px; border: 2px dashed #0c6c63;">{otp_code}</span>
             </div>
@@ -119,8 +119,8 @@ def send_otp_email(user, otp_code, purpose='Login'):
 
     # Priority 1: Brevo HTTPS Transactional Email API (works on Render/cloud where SMTP ports are blocked)
     if brevo_api_key:
-        sender_email = getattr(settings, 'BREVO_SENDER_EMAIL', '').strip() or host_user or 'noreply@skillbank.com'
-        sender_name = getattr(settings, 'BREVO_SENDER_NAME', 'Skill Bank').strip() or 'Skill Bank'
+        sender_email = getattr(settings, 'BREVO_SENDER_EMAIL', '').strip() or host_user or 'noreply@Skill-Verse.com'
+        sender_name = getattr(settings, 'BREVO_SENDER_NAME', 'Skill-Verse').strip() or 'Skill-Verse'
         timeout_sec = int(getattr(settings, 'EMAIL_TIMEOUT', 15))
         payload = json.dumps({
             'sender': {'name': sender_name, 'email': sender_email},

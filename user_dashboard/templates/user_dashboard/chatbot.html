@@ -1,7 +1,7 @@
-{% extends 'user_dashboard/base.html' %}
+﻿{% extends 'user_dashboard/base.html' %}
 {% load static %}
 
-{% block title %}AI Chatbot — Skill Bank{% endblock %}
+{% block title %}AI Chatbot — Skill-Verse{% endblock %}
 
 {% block content %}
 <div class="container mt-4" style="max-width: 880px;">
@@ -290,12 +290,12 @@
             if (data.response) {
                 addMessage(data.response, false);
             } else {
-                addMessage("I'm here to help you trade skills on SkillBank! Let me know if you need help matching or learning.", false);
+                addMessage("I'm here to help you trade skills on Skill-Verse! Let me know if you need help matching or learning.", false);
             }
         } catch (err) {
             const temp = document.getElementById(tempId);
             if (temp) temp.remove();
-            addMessage("SkillBank connects members worldwide to swap skills! Ask me anything about learning or exchange partners.", false);
+            addMessage("Skill-Verse connects members worldwide to swap skills! Ask me anything about learning or exchange partners.", false);
         }
     }
 

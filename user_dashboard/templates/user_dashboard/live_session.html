@@ -1,7 +1,7 @@
-{% extends 'user_dashboard/base.html' %}
+﻿{% extends 'user_dashboard/base.html' %}
 {% load static %}
 
-{% block title %}Live Session — Skill Bank{% endblock %}
+{% block title %}Live Session — Skill-Verse{% endblock %}
 
 {% block content %}
 <div class="container mt-4" style="max-width: 900px;">
@@ -123,7 +123,7 @@
 <script>
 function startSession() {
     // In production this would open a WebRTC room or redirect to Google Meet/Jitsi
-    const roomId = 'skillbank-' + Math.random().toString(36).substr(2, 8);
+    const roomId = 'Skill-Verse-' + Math.random().toString(36).substr(2, 8);
     const link = `https://meet.jit.si/${roomId}`;
     if (confirm(`Your session room is ready!\n\nRoom Link: ${link}\n\nShare this link with your exchange partner.\nClick OK to open the session.`)) {
         window.open(link, '_blank');

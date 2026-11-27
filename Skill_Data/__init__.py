@@ -1,4 +1,4 @@
-from .skills_db import SKILL_KNOWLEDGE_BASE, get_skill_knowledge
+﻿from .skills_db import SKILL_KNOWLEDGE_BASE, get_skill_knowledge
 from .all_skills import GLOBAL_SKILL_DATABASE, search_global_skills, get_all_skills_summary
 
 
@@ -18,7 +18,7 @@ def query_skill_bank_data(query_text):
 
         # Format a complete overview of all skills across all categories
         all_cats = get_all_skills_summary()
-        summary_lines = ["Skill Bank supports learning & advice across ALL domain skills:\n"]
+        summary_lines = ["Skill-Verse supports learning & advice across ALL domain skills:\n"]
         for cat, titles in all_cats.items():
             summary_lines.append(f"**{cat}**: {', '.join(titles)}")
         return "\n".join(summary_lines)

@@ -1,4 +1,4 @@
-from django.db import models
+﻿from django.db import models
 from django.contrib.auth import get_user_model
 
 
@@ -104,7 +104,7 @@ class PaymentReceipt(models.Model):
     item_title = models.CharField(max_length=200)
     category_name = models.CharField(max_length=100, blank=True, default='General')
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    payment_method = models.CharField(max_length=50, default='SkillBank Wallet')
+    payment_method = models.CharField(max_length=50, default='Skill-Verse Wallet')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PAID')
     created_at = models.DateTimeField(auto_now_add=True)
 

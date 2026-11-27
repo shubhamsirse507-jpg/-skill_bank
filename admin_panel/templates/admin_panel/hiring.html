@@ -1,5 +1,5 @@
-{% extends "base.html" %}
-{% block title %}Teacher Hiring — SkillBank Admin{% endblock %}
+﻿{% extends "base.html" %}
+{% block title %}Teacher Hiring — Skill-Verse Admin{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -246,7 +246,7 @@
   <div class="cta-banner">
     <div>
       <h2><i class="fa-solid fa-robot"></i> AI Mock Test — Start Teacher Evaluation</h2>
-      <p>Send a teacher to take an AI-generated skill qualification test before hiring them on SkillBank.</p>
+      <p>Send a teacher to take an AI-generated skill qualification test before hiring them on Skill-Verse.</p>
     </div>
     <a href="/admin-panel/mock-test/" class="btn-white">
       <i class="fa-solid fa-play"></i> Start New Test
@@ -371,7 +371,7 @@ function openModal(action, testId, username) {
 
   if (action === 'approve') {
     title.textContent = `✅ Approve & Hire ${username}?`;
-    desc.textContent = `This will mark ${username} as a verified SkillBank Teacher.`;
+    desc.textContent = `This will mark ${username} as a verified Skill-Verse Teacher.`;
     btn.className = 'btn-approve';
     btn.innerHTML = '<i class="fa-solid fa-check"></i> Approve & Hire';
   } else {

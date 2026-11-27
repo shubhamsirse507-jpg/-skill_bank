@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404, redirect
+﻿from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
@@ -325,7 +325,7 @@ def join_batch(request, batch_id):
                 item_title=batch.title,
                 category_name=cat_name,
                 amount=price,
-                payment_method='SkillBank Wallet',
+                payment_method='Skill-Verse Wallet',
                 transaction_id=tx_id,
                 status='PAID'
             )
@@ -353,7 +353,7 @@ def join_batch(request, batch_id):
                 type="booking",
                 action_url=rec_url,
                 action_text="View Receipt",
-                sender_name="SkillBank System"
+                sender_name="Skill-Verse System"
             )
 
         messages.success(
@@ -450,7 +450,7 @@ def create_doubt(request):
                 teacher_earning=teacher_earning,
                 duration_minutes=15,
                 is_paid=True,
-                meeting_link=f'https://meet.jit.si/SkillBankDoubt-{request.user.username}'
+                meeting_link=f'https://meet.jit.si/Skill-VerseDoubt-{request.user.username}'
             )
 
             # 5. Create Payment Receipt for Learner
@@ -462,7 +462,7 @@ def create_doubt(request):
                 item_title=f"15-Min Doubt Session: {subject}",
                 category_name='Doubt Call',
                 amount=price,
-                payment_method='SkillBank Wallet',
+                payment_method='Skill-Verse Wallet',
                 transaction_id=tx_id,
                 status='PAID'
             )
@@ -476,7 +476,7 @@ def create_doubt(request):
                 type="booking",
                 action_url=f"/payments/receipt/{receipt.receipt_number}/",
                 action_text="View Receipt",
-                sender_name="SkillBank System"
+                sender_name="Skill-Verse System"
             )
 
             messages.success(
@@ -496,7 +496,7 @@ def live_room(request, room_id=None):
     from django.utils import timezone
     from payments.models import Wallet, WalletTransaction, PaymentReceipt
 
-    room_name = f"SkillBankRoom-{room_id or 'General'}"
+    room_name = f"Skill-VerseRoom-{room_id or 'General'}"
     doubt = None
     remaining_seconds = 900 # 15 minutes default
     is_doubt_session = False
@@ -588,7 +588,7 @@ def create_batch(request):
         duration_minutes = request.POST.get('duration_minutes', 60)
         max_seats = request.POST.get('max_seats', 15)
         price_credits = request.POST.get('price_credits', '50.00')
-        meeting_link = request.POST.get('meeting_link', '').strip() or 'https://meet.jit.si/SkillBankBatchRoom'
+        meeting_link = request.POST.get('meeting_link', '').strip() or 'https://meet.jit.si/Skill-VerseBatchRoom'
 
         errors = []
         if not title:

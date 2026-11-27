@@ -1,4 +1,4 @@
-import os
+﻿import os
 import django
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'skill_bank.settings')
@@ -15,7 +15,7 @@ from admin_panel.models import PlatformNotice, PlatformReport
 
 def run_tests():
     print("=" * 60)
-    print("RUNNING END-TO-END DEMO SUITE FOR SKILL BANK")
+    print("RUNNING END-TO-END DEMO SUITE FOR Skill-Verse")
     print("=" * 60)
 
     client = Client()

@@ -1,4 +1,4 @@
-"""
+﻿"""
 Django settings for Skill Exchange Platform (single, canonical project).
 Reads all sensitive values from .env via python-dotenv.
 """
@@ -69,7 +69,7 @@ INSTALLED_APPS = [
     'chatboat',             # AI chat assistant
     'dashboard',            # Landing dashboard (legacy, kept)
     'user_dashboard',       # User-facing dashboard views
-    'payments',             # SkillBank Wallet & Payments
+    'payments',             # Skill-Verse Wallet & Payments
 ]
 
 MIDDLEWARE = [
@@ -244,7 +244,7 @@ _raw_email_pass = os.environ.get('EMAIL_HOST_PASSWORD', '')
 EMAIL_HOST_PASSWORD = _raw_email_pass.replace(' ', '').strip()
 DEFAULT_FROM_EMAIL = os.environ.get(
     'DEFAULT_FROM_EMAIL',
-    f"Skill Bank <{EMAIL_HOST_USER}>" if EMAIL_HOST_USER else 'noreply@skillbank.com'
+    f"Skill-Verse <{EMAIL_HOST_USER}>" if EMAIL_HOST_USER else 'noreply@Skill-Verse.com'
 )
 _default_email_backend = (
     'django.core.mail.backends.smtp.EmailBackend'
@@ -268,7 +268,7 @@ OTP_DEV_LOG = os.environ.get('OTP_DEV_LOG', 'False').lower() == 'true'
 # Brevo (Sendinblue) HTTPS Transactional Email API (bypasses cloud SMTP port blocks)
 BREVO_API_KEY = os.environ.get('BREVO_API_KEY', '').strip()
 BREVO_SENDER_EMAIL = os.environ.get('BREVO_SENDER_EMAIL', EMAIL_HOST_USER or '').strip()
-BREVO_SENDER_NAME = os.environ.get('BREVO_SENDER_NAME', 'Skill Bank').strip()
+BREVO_SENDER_NAME = os.environ.get('BREVO_SENDER_NAME', 'Skill-Verse').strip()
 
 # ---------------------------------------------------------------------------
 # Security & Cloud Proxy Configuration

@@ -1,4 +1,4 @@
-"""
+﻿"""
 management/commands/seed_dummy_users.py
 
 Creates 3 dummy accounts in the SQLite database:
@@ -21,7 +21,7 @@ from skill_management.models import Skill, SkillCategory
 USERS = [
     {
         "username": "student_user",
-        "email": "skillbank2026@gmail.com",
+        "email": "Skill-Verse2026@gmail.com",
         "password": "Student@1234",
         "first_name": "Ananya",
         "last_name": "Sharma",
@@ -45,7 +45,7 @@ USERS = [
     },
     {
         "username": "teacher_demo",
-        "email": "teacher@skillbank.com",
+        "email": "teacher@Skill-Verse.com",
         "password": "Teacher@1234",
         "first_name": "Rajesh",
         "last_name": "Kumar",
@@ -69,7 +69,7 @@ USERS = [
     },
     {
         "username": "admin_demo",
-        "email": "admin@skillbank.com",
+        "email": "admin@Skill-Verse.com",
         "password": "Admin@1234",
         "first_name": "Priya",
         "last_name": "Mehta",
@@ -80,14 +80,14 @@ USERS = [
             "status": "active",
             "bio": "Platform administrator ensuring quality and smooth experience for all users.",
             "location": "Delhi, India",
-            "headline": "Platform Admin | SkillBank Operations",
+            "headline": "Platform Admin | Skill-Verse Operations",
             "city": "Delhi",
             "country": "India",
             "phone": "+91-9001122334",
             "availability": "available",
             "work_preference": "Remote",
             "matching_goal": "Platform Growth",
-            "experience_summary": "Managing SkillBank since inception. Oversees skill approvals and user support.",
+            "experience_summary": "Managing Skill-Verse since inception. Oversees skill approvals and user support.",
             "avatar_preset_url": "https://api.dicebear.com/7.x/avataaars/svg?seed=Priya",
         },
     },
@@ -239,7 +239,7 @@ class Command(BaseCommand):
                 'mentor': teacher,
                 'question': 'How do I resolve OperationalError during SQLite migration with existing table records?',
                 'status': 'searching',
-                'meeting_link': 'https://meet.jit.si/SkillBankDoubt-DjangoFK'
+                'meeting_link': 'https://meet.jit.si/Skill-VerseDoubt-DjangoFK'
             }
         )
         label = "Created" if d1_created else "Exists"

@@ -1,11 +1,11 @@
-{% load static %}
+﻿{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="AI Chat Boat — Your intelligent AI assistant built into Skill Bank. Ask with text, voice mic, or camera photos." />
-  <title>AI Chat Boat | Skill Bank</title>
+  <meta name="description" content="AI Chat Boat — Your intelligent AI assistant built into Skill-Verse. Ask with text, voice mic, or camera photos." />
+  <title>AI Chat Boat | Skill-Verse</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -37,7 +37,7 @@
     <aside class="sidebar" id="sidebar" role="complementary" aria-label="Sidebar">
 
       <div class="sidebar-header">
-        <a href="/" class="brand" title="Back to Skill Bank">
+        <a href="/" class="brand" title="Back to Skill-Verse">
           <div class="brand-icon" aria-hidden="true">
             <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="18" cy="18" r="17" stroke="url(#bG)" stroke-width="2"/>
@@ -101,9 +101,9 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/></svg>
             <span>Clear Chat</span>
           </button>
-          <a href="/" class="sidebar-action-btn" aria-label="Back to Skill Bank">
+          <a href="/" class="sidebar-action-btn" aria-label="Back to Skill-Verse">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-            <span>Back to Skill Bank</span>
+            <span>Back to Skill-Verse</span>
           </a>
         </div>
 
@@ -112,7 +112,7 @@
           <div class="user-avatar" aria-hidden="true">{{ user.username|default:'G'|first|upper }}</div>
           <div class="user-info">
             <span class="user-name">{{ user.username|default:'Guest' }}</span>
-            <span class="user-plan">{% if user.is_authenticated %}Skill Bank Member{% else %}Preview Mode{% endif %}</span>
+            <span class="user-plan">{% if user.is_authenticated %}Skill-Verse Member{% else %}Preview Mode{% endif %}</span>
           </div>
           {% if user.is_authenticated %}
           <a href="{% url 'logout' %}" class="logout-btn">Logout</a>
@@ -144,7 +144,7 @@
           <button class="topbar-action-btn" id="topExportBtn" title="Export conversation" aria-label="Export">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           </button>
-          <a href="/" class="topbar-action-btn" title="Skill Bank Home" aria-label="Home">
+          <a href="/" class="topbar-action-btn" title="Skill-Verse Home" aria-label="Home">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
           </a>
         </div>

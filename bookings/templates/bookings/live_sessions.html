@@ -1,7 +1,7 @@
-{% extends 'base.html' %}
+﻿{% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Live Sessions — SkillBank{% endblock %}
+{% block title %}Live Sessions — Skill-Verse{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -310,7 +310,7 @@
       <div class="room-input-row">
         <input type="text" class="room-input" id="roomNameInput"
                placeholder="e.g. PythonSession-2026, DesignReview…"
-               value="SkillBankRoom-{{ request.user.username }}">
+               value="Skill-VerseRoom-{{ request.user.username }}">
         <button class="room-go-btn" onclick="joinRoom()">
           <i class="fa-solid fa-play"></i> Join Room
         </button>

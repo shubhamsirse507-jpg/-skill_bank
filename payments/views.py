@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404, redirect
+﻿from django.shortcuts import render, get_object_or_404, redirect
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
@@ -57,7 +57,7 @@ from decimal import Decimal
 
 @login_required
 def wallet_view(request):
-    """SkillBank Wallet view matching Lovable app."""
+    """Skill-Verse Wallet view matching Lovable app."""
     wallet, _ = Wallet.objects.get_or_create(user=request.user)
     transactions = wallet.transactions.all()
     return render(request, "payments/wallet.html", {
@@ -68,7 +68,7 @@ def wallet_view(request):
 
 @login_required
 def add_funds(request):
-    """Adds funds/credits to SkillBank wallet."""
+    """Adds funds/credits to Skill-Verse wallet."""
     if request.method == "POST":
         try:
             amount = Decimal(request.POST.get("amount", "0"))
@@ -83,7 +83,7 @@ def add_funds(request):
                     transaction_type="credit",
                     description=f"Added funds via {method}"
                 )
-                messages.success(request, f"Successfully added ₹{amount} to your SkillBank wallet!")
+                messages.success(request, f"Successfully added ₹{amount} to your Skill-Verse wallet!")
             else:
                 messages.error(request, "Please enter a valid positive amount.")
         except Exception as e:
@@ -94,7 +94,7 @@ def add_funds(request):
 
 @login_required
 def withdraw_funds(request):
-    """Withdraws earnings from SkillBank wallet."""
+    """Withdraws earnings from Skill-Verse wallet."""
     if request.method == "POST":
         try:
             amount = Decimal(request.POST.get("amount", "0"))
@@ -165,7 +165,7 @@ def my_receipts(request):
                 item_title=enrollment.batch.title,
                 category_name=enrollment.batch.category.category_name if enrollment.batch.category else 'General',
                 amount=enrollment.batch.price_credits,
-                payment_method='SkillBank Wallet',
+                payment_method='Skill-Verse Wallet',
                 transaction_id=tx_id,
                 status='PAID'
             )
@@ -183,7 +183,7 @@ def my_receipts(request):
                     item_title=b.title,
                     category_name=b.category.category_name if b.category else 'General',
                     amount=b.price_credits,
-                    payment_method='SkillBank Wallet',
+                    payment_method='Skill-Verse Wallet',
                     transaction_id=tx_id,
                     status='PAID'
                 )

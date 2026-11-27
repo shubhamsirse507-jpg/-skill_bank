@@ -1,4 +1,4 @@
-"""
+﻿"""
 authentication/models.py
 OTPVerification — stores hashed one-time passwords for registration, login, and password reset.
 """
@@ -60,7 +60,7 @@ class OTPVerification(models.Model):
 
     @staticmethod
     def mask_email(email: str) -> str:
-        """Mask email like a***n@skillbank.com."""
+        """Mask email like a***n@Skill-Verse.com."""
         email = (email or '').strip()
         if '@' not in email:
             return email

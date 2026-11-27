@@ -1,11 +1,11 @@
-{% load static %}
+﻿{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SkillBank — Trade Skills, Not Money</title>
-<meta name="description" content="SkillBank connects people who want to teach with people who want to learn. Swap skills, share knowledge, grow together without spending money.">
+<title>Skill-Verse — Trade Skills, Not Money</title>
+<meta name="description" content="Skill-Verse connects people who want to teach with people who want to learn. Swap skills, share knowledge, grow together without spending money.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
@@ -1794,7 +1794,7 @@
 
   <div class="hero-actions">
     <a href="{% url 'register' %}" class="btn-hero-primary">
-      🚀 Join SkillBank Free
+      🚀 Join Skill-Verse Free
     </a>
     <a href="#categories" class="btn-hero-ghost">
       🔍 Explore Skills
@@ -1895,7 +1895,7 @@
   <div class="container">
     <div class="how-header reveal">
       <div class="section-tag">⚡ Seamless Process</div>
-      <h2 class="section-title">How SkillBank Works</h2>
+      <h2 class="section-title">How Skill-Verse Works</h2>
       <p class="section-desc">From your first listed skill to completed swap sessions — in 4 frictionless steps.</p>
     </div>
 
@@ -1925,7 +1925,7 @@
         <div class="how-step-num">Step 04</div>
         <div class="how-icon"><i class="fa-solid fa-award"></i></div>
         <div class="how-title">Earn & Level Up</div>
-        <p class="how-desc">Collect peer reviews, earn official SkillBank verified certificates, and unlock new badges.</p>
+        <p class="how-desc">Collect peer reviews, earn official Skill-Verse verified certificates, and unlock new badges.</p>
       </div>
     </div>
   </div>
@@ -2150,7 +2150,7 @@
 
       <div class="review-card reveal">
         <div class="review-stars">★★★★★</div>
-        <p class="review-quote">"SkillBank removed the financial barrier to learning graphic design. I taught financial accounting in return. It's a win-win."</p>
+        <p class="review-quote">"Skill-Verse removed the financial barrier to learning graphic design. I taught financial accounting in return. It's a win-win."</p>
         <div class="review-author">
           <div class="review-av" style="background:#fef3c7;">👩‍💼</div>
           <div class="review-meta">
@@ -2181,17 +2181,17 @@
     <div class="faq-header reveal">
       <div class="section-tag">❓ Got Questions?</div>
       <h2 class="section-title">Frequently Asked Questions</h2>
-      <p class="section-desc">Everything you need to know about getting started on SkillBank.</p>
+      <p class="section-desc">Everything you need to know about getting started on Skill-Verse.</p>
     </div>
 
     <div class="faq-accordion reveal">
       <div class="faq-item active">
         <div class="faq-question">
-          <span>Is SkillBank really 100% free?</span>
+          <span>Is Skill-Verse really 100% free?</span>
           <i class="fa-solid fa-chevron-down faq-icon"></i>
         </div>
         <div class="faq-answer">
-          Yes! SkillBank is built on the philosophy of reciprocity. You give your time and knowledge in one discipline, and receive expert tutoring in another. No cash transaction is required.
+          Yes! Skill-Verse is built on the philosophy of reciprocity. You give your time and knowledge in one discipline, and receive expert tutoring in another. No cash transaction is required.
         </div>
       </div>
 
@@ -2211,7 +2211,7 @@
           <i class="fa-solid fa-chevron-down faq-icon"></i>
         </div>
         <div class="faq-answer">
-          Once you and your partner accept a swap request, you can use our built-in messaging to pick a time and launch an interactive live video room directly inside SkillBank.
+          Once you and your partner accept a swap request, you can use our built-in messaging to pick a time and launch an interactive live video room directly inside Skill-Verse.
         </div>
       </div>
 
@@ -2249,7 +2249,7 @@
       <div class="footer-brand">
         <a href="{% url 'landing' %}" class="footer-logo">
           <div class="footer-logo-icon">🏦</div>
-          <span class="footer-logo-text">SkillBank</span>
+          <span class="footer-logo-text">Skill-Verse</span>
         </a>
         <p class="footer-tagline">Trade skills, not money. Connect with curious minds and build lifelong knowledge.</p>
       </div>
@@ -2285,7 +2285,7 @@
     </div>
 
     <div class="footer-bottom">
-      <p class="footer-copy">© 2026 SkillBank. All rights reserved.</p>
+      <p class="footer-copy">© 2026 Skill-Verse. All rights reserved.</p>
       <p class="footer-made">Made with <span>♥</span> for lifelong learners everywhere</p>
     </div>
   </div>
@@ -2307,7 +2307,7 @@
       </div>
       <div class="skye-header-info">
         <h3 class="skye-title">Skye AI</h3>
-        <p class="skye-subtitle">Your SkillBank match assistant</p>
+        <p class="skye-subtitle">Your Skill-Verse match assistant</p>
       </div>
       <a href="{% url 'chatboat' %}" target="_blank" class="skye-close-btn" title="Open Full Chat Boat" aria-label="Open full chat">
         <i class="fa-solid fa-arrow-up-right-from-square"></i>
@@ -2722,11 +2722,11 @@
       } else if (data.error) {
         addMessage('Sorry, ' + data.error, 'bot');
       } else {
-        addMessage('I am here to help you trade skills on SkillBank! Sign up or log in to start skill swapping.', 'bot');
+        addMessage('I am here to help you trade skills on Skill-Verse! Sign up or log in to start skill swapping.', 'bot');
       }
     } catch (err) {
       removeTypingIndicator();
-      addMessage('SkillBank connects people to trade skills! Create a free account or log in to get started.', 'bot');
+      addMessage('Skill-Verse connects people to trade skills! Create a free account or log in to get started.', 'bot');
     } finally {
       skyeSendBtn.disabled = false;
     }

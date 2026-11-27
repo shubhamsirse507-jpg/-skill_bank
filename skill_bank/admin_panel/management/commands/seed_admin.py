@@ -1,4 +1,4 @@
-from django.core.management.base import BaseCommand
+﻿from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from admin_panel.models import SkillCategory, PlatformSkill, PlatformReport, PlatformNotice, AuditLog
 from messaging.models import SkillExchange, Message
@@ -15,11 +15,11 @@ class Command(BaseCommand):
         # 1. Ensure sample users exist
         users = []
         user_data = [
-            ("alex_dev", "alex@skillbank.io", "Alex", "Mercer"),
-            ("sarah_design", "sarah@skillbank.io", "Sarah", "Jenkins"),
-            ("chen_data", "chen@skillbank.io", "Wei", "Chen"),
-            ("maria_mktg", "maria@skillbank.io", "Maria", "Garcia"),
-            ("david_pm", "david@skillbank.io", "David", "Kim"),
+            ("alex_dev", "alex@Skill-Verse.io", "Alex", "Mercer"),
+            ("sarah_design", "sarah@Skill-Verse.io", "Sarah", "Jenkins"),
+            ("chen_data", "chen@Skill-Verse.io", "Wei", "Chen"),
+            ("maria_mktg", "maria@Skill-Verse.io", "Maria", "Garcia"),
+            ("david_pm", "david@Skill-Verse.io", "David", "Kim"),
         ]
 
         for username, email, first_name, last_name in user_data:
@@ -128,7 +128,7 @@ class Command(BaseCommand):
         # 5. Seed Announcements
         if PlatformNotice.objects.count() == 0:
             PlatformNotice.objects.create(
-                title="Welcome to SkillBank Platform 2.0",
+                title="Welcome to Skill-Verse Platform 2.0",
                 message="We have updated our real-time messaging engine and rating system!",
                 priority="HIGH",
                 target_group="ALL"

@@ -1,4 +1,4 @@
-/* ========================================
+﻿/* ========================================
    AI CHAT BOAT — Django Integration JS
    Multimodal Voice (Mic) & Vision (Camera)
    ======================================== */
@@ -20,14 +20,14 @@ const state = {
 // ─── AI Responses Fallbacks ─────────────────────────
 const AI_RESPONSES = {
   greetings: [
-    "Hello! 👋 I'm **AI Chat Boat**, your intelligent assistant built into **Skill Bank**. Ask me anything — via text, mic 🎙️, or photo 📸!",
-    "Hi there! Great to see you on Skill Bank! I can help you find skill swap matches, learn technical roadmaps, or analyze documents/photos you upload. What's on your mind?",
+    "Hello! 👋 I'm **AI Chat Boat**, your intelligent assistant built into **Skill-Verse**. Ask me anything — via text, mic 🎙️, or photo 📸!",
+    "Hi there! Great to see you on Skill-Verse! I can help you find skill swap matches, learn technical roadmaps, or analyze documents/photos you upload. What's on your mind?",
   ],
   skills: [
     "Great question about skill development! 🎯\n\n**Top In-Demand Skills for 2025:**\n\n1. **🤖 AI & Prompting** — Python, LLMs, LangChain\n2. **☁️ Cloud Computing** — AWS, Azure, Docker\n3. **🌐 Full-Stack Web** — React, Django, Node.js\n4. **🎨 UI/UX & Design** — Figma, Design Systems\n\nWhat skill are you looking to trade or learn today?",
   ],
   default: [
-    "That's a great question! 🎯\n\nBased on what you've shared, I can help connect this with suitable skill exchange paths on SkillBank. Feel free to ask more or attach an image / speak via mic for more details!",
+    "That's a great question! 🎯\n\nBased on what you've shared, I can help connect this with suitable skill exchange paths on Skill-Verse. Feel free to ask more or attach an image / speak via mic for more details!",
   ],
 };
 
@@ -587,7 +587,7 @@ dom.clearHistoryBtn && dom.clearHistoryBtn.addEventListener('click', () => {
 dom.topExportBtn && dom.topExportBtn.addEventListener('click', () => {
   if (!state.messages.length) { showToast('⚠️ No messages to export', 'error'); return; }
   const text = state.messages.map(m => `[${m.role.toUpperCase()}]\n${m.content}`).join('\n\n' + '─'.repeat(40) + '\n\n');
-  const blob = new Blob([`AI Chat Boat — Skill Bank\n${'='.repeat(40)}\n${new Date().toLocaleString()}\n\n${text}`], { type: 'text/plain' });
+  const blob = new Blob([`AI Chat Boat — Skill-Verse\n${'='.repeat(40)}\n${new Date().toLocaleString()}\n\n${text}`], { type: 'text/plain' });
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
   a.download = `chat-export-${Date.now()}.txt`; a.click();
   showToast('📄 Exported!', 'success');

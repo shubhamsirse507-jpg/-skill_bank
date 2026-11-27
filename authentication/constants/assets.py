@@ -1,4 +1,4 @@
-import os
+﻿import os
 import shutil
 from pathlib import Path
 
@@ -47,6 +47,6 @@ def _get_bg_video_url():
 # Resolved once at module load — lightweight, no blocking network calls
 AUTH_BACKGROUND_VIDEO_URL = _get_bg_video_url()
 
-# Skill Bank Logo Image
+# Skill-Verse Logo Image
 BRAND_LOGO_IMAGE_NAME = "logo.svg"
 

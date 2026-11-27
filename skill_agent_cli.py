@@ -1,5 +1,5 @@
-"""
-SkillBank Autonomous AI Agent (100% Keyless with Local Ollama)
+﻿"""
+Skill-Verse Autonomous AI Agent (100% Keyless with Local Ollama)
 Zero API Keys Required • Runs completely locally on your PC
 """
 import sys
@@ -38,7 +38,7 @@ def query_ollama(prompt, model="llama3.2:1b"):
 
 
 # ─── AGENT CONTROLLER ─────────────────────────────────────────────────────────
-class SkillBankAgent:
+class Skill-VerseAgent:
     def __init__(self):
         self.name = "Skye"
 
@@ -59,7 +59,7 @@ class SkillBankAgent:
 
         # 2. Local Ollama LLM Generation
         ollama_prompt = (
-            f"You are Skye, the helpful AI assistant for SkillBank (a platform where users swap skills with 0 money).\n"
+            f"You are Skye, the helpful AI assistant for Skill-Verse (a platform where users swap skills with 0 money).\n"
             f"User asked: {user_msg}\n"
             f"Answer concisely in friendly markdown:"
         )
@@ -77,9 +77,9 @@ class SkillBankAgent:
 
 
 if __name__ == "__main__":
-    agent = SkillBankAgent()
+    agent = Skill-VerseAgent()
     print("=" * 65)
-    print("🤖 SkillBank Local AI Agent (CLI Version)")
+    print("🤖 Skill-Verse Local AI Agent (CLI Version)")
     print("Zero API Keys Required • Connects to Local Ollama automatically")
     print("Type 'exit' to quit.")
     print("=" * 65)

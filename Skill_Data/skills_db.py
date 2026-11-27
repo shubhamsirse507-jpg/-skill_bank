@@ -1,4 +1,4 @@
-# Comprehensive Skill Knowledge Base for Skill Bank AI
+﻿# Comprehensive Skill Knowledge Base for Skill-Verse AI
 
 SKILL_KNOWLEDGE_BASE = {
     "python": {
@@ -35,7 +35,7 @@ SKILL_KNOWLEDGE_BASE = {
         "description": "The web framework for perfectionists with deadlines — battery-included Python framework.",
         "roadmap": ["MVT Architecture", "URL Routing & Views", "Django ORM & Models", "Templates & Static Files", "Django Forms & Authentication", "Django REST Framework (DRF)", "Middleware & Signals", "Deployment (Gunicorn, Nginx, PostgreSQL)"],
         "popular_frameworks": ["Django REST Framework (DRF)", "Django Channels (WebSockets)", "Celery (Background Tasks)", "Django Allauth"],
-        "project_ideas": ["Skill Bank Platform", "Social Media Backend", "Blog with Markdown & Auth", "Multi-vendor Marketplace"],
+        "project_ideas": ["Skill-Verse Platform", "Social Media Backend", "Blog with Markdown & Auth", "Multi-vendor Marketplace"],
         "interview_questions": [
             "What is MVT architecture in Django?",
             "Difference between select_related and prefetch_related?",
@@ -152,7 +152,7 @@ def get_skill_knowledge(query_text):
     if not matched_skills:
         # Return generic list of available skills if no exact match
         return (
-            "Available Skills in Skill Bank:\n"
+            "Available Skills in Skill-Verse:\n"
             "- Python & Django Web Development\n"
             "- JavaScript, React.js & Frontend Systems\n"
             "- HTML5, CSS3 & Glassmorphic UI Design\n"

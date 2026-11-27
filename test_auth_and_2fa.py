@@ -1,4 +1,4 @@
-"""
+﻿"""
 test_auth_and_2fa.py
 Comprehensive test suite verifying Authentication, Two-Factor Authentication (2FA),
 OTP verification, password reset, and REST API endpoints.
@@ -27,7 +27,7 @@ from fix_missing_tables import fix_schema
 
 def run_tests():
     print("\n" + "="*70)
-    print("🚀 RUNNING SKILLBANK AUTH & 2FA VERIFICATION SUITE")
+    print("🚀 RUNNING Skill-Verse AUTH & 2FA VERIFICATION SUITE")
     print("="*70)
 
     # Step 0: Ensure DB schema & column integrity
@@ -53,7 +53,7 @@ def run_tests():
     print("\n[STEP 1] Testing User Registration...")
     reg_req = rf.post('/register/', {
         'username': 'test_2fa_user',
-        'email': 'test2fa@skillbank.com',
+        'email': 'test2fa@Skill-Verse.com',
         'first_name': 'Test',
         'last_name': 'TwoFactor',
         'password': 'SecurePassword@123',
@@ -152,7 +152,7 @@ def run_tests():
 
     # Step 7: Test Forgot Password OTP & Password Reset Flow
     print("\n[STEP 7] Testing Forgot Password OTP & Reset...")
-    forgot_req = rf.post('/forgot-password/', {'email': 'test2fa@skillbank.com'})
+    forgot_req = rf.post('/forgot-password/', {'email': 'test2fa@Skill-Verse.com'})
     prepare_request(forgot_req)
     forgot_res = auth_views.forgot_password(forgot_req)
     assert forgot_res.status_code == 302, "Expected redirect to verify_otp"

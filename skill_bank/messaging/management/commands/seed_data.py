@@ -1,4 +1,4 @@
-from django.core.management.base import BaseCommand
+﻿from django.core.management.base import BaseCommand
 from django.contrib.auth.models import User
 from messaging.models import SkillExchange, Message
 from ratings.models import ReviewRating
@@ -18,7 +18,7 @@ class Command(BaseCommand):
             defaults={
                 'first_name': 'Dnyani',
                 'last_name': 'Patil',
-                'email': 'dnyani@skillbank.io'
+                'email': 'dnyani@Skill-Verse.io'
             }
         )
         dnyani.first_name = 'Dnyani'
@@ -31,7 +31,7 @@ class Command(BaseCommand):
             defaults={
                 'first_name': 'Umair',
                 'last_name': 'Khan',
-                'email': 'umair@skillbank.io'
+                'email': 'umair@Skill-Verse.io'
             }
         )
         umair.first_name = 'Umair'
@@ -44,7 +44,7 @@ class Command(BaseCommand):
             defaults={
                 'first_name': 'Shubham',
                 'last_name': 'Sharma',
-                'email': 'shubham@skillbank.io'
+                'email': 'shubham@Skill-Verse.io'
             }
         )
         shubham.first_name = 'Shubham'

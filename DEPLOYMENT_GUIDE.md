@@ -1,6 +1,6 @@
-# 🚀 SkillBank Deployment Guide
+﻿# 🚀 Skill-Verse Deployment Guide
 
-This guide walks you through deploying the **SkillBank Platform** to production. All production configuration files (`Procfile`, `requirements.txt`, `build.sh`, `render.yaml`, `runtime.txt`) have been prepared for you.
+This guide walks you through deploying the **Skill-Verse Platform** to production. All production configuration files (`Procfile`, `requirements.txt`, `build.sh`, `render.yaml`, `runtime.txt`) have been prepared for you.
 
 ---
 
@@ -24,25 +24,25 @@ Render provides free hosting with HTTPS certificates, static file serving (via W
 1. In your local terminal, initialize git (if not done) and commit all changes:
    ```bash
    git add .
-   git commit -m "SkillBank production release ready"
+   git commit -m "Skill-Verse production release ready"
    git push origin main
    ```
 
 ### Step 2: Create Web Service on Render
 1. Go to [Render Dashboard](https://dashboard.render.com/) and click **New +** -> **Blueprint**.
-2. Connect your GitHub repository containing `SkillBank`.
+2. Connect your GitHub repository containing `Skill-Verse`.
 3. Render will automatically detect `render.yaml` and configure the service.
 4. Click **Apply**. Render will automatically run `build.sh`, collect static files, apply migrations, and launch your site!
 
 ### Step 3: Access Your Live Site
-Your app will be live at a URL like: `https://skillbank-platform.onrender.com`
+Your app will be live at a URL like: `https://Skill-Verse-platform.onrender.com`
 
 ---
 
 ## Option 2: Railway.app Deployment
 
 1. Go to [Railway.app](https://railway.app/) and click **New Project** -> **Deploy from GitHub repo**.
-2. Select your `SkillBank` repository.
+2. Select your `Skill-Verse` repository.
 3. In **Variables**, add:
    - `SECRET_KEY`: `your-secure-random-secret-key`
    - `DEBUG`: `False`
@@ -58,14 +58,14 @@ Your app will be live at a URL like: `https://skillbank-platform.onrender.com`
    ```bash
    git clone <your-repo-url> skill_bank
    cd skill_bank
-   mkvirtualenv --python=/usr/bin/python3.11 skillbank-env
+   mkvirtualenv --python=/usr/bin/python3.11 Skill-Verse-env
    pip install -r requirements.txt
    python manage.py collectstatic --no-input
    python manage.py migrate
    ```
 3. In **Web** tab:
    - Set **Source Code**: `/home/<username>/skill_bank`
-   - Set **Virtualenv**: `/home/<username>/.virtualenvs/skillbank-env`
+   - Set **Virtualenv**: `/home/<username>/.virtualenvs/Skill-Verse-env`
    - Set **WSGI file**: point to `/home/<username>/skill_bank/skill_bank/wsgi.py`
 4. Click **Reload**.
 

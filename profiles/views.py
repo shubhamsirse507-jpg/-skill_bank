@@ -1,4 +1,4 @@
-import os
+﻿import os
 import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
@@ -14,7 +14,7 @@ PRESET_AVATARS = [
     {'id': 'preset_3', 'name': 'Bot TechWiz', 'url': 'https://api.dicebear.com/7.x/bottts/svg?seed=TechWiz'},
     {'id': 'preset_4', 'name': 'Avatar Sam', 'url': 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sam'},
     {'id': 'preset_5', 'name': 'Bot SkillHero', 'url': 'https://api.dicebear.com/7.x/bottts/svg?seed=SkillHero'},
-    {'id': 'preset_6', 'name': 'Identicon Bank', 'url': 'https://api.dicebear.com/7.x/identicon/svg?seed=SkillBank'},
+    {'id': 'preset_6', 'name': 'Identicon Bank', 'url': 'https://api.dicebear.com/7.x/identicon/svg?seed=Skill-Verse'},
 ]
 
 

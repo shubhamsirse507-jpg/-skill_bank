@@ -1,4 +1,4 @@
-import uuid
+﻿import uuid
 
 from django.shortcuts import render
 from django.http import JsonResponse
@@ -17,7 +17,7 @@ def test_ui(request):
 def home(request):
     if "text/html" in request.headers.get("Accept", ""):
         return test_ui(request)
-    return JsonResponse({"message": "SkillBank Backend Running", "testing_ui": "/test_ui/"})
+    return JsonResponse({"message": "Skill-Verse Backend Running", "testing_ui": "/test_ui/"})
 
 
 # Live Doubt Solving Module
@@ -81,7 +81,7 @@ def create_meeting(request):
         student_name=booking.student_name,
         teacher_name=booking.teacher_name,
         meeting_id=meeting_id,
-        meeting_link=f"https://meet.jit.si/SkillBank_{meeting_id}"
+        meeting_link=f"https://meet.jit.si/Skill-Verse_{meeting_id}"
     )
 
     return JsonResponse({

@@ -1,4 +1,4 @@
-# Comprehensive Global Skills Knowledge Base for Skill Bank AI
+﻿# Comprehensive Global Skills Knowledge Base for Skill-Verse AI
 # Covers Technical, Creative, Business, Soft Skills, Trades, Health, Finance & Everyday Life Skills
 
 GLOBAL_SKILL_DATABASE = {

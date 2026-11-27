@@ -1,4 +1,4 @@
-import os
+﻿import os
 import django
 from datetime import date, time
 
@@ -17,20 +17,20 @@ from authentication.models import OTPVerification
 from notifications.models import Notification
 
 def setup_demo_accounts():
-    print("Setting up Demo Test Accounts & Sample Conversations for Skill Bank...")
+    print("Setting up Demo Test Accounts & Sample Conversations for Skill-Verse...")
     fix_schema()
 
     # 1. Demo Regular User
     demo_user, _ = User.objects.get_or_create(
         username='demouser',
         defaults={
-            'email': 'skillbank2026@gmail.com',
+            'email': 'Skill-Verse2026@gmail.com',
             'first_name': 'Alex',
             'last_name': 'Morgan',
             'is_active': True,
         }
     )
-    demo_user.email = 'skillbank2026@gmail.com'
+    demo_user.email = 'Skill-Verse2026@gmail.com'
     demo_user.set_password('DemoPassword123!')
     demo_user.save()
 
@@ -47,7 +47,7 @@ def setup_demo_accounts():
     teacher_user, _ = User.objects.get_or_create(
         username='demoteacher',
         defaults={
-            'email': 'teacher@skillbank.com',
+            'email': 'teacher@Skill-Verse.com',
             'first_name': 'Sarah',
             'last_name': 'Connor',
             'is_active': True,
@@ -69,7 +69,7 @@ def setup_demo_accounts():
     admin_user, _ = User.objects.get_or_create(
         username='admin',
         defaults={
-            'email': 'admin@skillbank.com',
+            'email': 'admin@Skill-Verse.com',
             'first_name': 'System',
             'last_name': 'Admin',
             'is_staff': True,

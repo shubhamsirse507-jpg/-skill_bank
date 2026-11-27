@@ -1,4 +1,4 @@
-# SkillBank — Run these commands in your terminal after the previous session
+﻿# Skill-Verse — Run these commands in your terminal after the previous session
 
 # 1. Run directly with .venv Python (avoids PowerShell .ps1 ExecutionPolicy blocks)
 .\.venv\Scripts\python.exe manage.py migrate

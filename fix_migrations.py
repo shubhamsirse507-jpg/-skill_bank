@@ -1,4 +1,4 @@
-"""
+﻿"""
 fix_migrations.py
 -----------------
 Run this script to apply all pending migrations and create missing tables.
@@ -24,7 +24,7 @@ django.setup()
 from django.core.management import call_command
 
 print("=" * 60)
-print("  SkillBank — Applying Pending Migrations")
+print("  Skill-Verse — Applying Pending Migrations")
 print("=" * 60)
 
 print("\n[1/2] Running makemigrations (safety check)...")

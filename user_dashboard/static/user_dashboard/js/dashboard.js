@@ -1,6 +1,6 @@
-// SkillBank Dashboard Interactivity & Animation Suite
+﻿// Skill-Verse Dashboard Interactivity & Animation Suite
 document.addEventListener('DOMContentLoaded', function () {
-    console.log('SkillBank Dashboard Engine Initialized.');
+    console.log('Skill-Verse Dashboard Engine Initialized.');
 
     // 1. Dynamic Time-Of-Day Greeting
     const greetingEl = document.getElementById('dynamicGreeting');

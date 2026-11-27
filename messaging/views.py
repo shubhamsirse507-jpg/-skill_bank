@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404, redirect
+﻿from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
@@ -262,7 +262,7 @@ def update_exchange_status(request, exchange_id, action):
                 item_title=f"Skill Swap: {exchange.title}",
                 category_name='Skill Exchange',
                 amount=exchange.price,
-                payment_method='SkillBank Wallet',
+                payment_method='Skill-Verse Wallet',
                 transaction_id=tx_id,
                 status='PAID'
             )

@@ -1,5 +1,5 @@
-{% extends "base.html" %}
-{% block title %}My Certificates — SkillBank{% endblock %}
+﻿{% extends "base.html" %}
+{% block title %}My Certificates — Skill-Verse{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -132,7 +132,7 @@
 {% block content %}
 <div class="certs-hero">
   <h1><i class="fa-solid fa-certificate" style="margin-right:10px;opacity:0.85;"></i>My Certificates</h1>
-  <p>View, download, and share your skill completion certificates earned on SkillBank.</p>
+  <p>View, download, and share your skill completion certificates earned on Skill-Verse.</p>
 </div>
 
 <div class="certs-wrap">
@@ -269,7 +269,7 @@ function switchTab(tab, btn) {
 function shareCert(certId) {
   const url = window.location.origin + '/skills/certificate/' + certId + '/';
   if (navigator.share) {
-    navigator.share({ title: 'SkillBank Certificate', url: url });
+    navigator.share({ title: 'Skill-Verse Certificate', url: url });
   } else {
     navigator.clipboard.writeText(url).then(() => {
       alert('Certificate link copied to clipboard!');

@@ -1,4 +1,4 @@
-# 🎓 SkillBank — Peer-to-Peer Skill Exchange & Learning Platform
+﻿# 🎓 Skill-Verse — Peer-to-Peer Skill Exchange & Learning Platform
 
 [![Python](https://img.shields.io/badge/Python-3.11-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org/)
 [![Django](https://img.shields.io/badge/Django-4.2+-092E20.svg?style=flat&logo=django&logoColor=white)](https://www.djangoproject.com/)
@@ -8,7 +8,7 @@
 [![Deployment](https://img.shields.io/badge/Deployment-Render%20%7C%20Railway-46E3B7.svg?style=flat&logo=render&logoColor=white)](https://render.com/)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-**SkillBank** is a comprehensive, production-ready full-stack Django platform designed to facilitate peer-to-peer skill exchanges, structured batch courses, live 1-on-1 mentorship, and doubt-clearing sessions. Whether trading Python programming lessons for Graphic Design guidance or booking structured masterclasses, SkillBank connects mentors and learners around the globe.
+**Skill-Verse** is a comprehensive, production-ready full-stack Django platform designed to facilitate peer-to-peer skill exchanges, structured batch courses, live 1-on-1 mentorship, and doubt-clearing sessions. Whether trading Python programming lessons for Graphic Design guidance or booking structured masterclasses, Skill-Verse connects mentors and learners around the globe.
 
 ---
 
@@ -38,7 +38,7 @@
 - **Exchange Proposals**: Propose skill swaps with session duration, agreed terms, and interactive accept/decline workflows.
 
 ### 💳 6. Wallet & Payments (`payments`)
-- **SkillBank Virtual Wallet**: Track token/coin balances or virtual credits used to book sessions.
+- **Skill-Verse Virtual Wallet**: Track token/coin balances or virtual credits used to book sessions.
 - **Transaction History & Receipts**: Itemized audit logs and downloadable payment receipts for every transaction.
 
 ### 🤖 7. AI Chat Assistant ("Chatboat") (`chatboat`)
@@ -191,7 +191,7 @@ Visit the application in your web browser at:
 | `/live/` | Live Sessions Lobby |
 | `/doubt/` | Doubt Clearing Forum |
 | `/messaging/` | Direct Inbox & Exchange Proposals |
-| `/wallet/` | SkillBank Wallet & Balance |
+| `/wallet/` | Skill-Verse Wallet & Balance |
 | `/receipts/` | Transaction Receipts |
 | `/chat/` | AI Assistant Chat Interface |
 | `/admin-panel/` | Admin Control Center & Audit Logs |
@@ -212,7 +212,7 @@ Visit the application in your web browser at:
 
 ## 🚢 Deployment Guide
 
-SkillBank is pre-configured for automated 1-click cloud deployment.
+Skill-Verse is pre-configured for automated 1-click cloud deployment.
 
 ### Option 1: Render.com (Recommended)
 1. Push your repository to GitHub.

@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect, get_object_or_404
+﻿from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
@@ -360,7 +360,7 @@ def approve_hire_teacher(request, test_id):
             mock_test.status = 'APPROVED'
             mock_test.admin_notes = notes or "Approved by Admin based on Mock Test performance."
             mock_test.save()
-            messages.success(request, f"Teacher '{mock_test.teacher.username}' has been APPROVED & HIRED on SkillBank!")
+            messages.success(request, f"Teacher '{mock_test.teacher.username}' has been APPROVED & HIRED on Skill-Verse!")
 
         elif action == 'reject':
             mock_test.status = 'REJECTED'

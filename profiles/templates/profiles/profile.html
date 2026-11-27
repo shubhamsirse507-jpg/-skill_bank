@@ -1,7 +1,7 @@
-{% extends 'user_dashboard/base.html' %}
+﻿{% extends 'user_dashboard/base.html' %}
 {% load static %}
 
-{% block title %}Profile Management | Skill Bank{% endblock %}
+{% block title %}Profile Management | Skill-Verse{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -310,7 +310,7 @@
                 <div class="status-badge" title="Active"></div>
             </div>
             <h3 class="profile-name" id="sidebarName">{{ profile.first_name }} {{ profile.last_name }}</h3>
-            <p class="profile-headline" id="sidebarHeadline">{{ profile.headline|default:"Skill Bank Member" }}</p>
+            <p class="profile-headline" id="sidebarHeadline">{{ profile.headline|default:"Skill-Verse Member" }}</p>
             
             {% if profile.city or profile.country %}
             <span class="location-tag" id="sidebarLocation">
@@ -416,7 +416,7 @@
                     <div class="toggle-row">
                         <div class="toggle-info">
                             <h5>Public Profile Visibility</h5>
-                            <p>Make your profile searchable in the Skill Bank community directory.</p>
+                            <p>Make your profile searchable in the Skill-Verse community directory.</p>
                         </div>
                         <div class="form-check form-switch fs-4">
                             <input class="form-check-input" type="checkbox" id="is_profile_public" name="is_profile_public" {% if profile.is_profile_public %}checked{% endif %}>
@@ -479,7 +479,7 @@
                 <div class="save-actions-bar">
                     <div>
                         <h5 class="mb-0 fw-bold" style="color: #1f2937;">Save Profile Updates</h5>
-                        <p class="text-muted mb-0" style="font-size: 12px;">Changes will be applied immediately across Skill Bank.</p>
+                        <p class="text-muted mb-0" style="font-size: 12px;">Changes will be applied immediately across Skill-Verse.</p>
                     </div>
                     <button type="submit" class="save-btn"><i class="bi bi-save me-1"></i> Save Changes</button>
                 </div>

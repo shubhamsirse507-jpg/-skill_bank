@@ -1,4 +1,4 @@
-"""
+﻿"""
 admin_panel/ai_generator.py
 
 AI Mock Test Question Generator for Teacher Qualification.
@@ -171,7 +171,7 @@ def generate_ai_mock_test(skill_name, skill_level='Intermediate'):
             },
             {
                 "id": 4,
-                "question": "What key quality distinguishes an exceptional SkillBank teacher?",
+                "question": "What key quality distinguishes an exceptional Skill-Verse teacher?",
                 "options": [
                     "A. High subject authority, patience, clear communication, and structured guidance",
                     "B. Speaking as fast as possible to cover more topics",

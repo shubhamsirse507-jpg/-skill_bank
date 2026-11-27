@@ -1,5 +1,5 @@
-{% extends "base.html" %}
-{% block title %}Skill Certificate — {{ cert.certificate_id }} | SkillBank{% endblock %}
+﻿{% extends "base.html" %}
+{% block title %}Skill Certificate — {{ cert.certificate_id }} | Skill-Verse{% endblock %}
 
 {% block extra_css %}
 <style>
@@ -46,7 +46,7 @@
 
   /* Background watermark */
   .cert-body::before {
-    content: 'SKILLBANK';
+    content: 'Skill-Verse';
     position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%) rotate(-30deg);
@@ -194,7 +194,7 @@
   <!-- Verification Banner -->
   <div class="verify-banner">
     <i class="fa-solid fa-shield-check"></i>
-    <span>This certificate is <strong>verified & authentic</strong>. Issued by SkillBank Platform on {{ cert.issue_date|date:"F d, Y" }}.</span>
+    <span>This certificate is <strong>verified & authentic</strong>. Issued by Skill-Verse Platform on {{ cert.issue_date|date:"F d, Y" }}.</span>
     <span class="cert-id-badge">ID: {{ cert.certificate_id|upper|slice:":8" }}…</span>
   </div>
 
@@ -206,7 +206,7 @@
       <!-- Header -->
       <div class="cert-header">
         <div class="cert-logo">S</div>
-        <div class="cert-platform">SkillBank</div>
+        <div class="cert-platform">Skill-Verse</div>
         <div class="cert-presents">Certificate of Skill Completion</div>
       </div>
 
@@ -227,7 +227,7 @@
           {{ cert.skill_title }}
           <span class="category-pill">{{ cert.category_name }}</span>
         </span>
-        under the mentorship of <strong>{{ cert.teacher.get_full_name|default:cert.teacher.username }}</strong> on the SkillBank platform.
+        under the mentorship of <strong>{{ cert.teacher.get_full_name|default:cert.teacher.username }}</strong> on the Skill-Verse platform.
         This certificate is awarded in recognition of their dedication, practice, and demonstrated competency.
       </p>
 
@@ -261,9 +261,9 @@
         </div>
 
         <div class="sig-block">
-          <div class="sig-line">SkillBank Platform</div>
+          <div class="sig-line">Skill-Verse Platform</div>
           <div class="sig-role">Platform Authority</div>
-          <div class="sig-name">SkillBank Admin</div>
+          <div class="sig-name">Skill-Verse Admin</div>
         </div>
       </div>
     </div>
@@ -275,7 +275,7 @@
         <span><i class="fa-solid fa-calendar" style="color:#0e7d73;"></i> Issued: <strong>{{ cert.issue_date|date:"d M Y" }}</strong></span>
         <span><i class="fa-solid fa-user-graduate" style="color:#0e7d73;"></i> Student: <strong>{{ cert.student.username }}</strong></span>
       </div>
-      <span style="font-size:0.75rem;color:#d1d5db;">skillbank.platform</span>
+      <span style="font-size:0.75rem;color:#d1d5db;">Skill-Verse.platform</span>
     </div>
 
     <div class="cert-bottombar"></div>

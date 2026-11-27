@@ -1,4 +1,4 @@
-"""
+﻿"""
 Django management command: fix_schema
 Usage: python manage.py fix_schema
 Adds all missing columns to MySQL tables AND fixes broken FK constraints
@@ -139,10 +139,10 @@ def get_fk_constraints(cursor, table, db_name):
 
 
 class Command(BaseCommand):
-    help = 'Fixes missing DB columns AND broken FK constraints for all Skill Bank tables'
+    help = 'Fixes missing DB columns AND broken FK constraints for all Skill-Verse tables'
 
     def handle(self, *args, **options):
-        self.stdout.write(self.style.MIGRATE_HEADING('\n🔧 Skill Bank Schema Repair Tool\n'))
+        self.stdout.write(self.style.MIGRATE_HEADING('\n🔧 Skill-Verse Schema Repair Tool\n'))
 
         with connection.cursor() as cursor:
             # Get current database name

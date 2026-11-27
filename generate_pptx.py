@@ -1,4 +1,4 @@
-import sys
+﻿import sys
 import subprocess
 
 # Ensure python-pptx is installed
@@ -28,7 +28,7 @@ def build_presentation():
 
     blank_layout = prs.slide_layouts[6]
 
-    def add_header(slide, title_text, category_text="SKILLBANK PLATFORM PRESENTATION"):
+    def add_header(slide, title_text, category_text="Skill-Verse PLATFORM PRESENTATION"):
         # Header banner
         shape = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(0), Inches(0), Inches(13.333), Inches(1.1))
         shape.fill.solid()
@@ -63,7 +63,7 @@ def build_presentation():
     tf1.margin_top = Inches(2.2)
 
     p1 = tf1.paragraphs[0]
-    p1.text = "SkillBank — Trade Skills, Not Money"
+    p1.text = "Skill-Verse — Trade Skills, Not Money"
     p1.font.size = Pt(36)
     p1.font.bold = True
     p1.font.color.rgb = WHITE
@@ -120,7 +120,7 @@ def build_presentation():
     objectives = [
         ("🤝 Peer-to-Peer Skill Bartering System", "Enable users to offer their expertise in exchange for learning new skills without financial friction."),
         ("⚡ Instant Live Doubt Solving & Group Batches", "Real-time 15-minute doubt calls (90% mentor / 10% admin split) and multi-student scheduled batch courses."),
-        ("💳 SkillBank Virtual Wallet", "Unified virtual credit system (₹250 initial signup bonus) to handle seamless skill credits and transactions."),
+        ("💳 Skill-Verse Virtual Wallet", "Unified virtual credit system (₹250 initial signup bonus) to handle seamless skill credits and transactions."),
         ("📜 Verifiable Skill Completion Certificates", "Teacher-issued certificates backed by 128-bit UUID verification IDs for authentic achievement verification."),
         ("🛡️ Comprehensive Admin Control", "Centralized administration, teacher hiring approvals, content moderation, and immutable audit logs.")
     ]
@@ -389,7 +389,7 @@ def build_presentation():
     tf12.word_wrap = True
 
     conc_items = [
-        ("🎉 Project Summary", "Successfully designed and built SkillBank — a full-stack peer-to-peer skill bartering platform featuring live video calls, group batches, virtual wallets, and verifiable certificates."),
+        ("🎉 Project Summary", "Successfully designed and built Skill-Verse — a full-stack peer-to-peer skill bartering platform featuring live video calls, group batches, virtual wallets, and verifiable certificates."),
         ("👥 Modular Team Execution", "Divided into 8 specialized modules across Backend (Umair, Samarth, Savedita, Neha) and Frontend (Shubham, Purva, Priyanka, Dyani) squads."),
         ("📱 Native Mobile Application", "Develop React Native / Flutter mobile app using existing REST API v1 endpoints."),
         ("🧠 AI Skill Matching Engine", "Implement intelligent machine learning matching algorithm for personalized skill recommendations."),
@@ -410,7 +410,7 @@ def build_presentation():
         p_sub.font.color.rgb = TEXT_DARK
         p_sub.space_before = Pt(2)
 
-    out_file = "SkillBank_Presentation.pptx"
+    out_file = "Skill-Verse_Presentation.pptx"
     prs.save(out_file)
     print(f"✅ Successfully generated presentation file: {out_file}")
 
