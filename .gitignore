@@ -1,6 +1,9 @@
 # Ignore embedded repository
 -skill_bank/
 
+# Local-only AI Workflow & Backend Graphical Monitor (never push to GitHub)
+ai_workflow_monitor/
+
 # Environments
 venv/
 env/

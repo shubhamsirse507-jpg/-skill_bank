@@ -38,7 +38,7 @@ def query_ollama(prompt, model="llama3.2:1b"):
 
 
 # ─── AGENT CONTROLLER ─────────────────────────────────────────────────────────
-class Skill-VerseAgent:
+class SkillVerseAgent:
     def __init__(self):
         self.name = "Skye"
 
@@ -77,7 +77,7 @@ class Skill-VerseAgent:
 
 
 if __name__ == "__main__":
-    agent = Skill-VerseAgent()
+    agent = SkillVerseAgent()
     print("=" * 65)
     print("🤖 Skill-Verse Local AI Agent (CLI Version)")
     print("Zero API Keys Required • Connects to Local Ollama automatically")
