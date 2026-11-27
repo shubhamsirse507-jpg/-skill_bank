@@ -252,12 +252,17 @@ def login(request):
                     })
 
                 # Check Two-Factor Authentication (2FA) status safely
-                is_2fa_enabled = True
+                # 2FA is disabled for user, admin, and student roles
+                is_2fa_enabled = False
                 try:
                     profile = UserProfile.objects.filter(user=user).first()
                     if profile is None:
-                        profile = UserProfile.objects.create(user=user)
-                    is_2fa_enabled = getattr(profile, 'two_factor_enabled', True)
+                        profile = UserProfile.objects.create(user=user, two_factor_enabled=False)
+                    user_role = getattr(profile, 'role', 'user')
+                    if user_role in ('user', 'admin', 'student') or user.is_staff or user.is_superuser:
+                        is_2fa_enabled = False
+                    else:
+                        is_2fa_enabled = getattr(profile, 'two_factor_enabled', False)
                 except Exception as ex:
                     logger.warning("[Profile 2FA Lookup]: %s", ex)
                     is_2fa_enabled = False
@@ -577,14 +582,15 @@ def register(request):
             last_name=last_name
         )
 
-        # Create linked UserProfile with 2FA enabled by default
+        # Create linked UserProfile (2FA disabled for user, admin, and student)
         try:
+            assigned_role = role if role in ['user', 'student', 'teacher', 'admin'] else 'user'
             UserProfile.objects.create(
                 user=user,
                 phone=phone,
                 status='active',
-                role=role if role in ['user', 'student', 'teacher', 'admin'] else 'user',
-                two_factor_enabled=True
+                role=assigned_role,
+                two_factor_enabled=False
             )
         except Exception as p_err:
             print(f"[UserProfile creation notice]: {p_err}")

@@ -99,8 +99,12 @@ class LoginAPIView(APIView):
         if not user.is_active:
             return api_error('account_inactive', 'Account has been deactivated or suspended.', status_code=403)
 
-        profile, _ = UserProfile.objects.get_or_create(user=user)
-        is_2fa = getattr(profile, 'two_factor_enabled', True)
+        profile, _ = UserProfile.objects.get_or_create(user=user, defaults={'two_factor_enabled': False})
+        user_role = getattr(profile, 'role', 'user')
+        if user_role in ('user', 'admin', 'student') or user.is_staff or user.is_superuser:
+            is_2fa = False
+        else:
+            is_2fa = getattr(profile, 'two_factor_enabled', False)
 
         if is_2fa and user.email:
             otp = OTPVerification.generate_otp()
