@@ -31,6 +31,7 @@ ALLOWED_HOSTS = ['*']
 
 CSRF_TRUSTED_ORIGINS = [
     'https://*.onrender.com',
+    'https://skill-verse-platform.onrender.com',
     'https://skill-bank-platform.onrender.com',
     'https://*.railway.app',
     'http://localhost:8000',
