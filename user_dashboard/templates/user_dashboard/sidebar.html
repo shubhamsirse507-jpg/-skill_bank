@@ -12,13 +12,16 @@
     flex-wrap: nowrap;
     gap: 4px;
     background: linear-gradient(135deg, #0f172a 0%, #0c3832 100%);
-    padding: 10px 20px;
+    padding: 8px 24px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
     position: sticky;
-    top: 60px;   /* below navbar */
+    top: 0;           /* flush: sticks right below the sticky navbar */
     z-index: 1040;
+    width: 100%;      /* always full viewport width */
+    margin: 0;        /* no accidental gaps */
+    box-sizing: border-box;
 }
 .sidebar-horizontal::-webkit-scrollbar { display: none; }
 
