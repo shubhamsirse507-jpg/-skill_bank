@@ -71,6 +71,7 @@ INSTALLED_APPS = [
     'dashboard',            # Landing dashboard (legacy, kept)
     'user_dashboard',       # User-facing dashboard views
     'payments',             # Skill-Verse Wallet & Payments
+    'calling',              # Self-hosted WebRTC calling settings, logs & admin controls
 ]
 
 MIDDLEWARE = [
@@ -326,6 +327,15 @@ LOGGING = {
         'skill_management': {'handlers': ['console'], 'level': 'DEBUG', 'propagate': False},
     },
 }
+
+# ---------------------------------------------------------------------------
+# Self-Hosted WebRTC Calling Integration (Node + Socket.IO + mediasoup)
+# ---------------------------------------------------------------------------
+WEBRTC_SERVER_URL = os.environ.get('WEBRTC_SERVER_URL', 'http://localhost:4000').rstrip('/')
+INTERNAL_CALLING_SECRET = os.environ.get(
+    'INTERNAL_CALLING_SECRET',
+    'skillverse-internal-bridge-secret-dev',
+)
 
 # ---------------------------------------------------------------------------
 # Swagger / OpenAPI

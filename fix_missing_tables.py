@@ -19,6 +19,10 @@ def fix_schema():
         from authentication.models import OTPVerification
         from notifications.models import Notification
         from payments.models import Wallet, WalletTransaction, PaymentReceipt
+        from calling.models import (
+            PlatformCallSettings, RoleCallPermission, UserCallPermission,
+            CallRoom, CallLog, CallAuditLog,
+        )
 
         with connection.schema_editor() as schema_editor:
             models = [
@@ -28,6 +32,8 @@ def fix_schema():
                 ReviewRating, PlatformReport, PlatformNotice, AuditLog,
                 TeacherMockTest, OTPVerification, Notification,
                 Wallet, WalletTransaction, PaymentReceipt,
+                PlatformCallSettings, RoleCallPermission, UserCallPermission,
+                CallRoom, CallLog, CallAuditLog,
             ]
 
             existing_tables = connection.introspection.table_names()

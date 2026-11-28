@@ -41,6 +41,9 @@ urlpatterns = [
     # Messaging detail messages
     path('exchanges/<int:exchange_id>/messages/', MessageListCreateAPIView.as_view(), name='api_exchange_messages'),
 
+    # Self-hosted WebRTC calling integration (Phase B+)
+    path('calling/', include('calling.urls')),
+
     # ViewSets
     path('', include(router.urls)),
 ]

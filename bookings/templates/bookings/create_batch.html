@@ -1,4 +1,4 @@
-﻿{% extends 'base.html' %}
+{% extends 'base.html' %}
 {% load static %}
 
 {% block title %}Create Batch — Skill-Verse{% endblock %}
@@ -322,18 +322,18 @@
 
             <hr class="section-divider">
 
-            <!-- Meeting Link -->
-            <div class="section-label">🎥 Session Link</div>
+            <!-- Meeting Room -->
+            <div class="section-label">🎥 In-App Video Room</div>
 
             <div class="form-group">
-                <label class="form-label" for="meeting_link">Meeting / Video Call Link</label>
+                <label class="form-label" for="meeting_link">Custom Room Path (Optional)</label>
                 <div class="icon-prefix">
                     <span class="prefix-icon">🔗</span>
-                    <input type="url" id="meeting_link" name="meeting_link"
-                           value="{{ form_data.meeting_link|default:'https://meet.jit.si/Skill-VerseBatchRoom' }}"
-                           placeholder="https://meet.google.com/xxx or https://meet.jit.si/...">
+                    <input type="text" id="meeting_link" name="meeting_link"
+                           value="{{ form_data.meeting_link|default:'' }}"
+                           placeholder="Leave blank to use Skill-Verse's built-in live room">
                 </div>
-                <div class="input-hint">Paste your Google Meet, Zoom, or Jitsi link. A default Jitsi room is prefilled.</div>
+                <div class="input-hint">Sessions run inside Skill-Verse via self-hosted WebRTC (no external redirects).</div>
             </div>
 
             <!-- Submit -->

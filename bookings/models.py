@@ -1,4 +1,4 @@
-﻿"""
+"""
 bookings/models.py
 New app — spec table: bookings.
 Built from scratch to match spec exactly.
@@ -72,7 +72,7 @@ class Batch(models.Model):
     max_seats = models.IntegerField(default=15)
     enrolled_count = models.IntegerField(default=0)
     price_credits = models.DecimalField(max_digits=8, decimal_places=2, default=50.00)
-    meeting_link = models.URLField(blank=True, default='https://meet.jit.si/Skill-VerseBatchRoom')
+    meeting_link = models.CharField(max_length=255, blank=True, default='')
     status = models.CharField(max_length=20, default='upcoming')
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -101,7 +101,7 @@ class DoubtCall(models.Model):
     subject = models.CharField(max_length=150)
     question = models.TextField()
     status = models.CharField(max_length=20, default='searching') # searching, active, completed
-    meeting_link = models.URLField(blank=True, default='https://meet.jit.si/Skill-VerseDoubtCall')
+    meeting_link = models.CharField(max_length=255, blank=True, default='')
     
     # Financial & Session Time Limits
     price = models.DecimalField(max_digits=10, decimal_places=2, default=Decimal('50.00'))
