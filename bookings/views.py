@@ -472,7 +472,7 @@ def create_doubt(request):
                     description=f"Admin 10% Fee from Doubt Call by @{request.user.username}"
                 )
 
-            # 4. Create DoubtCall Record
+            # 4. Create DoubtCall Record (uses built-in in-app room path, no external service)
             doubt = DoubtCall.objects.create(
                 learner=request.user,
                 subject=subject,
@@ -483,8 +483,10 @@ def create_doubt(request):
                 teacher_earning=teacher_earning,
                 duration_minutes=15,
                 is_paid=True,
-                meeting_link=f'https://meet.jit.si/Skill-VerseDoubt-{request.user.username}'
+                meeting_link=''
             )
+            doubt.meeting_link = f'/bookings/room/{doubt.id}/'
+            doubt.save(update_fields=['meeting_link'])
 
             # 5. Create Payment Receipt for Learner
             tx_id = f"TXN-DBT-{uuid.uuid4().hex[:8].upper()}"
@@ -621,7 +623,7 @@ def create_batch(request):
         duration_minutes = request.POST.get('duration_minutes', 60)
         max_seats = request.POST.get('max_seats', 15)
         price_credits = request.POST.get('price_credits', '50.00')
-        meeting_link = request.POST.get('meeting_link', '').strip() or 'https://meet.jit.si/Skill-VerseBatchRoom'
+        meeting_link = request.POST.get('meeting_link', '').strip()
 
         errors = []
         if not title:

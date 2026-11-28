@@ -1,4 +1,4 @@
-﻿{% extends 'user_dashboard/base.html' %}
+{% extends 'user_dashboard/base.html' %}
 {% load static %}
 
 {% block title %}Live Session — Skill-Verse{% endblock %}
@@ -122,18 +122,17 @@
 {% block extra_js %}
 <script>
 function startSession() {
-    // In production this would open a WebRTC room or redirect to Google Meet/Jitsi
-    const roomId = 'Skill-Verse-' + Math.random().toString(36).substr(2, 8);
-    const link = `https://meet.jit.si/${roomId}`;
-    if (confirm(`Your session room is ready!\n\nRoom Link: ${link}\n\nShare this link with your exchange partner.\nClick OK to open the session.`)) {
-        window.open(link, '_blank');
-    }
+    const roomId = 'Skill-Verse-' + Math.random().toString(36).substring(2, 10);
+    window.location.href = '/bookings/room/' + encodeURIComponent(roomId) + '/';
 }
 
 function joinSession() {
-    const link = document.getElementById('joinLink').value.trim();
-    if (!link) { alert('Please paste a session link first.'); return; }
-    window.open(link, '_blank');
+    const raw = document.getElementById('joinLink').value.trim();
+    if (!raw) { alert('Please enter a room code or internal session path.'); return; }
+    const cleaned = raw.replace(/^https?:\/\/[^/]+/, '').replace(/^\/+|\/+$/g, '');
+    const parts = cleaned.split('/').filter(Boolean);
+    const slug = (parts[parts.length - 1] || cleaned).replace(/[^a-zA-Z0-9\-_]/g, '-');
+    window.location.href = '/bookings/room/' + encodeURIComponent(slug) + '/';
 }
 
 let micOn = true, camOn = true;

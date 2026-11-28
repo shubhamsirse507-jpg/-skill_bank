@@ -233,8 +233,12 @@
                         Mode: <strong>{{ booking.get_meeting_mode_display }}</strong>
                     </p>
                     {% if booking.meeting_link %}
-                    <a href="{{ booking.meeting_link }}" target="_blank" class="join-btn">
-                        <i class="fa-solid fa-video"></i> Join Meeting
+                    <a href="{{ booking.meeting_link }}" class="join-btn">
+                        <i class="fa-solid fa-video"></i> Join Call
+                    </a>
+                    {% else %}
+                    <a href="{% url 'live_room' room_id=booking.id %}" class="join-btn">
+                        <i class="fa-solid fa-video"></i> Join In-App Call
                     </a>
                     {% endif %}
                 </div>

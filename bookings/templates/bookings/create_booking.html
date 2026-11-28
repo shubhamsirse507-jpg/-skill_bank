@@ -1,4 +1,4 @@
-﻿{% extends 'user_dashboard/base.html' %}
+{% extends 'user_dashboard/base.html' %}
 
 {% block title %}Schedule Booking — Skill-Verse{% endblock %}
 
@@ -36,8 +36,8 @@
             </div>
 
             <div style="margin-bottom: 20px;">
-                <label style="display: block; font-weight: 600; margin-bottom: 5px;">Meeting Link (Google Meet / Zoom / Jitsi)</label>
-                <input type="url" name="meeting_link" placeholder="https://meet.google.com/abc-defg-hij" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
+                <label style="display: block; font-weight: 600; margin-bottom: 5px;">Session Room (Optional — defaults to built-in Skill-Verse call)</label>
+                <input type="text" name="meeting_link" placeholder="Leave blank for built-in in-app WebRTC call" style="width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ccc;">
             </div>
 
             <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; padding: 12px;">Confirm Booking</button>
