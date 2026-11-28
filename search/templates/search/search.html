@@ -1,4 +1,4 @@
-﻿{% extends 'base.html' %}
+{% extends 'base.html' %}
 
 {% load static %}
 
@@ -203,10 +203,10 @@
     <p>Find your desired skill from the Skill-Verse community.</p>
 </div>
 
-<form method="GET" action="{% url 'search_skills' %}" class="search-filter-box">
-    <input type="text" name="q" value="{{ query|default:'' }}" placeholder="Search skills, topics, users...">
+<form method="GET" action="{% url 'search_skills' %}" class="search-filter-box" id="svSearchForm">
+    <input type="text" name="q" id="svLiveSearchInput" value="{{ query|default:'' }}" placeholder="Search skills, topics, users...">
 
-    <select name="category">
+    <select name="category" id="svCategorySelect">
         <option value="">All Categories</option>
         {% for cat in categories %}
             <option value="{{ cat.id }}" {% if selected_category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.category_name }}</option>
@@ -227,6 +227,14 @@
 
     <button type="submit"><i class="bi bi-search me-1"></i> Search</button>
 </form>
+
+<!-- Instant Category Filter Chips -->
+<div class="d-flex flex-wrap justify-content-center gap-2 px-3 mb-3" style="max-width: 1000px; margin: 0 auto;">
+    <button type="button" class="btn btn-sm rounded-pill px-3 sv-cat-chip active" data-cat="" style="background:#0e7d73; color:#fff; border:1px solid #0e7d73;">All</button>
+    {% for cat in categories %}
+        <button type="button" class="btn btn-sm rounded-pill px-3 sv-cat-chip" data-cat="{{ cat.category_name|lower }}" style="background:#fff; color:#334155; border:1px solid #cbd5e1;">{{ cat.category_name }}</button>
+    {% endfor %}
+</div>
 
 <div class="cards-grid">
     {% if skills %}
@@ -262,10 +270,65 @@
         {% endfor %}
     {% else %}
         <div class="no-results-box">
-            <i class="bi bi-search-heart fs-1 text-muted"></i>
-            <h3 class="mt-3">No skills found matching your criteria</h3>
-            <p>Try adjusting your search terms or filters.</p>
+            <div style="font-size:3.5rem; line-height:1;">🔍</div>
+            <h3 class="mt-3" style="font-weight:700; color:#1f2937;">No skills found</h3>
+            <p class="text-muted">Try different keywords, adjust filters, or browse everything.</p>
+            <a href="{% url 'search_skills' %}" class="btn mt-2" style="background:#0e7d73; color:#fff; border-radius:8px; padding:10px 24px; font-weight:600; text-decoration:none;">Browse All Skills</a>
         </div>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+(function() {
+  /* ── Category chip click-to-filter ─────────────────────────── */
+  const chips = document.querySelectorAll('.sv-cat-chip');
+  const cards = document.querySelectorAll('.skill-card-item');
+
+  chips.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      /* Reset all chips */
+      chips.forEach(function(b) {
+        b.style.background    = '#fff';
+        b.style.color         = '#334155';
+        b.style.borderColor   = '#cbd5e1';
+        b.classList.remove('active');
+      });
+      /* Activate clicked chip */
+      this.style.background  = '#0e7d73';
+      this.style.color       = '#fff';
+      this.style.borderColor = '#0e7d73';
+      this.classList.add('active');
+
+      const cat = this.dataset.cat; /* '' = show all */
+
+      cards.forEach(function(card) {
+        if (!cat) {
+          card.style.display = '';
+          return;
+        }
+        /* Match against the Category: <name> paragraph */
+        const catPara = card.querySelector('p strong');
+        const catText = catPara && catPara.textContent.trim() === 'Category:'
+          ? (catPara.parentElement.textContent || '').toLowerCase()
+          : '';
+        card.style.display = catText.includes(cat) ? '' : 'none';
+      });
+    });
+  });
+
+  /* ── Live search filter (client-side while typing) ──────────── */
+  const searchInput = document.getElementById('svLiveSearchInput');
+  if (searchInput) {
+    searchInput.addEventListener('input', function() {
+      const q = this.value.toLowerCase().trim();
+      cards.forEach(function(card) {
+        const text = card.textContent.toLowerCase();
+        card.style.display = (!q || text.includes(q)) ? '' : 'none';
+      });
+    });
+  }
+})();
+</script>
 {% endblock %}

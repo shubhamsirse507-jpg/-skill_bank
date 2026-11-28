@@ -1,4 +1,4 @@
-﻿{% extends 'user_dashboard/base.html' %}
+{% extends 'user_dashboard/base.html' %}
 {% load static %}
 
 {% block title %}Dashboard — Skill-Verse{% endblock %}
@@ -57,12 +57,46 @@
                          onerror="this.style.display='none'">
                     
                     <div class="floating-learner-badge">
-                        <span class="badge bg-success rounded-pill p-1">●</span> 120+ Active Matches Today
+                        <span class="badge bg-success rounded-pill p-1">●</span>
+                        {{ skills_offered_count|default:0 }} Offered · {{ bookings_count|default:0 }} Sessions
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    {% if not skills_offered_count %}
+    <!-- ── ONBOARDING CHECKLIST ── -->
+    <div class="sv-onboard-card mb-4 p-4 rounded-4 border" style="background: linear-gradient(135deg, #f0fdfa, #ffffff); border-color: #99f6e4 !important;">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <div>
+                <h5 class="fw-bold mb-1" style="color: #0c6c63;"><i class="fa-solid fa-rocket me-2"></i>Get Started on Skill-Verse (3 Quick Steps)</h5>
+                <p class="text-muted mb-0" style="font-size: 0.88rem;">Complete your setup to unlock peer skill swaps and live sessions.</p>
+            </div>
+            <span class="badge rounded-pill px-3 py-2" style="background: #0e7d73;">0 / 3 Completed</span>
+        </div>
+        <div class="row g-3">
+            <div class="col-md-4">
+                <a href="{% url 'add_skill' %}" class="text-decoration-none d-block p-3 rounded-3 border bg-white h-100">
+                    <div class="fw-bold text-dark mb-1">1. Post a Skill You Teach</div>
+                    <div class="text-muted" style="font-size: 0.82rem;">Share coding, design, music, or any topic you know.</div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="{% url 'skills' %}" class="text-decoration-none d-block p-3 rounded-3 border bg-white h-100">
+                    <div class="fw-bold text-dark mb-1">2. Explore &amp; Find Matches</div>
+                    <div class="text-muted" style="font-size: 0.82rem;">Browse peers who teach what you want to learn.</div>
+                </a>
+            </div>
+            <div class="col-md-4">
+                <a href="{% url 'booking_list' %}" class="text-decoration-none d-block p-3 rounded-3 border bg-white h-100">
+                    <div class="fw-bold text-dark mb-1">3. Book Your First Swap</div>
+                    <div class="text-muted" style="font-size: 0.82rem;">Schedule a 1-on-1 live room session with zero fees.</div>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 
     <!-- ── 2. METRIC STAT CARDS ── -->
     <div class="row g-3 mb-4">

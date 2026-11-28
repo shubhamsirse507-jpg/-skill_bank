@@ -1,4 +1,4 @@
-﻿{% load static %}
+{% load static %}
 
 <style>
 /* ================================================================
@@ -285,6 +285,11 @@
 
         <!-- Right icons -->
         <div class="sb-nav-right">
+
+            <!-- Dark Mode Toggle -->
+            <button type="button" class="sv-theme-btn" id="svThemeToggle" title="Toggle Dark/Light Theme" aria-label="Toggle Dark Mode">
+                <i class="bi bi-moon-stars-fill"></i>
+            </button>
 
             <!-- Bell -->
             <a href="{% url 'notifications' %}"

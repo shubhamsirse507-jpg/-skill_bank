@@ -8,6 +8,11 @@ from skill_management.models import Skill, SkillCategory
 from messaging.models import SkillExchange
 from django.db.models import Q
 
+try:
+    from bookings.models import Booking as _Booking
+except ImportError:
+    _Booking = None
+
 
 @login_required
 def dashboard(request):
@@ -40,6 +45,11 @@ def dashboard(request):
     except Exception:
         categories = []
 
+    try:
+        bookings_count = _Booking.objects.filter(user=user).count() if _Booking else 0
+    except Exception:
+        bookings_count = 0
+
     return render(request, "user_dashboard/dashboard.html", {
         'user_skills': user_skills,
         'recent_skills': recent_skills,
@@ -48,6 +58,7 @@ def dashboard(request):
         'pending_requests_count': pending_requests_count,
         'completed_swaps_count': completed_swaps_count,
         'categories': categories,
+        'bookings_count': bookings_count,
     })
 
 

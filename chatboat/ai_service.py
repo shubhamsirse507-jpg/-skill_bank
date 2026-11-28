@@ -1,4 +1,4 @@
-﻿import json
+import json
 import urllib.request
 import urllib.parse
 import urllib.error
@@ -151,64 +151,77 @@ def call_gemini_api(prompt, api_key, image_data=None):
         return res_data['candidates'][0]['content']['parts'][0]['text']
 
 
-def generate_ai_response(prompt, requested_provider="auto", image_data=None):
+def get_installed_ollama_models():
+    """Return list of locally installed Ollama model names from localhost:11434."""
+    try:
+        req = urllib.request.Request("http://127.0.0.1:11434/api/tags", method="GET")
+        with urllib.request.urlopen(req, timeout=1.5) as response:
+            data = json.loads(response.read().decode("utf-8"))
+            return [m.get("name") for m in data.get("models", []) if m.get("name")]
+    except Exception:
+        return []
+
+
+def generate_ai_response(prompt, requested_provider="ollama", image_data=None):
     """
-    Generate accurate AI response with local Ollama priority, zero-fail failovers, and Skill_Data enrichment.
+    Generate AI response using Local Ollama ONLY (no Gemini/cloud API keys)
+    with Skill_Data knowledge base enrichment and offline fallback.
     """
     # 1. Fetch skill context from Skill_Data knowledge base
     skill_context = query_skill_bank_data(prompt)
     enriched_prompt = prompt
     if skill_context and "Skill-Verse supports" not in skill_context:
-        enriched_prompt = f"Skill-Verse Context:\n{skill_context}\n\nUser Question: {prompt}\nPlease provide a helpful, friendly response formatted nicely in markdown."
+        enriched_prompt = (
+            f"Skill-Verse Context:\n{skill_context}\n\n"
+            f"User Question: {prompt}\n"
+            f"Please provide a helpful, friendly response formatted nicely in markdown."
+        )
 
     if image_data:
         enriched_prompt = f"[User attached an image / camera capture for analysis]\n{enriched_prompt}"
 
-    gemini_key = getattr(settings, 'GEMINI_API_KEY', '')
-    groq_key = getattr(settings, 'GROQ_API_KEY', '')
-
-    pipeline = []
-
-    # Priority 1: Local Ollama (Zero Key, Local PC)
-    pipeline.append(("Local Ollama (Llama 3.2)", lambda p: call_ollama_ai(p, model="llama3.2:1b", image_data=image_data)))
-    pipeline.append(("Local Ollama (Phi 3)", lambda p: call_ollama_ai(p, model="phi3:mini", image_data=image_data)))
-
-    # Priority 2: Cloud API keys if configured
-    if gemini_key:
-        pipeline.append(("Google Gemini 1.5", lambda p: call_gemini_api(p, gemini_key, image_data=image_data)))
-    if groq_key:
-        pipeline.append(("Groq Llama 3", lambda p: call_groq_api(p, groq_key)))
-
-    # Priority 3: Free Public Gateways (DuckDuckGo GPT-4o & Pollinations)
-    pipeline.append(("Free AI (DuckDuckGo GPT-4o)", call_duckduckgo_ai))
-    pipeline.append(("Free AI (Pollinations)", call_pollinations_ai))
+    # Priority 1: Local Ollama (auto-detect installed models first, then common defaults)
+    installed_models = get_installed_ollama_models()
+    candidate_models = installed_models if installed_models else [
+        "llama3.2:1b",
+        "llama3.2:latest",
+        "llama3.2",
+        "phi3:mini",
+        "mistral",
+    ]
 
     errors = []
-
-    for name, func in pipeline:
+    for model_name in candidate_models:
         try:
-            logger.info(f"Trying AI Provider: {name}")
-            response = func(enriched_prompt)
+            logger.info(f"Trying Local Ollama model: {model_name}")
+            response = call_ollama_ai(enriched_prompt, model=model_name, image_data=image_data)
             if response and len(response.strip()) > 0:
                 return {
                     "success": True,
-                    "provider_used": name,
+                    "provider_used": f"Local Ollama ({model_name})",
                     "response": response,
                 }
         except Exception as e:
-            err_str = f"{name} Error: {str(e)}"
+            err_str = f"Local Ollama ({model_name}) Error: {str(e)}"
             logger.warning(err_str)
             errors.append(err_str)
 
-    # Priority 4: Local Skill_Data Knowledge fallback
+    # Priority 2: Local Skill_Data Knowledge fallback (zero external APIs)
     if skill_context:
-        fallback_res = f"### 📚 Skill-Verse Knowledge Response\n\n{skill_context}"
+        fallback_res = (
+            f"### 📚 Skill-Verse Knowledge Response\n\n{skill_context}\n\n"
+            f"---\n*💡 Local Ollama is offline right now. Start it with `ollama run llama3.2:1b` for full conversational AI.*"
+        )
     else:
-        fallback_res = f"Here is what I found for **'{prompt}'**:\n\nSkill-Verse connects learners worldwide to trade skills! Install & run Ollama (`ollama run llama3.2:1b`) for full offline local generation."
+        fallback_res = (
+            f"Here is what I found for **'{prompt}'**:\n\n"
+            f"Skill-Verse connects learners worldwide to trade skills! "
+            f"Start Local Ollama (`ollama run llama3.2:1b`) on your PC for full offline local AI generation."
+        )
 
     return {
         "success": True,
-        "provider_used": "Skill-Verse Knowledge Base",
+        "provider_used": "Skill-Verse Local Knowledge Base (Ollama Offline)",
         "response": fallback_res,
-        "errors": errors
+        "errors": errors,
     }
