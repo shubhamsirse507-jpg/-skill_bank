@@ -1,4 +1,4 @@
-﻿# 🎓 Skill-Verse — Peer-to-Peer Skill Exchange & Learning Platform
+# 🎓 Skill-Verse — Peer-to-Peer Skill Exchange & Learning Platform
 
 [![Python](https://img.shields.io/badge/Python-3.11-3776AB.svg?style=flat&logo=python&logoColor=white)](https://www.python.org/)
 [![Django](https://img.shields.io/badge/Django-4.2+-092E20.svg?style=flat&logo=django&logoColor=white)](https://www.djangoproject.com/)
@@ -223,6 +223,26 @@ Skill-Verse is pre-configured for automated 1-click cloud deployment.
 1. Connect your repository on [Railway.app](https://railway.app/).
 2. Define environment variables (`SECRET_KEY`, `DEBUG=False`, `ALLOWED_HOSTS`).
 3. Railway automatically detects `Procfile` and deploys the WSGI server.
+
+---
+
+## 🎓 Teacher Qualification Exam & Proctoring Workflow
+
+1. **Seed Question Bank:** Run `python manage.py seed_question_bank` (seeds 36+ MCQs across Python, Design, Guitar, Data, Web, and Generic Teaching).
+2. **Admin Invite (`/admin-panel/hiring/`):** Admin enters the teacher's email, skill, level, pass mark, time limit, question count, and expiry. Two separate emails are dispatched via Brevo HTTPS API (one with `/teacher-test/<token>/` + `test_code`, and a second with the one-time password).
+3. **Candidate Exam:** Teacher signs in without needing a Skill-Verse account, completes the privacy consent + browser-only MediaPipe camera check (self-hosted under `static/mediapipe/`), and takes the timed 1-question-at-a-time exam.
+4. **Review & Hiring (`/admin-panel/hiring/<id>/review/`):** Admin reviews score vs pass mark, time taken, and advisory proctoring timeline. Approving creates a per-skill `VerifiedTeacherSkill` badge, sends an email + in-app notification, and writes an `AuditLog`.
+5. **Cleanup Commands:**
+   - `python manage.py cleanup_orphan_mock_tests` — removes legacy orphan PENDING rows.
+   - `python manage.py cleanup_proctor_snapshots` — deletes proctoring snapshots older than `PROCTOR_RETENTION_DAYS`.
+
+### Proctoring Environment Variables
+| Variable | Default | Description |
+|---|---|---|
+| `PROCTOR_SNAPSHOTS_ENABLED` | `False` | Store small JPEGs in private storage on flagged events |
+| `PROCTOR_RETENTION_DAYS` | `14` | Days to retain proctoring events/snapshots |
+| `PROCTOR_ALLOW_NO_CAMERA` | `False` | Allow starting exam if camera is unavailable/denied |
+| `PROCTOR_AUTO_SUBMIT_THRESHOLD` | `0` | Optional auto-submit after N flagged events (`0` = off) |
 
 ---
 

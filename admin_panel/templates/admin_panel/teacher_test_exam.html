@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Exam In Progress — Skill-Verse{% endblock %}
+
+{% block content %}
+<div class="container py-4" style="max-width: 960px;" id="examContainer">
+  <!-- Header bar -->
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3 p-3 rounded-4 bg-white shadow-sm">
+    <div>
+      <h5 class="fw-bold mb-0" style="color:#0c6c63;">{{ invite.skill.title }} ({{ invite.skill_level }})</h5>
+      <small class="text-muted">Question <span id="qIndexLabel">1</span> of {{ total_questions }}</small>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+      <div class="badge bg-dark fs-6 px-3 py-2" id="timerBadge" aria-live="off">
+        ⏱ <span id="timerText">--:--</span>
+      </div>
+      <button type="button" id="fullscreenBtn" class="btn btn-sm btn-outline-secondary">Fullscreen</button>
+    </div>
+  </div>
+
+  <!-- Non-blocking proctor warning -->
+  <div id="proctorWarning" class="alert alert-warning d-none small" role="status" aria-live="polite"></div>
+
+  <div class="row g-3">
+    <!-- Question panel -->
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm rounded-4 p-4">
+        <div id="questionArea">
+          <p class="text-muted">Loading question...</p>
+        </div>
+        <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+          <button type="button" id="prevBtn" class="btn btn-outline-secondary" disabled>&larr; Previous</button>
+          <button type="button" id="nextBtn" class="btn text-white fw-semibold" style="background:#0c6c63;">Next &rarr;</button>
+        </div>
+      </div>
+
+      <form method="POST" action="{% url 'teacher_test_submit' invite.token %}" id="submitExamForm" class="mt-3 text-end">
+        {% csrf_token %}
+        <button type="submit" id="finalSubmitBtn" class="btn btn-success fw-bold px-4">Finish &amp; Submit Exam</button>
+      </form>
+    </div>
+
+    <!-- Side panel: question nav + mini camera -->
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm rounded-4 p-3 mb-3">
+        <div class="small fw-bold mb-2">Question Navigator</div>
+        <div id="qNavGrid" class="d-flex flex-wrap gap-2"></div>
+      </div>
+
+      {% if not invite.proctoring_skipped %}
+      <div class="card border-0 shadow-sm rounded-4 p-3">
+        <div class="small fw-bold mb-2">Camera Monitor</div>
+        <video id="examCam" autoplay playsinline muted class="rounded-3 w-100 bg-dark" style="max-height:160px; object-fit:cover;"></video>
+        <p class="text-muted mt-2 mb-0" style="font-size:0.72rem;">
+          Automated flags are advisory only and reviewed by an admin.
+        </p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script type="module">
+  import { startExamProctoring } from "{% static 'mediapipe/proctoring.js' %}";
+
+  const csrfToken = "{{ csrf_token }}";
+  const totalQuestions = {{ total_questions }};
+  let remainingSeconds = {{ remaining_seconds }};
+  const savedSet = new Set({{ saved_keys_json|safe }}.map(String));
+  let currentIdx = 1;
+  let currentQuestionId = null;
+
+  const qArea = document.getElementById('questionArea');
+  const qIndexLabel = document.getElementById('qIndexLabel');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const qNavGrid = document.getElementById('qNavGrid');
+  const timerText = document.getElementById('timerText');
+  const submitForm = document.getElementById('submitExamForm');
+  const warningEl = document.getElementById('proctorWarning');
+
+  // Build question nav buttons
+  function renderNav() {
+    qNavGrid.innerHTML = '';
+    for (let i = 1; i <= totalQuestions; i++) {
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.textContent = i;
+      btn.className = 'btn btn-sm ' + (i === currentIdx ? 'btn-dark' : (savedSet.has(String(i)) ? 'btn-success' : 'btn-outline-secondary'));
+      btn.addEventListener('click', () => loadQuestion(i));
+      qNavGrid.appendChild(btn);
+    }
+  }
+
+  async function loadQuestion(idx) {
+    const resp = await fetch(`/teacher-test/{{ invite.token }}/question/${idx}/`);
+    if (!resp.ok) {
+      if (resp.status === 403) {
+        submitForm.submit();
+      }
+      return;
+    }
+    const data = await resp.json();
+    currentIdx = data.idx;
+    currentQuestionId = data.question_id;
+    remainingSeconds = data.remaining_seconds;
+    qIndexLabel.textContent = currentIdx;
+
+    qArea.innerHTML = '';
+    const h = document.createElement('h5');
+    h.className = 'fw-bold mb-3';
+    h.textContent = data.question;
+    qArea.appendChild(h);
+
+    ['A', 'B', 'C', 'D'].forEach(letter => {
+      if (!data.options[letter]) return;
+      const label = document.createElement('label');
+      label.className = 'd-flex align-items-start gap-2 p-3 mb-2 border rounded-3';
+      label.style.cursor = 'pointer';
+
+      const radio = document.createElement('input');
+      radio.type = 'radio';
+      radio.name = 'exam_option';
+      radio.value = letter;
+      radio.className = 'form-check-input mt-1';
+      if (data.saved_answer === letter) radio.checked = true;
+
+      radio.addEventListener('change', async () => {
+        savedSet.add(String(currentQuestionId));
+        renderNav();
+        await fetch(`/teacher-test/{{ invite.token }}/answer/`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+          body: JSON.stringify({ question_id: currentQuestionId, option: letter }),
+        });
+      });
+
+      const span = document.createElement('span');
+      span.textContent = `${letter}. ${data.options[letter]}`;
+      label.appendChild(radio);
+      label.appendChild(span);
+      qArea.appendChild(label);
+    });
+
+    prevBtn.disabled = currentIdx <= 1;
+    nextBtn.disabled = currentIdx >= totalQuestions;
+    renderNav();
+  }
+
+  prevBtn.addEventListener('click', () => { if (currentIdx > 1) loadQuestion(currentIdx - 1); });
+  nextBtn.addEventListener('click', () => { if (currentIdx < totalQuestions) loadQuestion(currentIdx + 1); });
+
+  // Server-synced countdown
+  function updateTimer() {
+    const m = Math.floor(remainingSeconds / 60);
+    const s = remainingSeconds % 60;
+    timerText.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    if (remainingSeconds <= 0) {
+      submitForm.submit();
+      return;
+    }
+    remainingSeconds -= 1;
+  }
+  updateTimer();
+  setInterval(updateTimer, 1000);
+
+  // Deterrents: copy/paste/right-click + visibilitychange + fullscreenchange
+  const examBox = document.getElementById('examContainer');
+  ['copy', 'cut', 'paste', 'contextmenu'].forEach(ev => {
+    examBox.addEventListener(ev, e => {
+      e.preventDefault();
+      postProctorEvent('copy_attempt', 0);
+    });
+  });
+
+  document.getElementById('fullscreenBtn').addEventListener('click', () => {
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen().catch(() => {});
+    }
+  });
+
+  let hiddenAt = null;
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      hiddenAt = Date.now();
+    } else if (hiddenAt) {
+      const dur = (Date.now() - hiddenAt) / 1000;
+      hiddenAt = null;
+      postProctorEvent('tab_switch', dur);
+    }
+  });
+
+  document.addEventListener('fullscreenchange', () => {
+    if (!document.fullscreenElement) {
+      postProctorEvent('fullscreen_exit', 0);
+    }
+  });
+
+  let warningCount = 0;
+  async function postProctorEvent(type, durationSeconds, snapshotJpeg = '') {
+    warningCount += 1;
+    if (warningCount <= 2) {
+      warningEl.classList.remove('d-none');
+      warningEl.textContent = `Monitoring notice (#${warningCount}): "${type.replace('_', ' ')}" was logged. Stay focused on the exam.`;
+    }
+    try {
+      const r = await fetch(`/teacher-test/{{ invite.token }}/proctor-event/`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrfToken },
+        body: JSON.stringify({
+          type,
+          duration_seconds: durationSeconds,
+          snapshot_jpeg: snapshotJpeg,
+        }),
+      });
+      if (r.ok) {
+        const res = await r.json();
+        if (res.auto_submitted) {
+          window.location.href = `/teacher-test/{{ invite.token }}/`;
+        }
+      }
+    } catch (_) {}
+  }
+
+  {% if not invite.proctoring_skipped %}
+  const examCam = document.getElementById('examCam');
+  startExamProctoring({
+    videoEl: examCam,
+    wasmBase: "{% static 'mediapipe/wasm' %}",
+    bundleUrl: "{% static 'mediapipe/vision_bundle.mjs' %}",
+    faceModelUrl: "{% static 'mediapipe/models/face_landmarker.task' %}",
+    poseModelUrl: "{% static 'mediapipe/models/pose_landmarker_lite.task' %}",
+    objectModelUrl: "{% static 'mediapipe/models/efficientdet_lite0.tflite' %}",
+    snapshotsEnabled: {{ snapshots_enabled|yesno:"true,false" }},
+    onEvent: (type, duration, snap) => postProctorEvent(type, duration, snap),
+  });
+  {% endif %}
+
+  loadQuestion(1);
+</script>
+{% endblock %}

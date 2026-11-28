@@ -249,6 +249,9 @@
                         <p><i class="bi bi-geo-alt-fill text-danger me-1"></i> {{ skill.user.profile.location }}</p>
                     {% endif %}
                     <span class="badge-tag badge-{{ skill.skill_type }}">{{ skill.get_skill_type_display }}</span>
+                    {% if skill.is_verified_teacher %}
+                        <span class="badge rounded-pill ms-1" style="background:#0c6c63;color:#fff;font-size:0.75rem;padding:4px 10px;"><i class="bi bi-patch-check-fill me-1"></i>Verified Teacher</span>
+                    {% endif %}
                     {% if skill.description %}
                         <p class="mt-2 text-muted" style="font-size: 12px;">{{ skill.description|truncatewords:15 }}</p>
                     {% endif %}

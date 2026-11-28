@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Teacher Exam Sign-In — Skill-Verse{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width: 480px;">
+  <div class="card border-0 shadow-lg rounded-4 p-4">
+    <div class="text-center mb-3">
+      <div style="width:52px;height:52px;border-radius:14px;background:#0c6c63;color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:1.4rem;font-weight:800;">S</div>
+      <h3 class="fw-bold mt-3 mb-1">Teacher Qualification Exam</h3>
+      <p class="text-muted small mb-0">Skill: <strong>{{ invite.skill.title }}</strong> ({{ invite.skill_level }})</p>
+    </div>
+
+    {% if error_msg %}
+      <div class="alert alert-danger py-2 small" role="alert">{{ error_msg }}</div>
+    {% endif %}
+
+    <form method="POST" action="{% url 'teacher_test_entry' invite.token %}">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label for="id_test_code" class="form-label fw-semibold small">Test Code</label>
+        <input id="id_test_code" type="text" name="test_code" class="form-control" required placeholder="e.g. SB-4821" autocomplete="off">
+      </div>
+      <div class="mb-3">
+        <label for="id_password" class="form-label fw-semibold small">Exam Password</label>
+        <input id="id_password" type="password" name="password" class="form-control" required placeholder="Enter password from email" autocomplete="off">
+      </div>
+      <button type="submit" class="btn w-100 fw-bold text-white py-2" style="background:#0c6c63;">
+        Verify &amp; Continue
+      </button>
+    </form>
+
+    <div class="mt-3 text-center text-muted" style="font-size:0.78rem;">
+      Expires: {{ invite.expires_at|date:"M d, Y H:i" }} UTC &bull; Time limit: {{ invite.time_limit_minutes }} minutes
+    </div>
+  </div>
+</div>
+{% endblock %}

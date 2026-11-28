@@ -1,4 +1,4 @@
-﻿import os
+import os
 import json
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib import messages
@@ -110,6 +110,15 @@ def profile(request):
 
     score = calculate_completion_score(profile_obj)
 
+    from django.db.models import Q
+    from admin_panel.models import VerifiedTeacherSkill
+    verified_skills = list(
+        VerifiedTeacherSkill.objects.filter(
+            Q(user=request.user) | Q(teacher_email__iexact=request.user.email),
+            is_active=True,
+        ).select_related('skill')
+    )
+
     return render(request, 'profiles/profile.html', {
         'profile_obj': profile_obj,
         'profile': {
@@ -138,6 +147,7 @@ def profile(request):
         'preset_avatars': PRESET_AVATARS,
         'skills_offered': skills_offered,
         'skills_desired': skills_desired,
+        'verified_skills': verified_skills,
         'bg_video_url': AUTH_BACKGROUND_VIDEO_URL,
         'brand_logo_image_name': BRAND_LOGO_IMAGE_NAME,
     })
@@ -155,9 +165,19 @@ def public_profile(request, username):
     skills_offered = Skill.objects.filter(user=target_user, skill_type='offered')
     skills_desired = Skill.objects.filter(user=target_user, skill_type='wanted')
 
+    from django.db.models import Q
+    from admin_panel.models import VerifiedTeacherSkill
+    verified_skills = list(
+        VerifiedTeacherSkill.objects.filter(
+            Q(user=target_user) | Q(teacher_email__iexact=target_user.email),
+            is_active=True,
+        ).select_related('skill')
+    )
+
     return render(request, 'profiles/profile_public.html', {
         'target_user': target_user,
         'profile_obj': profile_obj,
         'skills_offered': skills_offered,
         'skills_desired': skills_desired,
+        'verified_skills': verified_skills,
     })

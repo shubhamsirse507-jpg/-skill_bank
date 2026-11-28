@@ -1,11 +1,11 @@
-﻿from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib import messages
 from django.db.models import Count, Q
 import os
 
-from .models import PlatformReport, PlatformNotice, AuditLog, TeacherMockTest
+from .models import PlatformReport, PlatformNotice, AuditLog, TeacherMockTest, TeacherTestInvite
 from skill_management.models import SkillCategory, Skill
 from messaging.models import SkillExchange, Message
 from ratings.models import ReviewRating
@@ -30,16 +30,16 @@ def admin_dashboard(request):
     total_categories = SkillCategory.objects.count()
     total_skills = Skill.objects.count()
 
-    # Teacher Hiring stats
-    total_hiring = TeacherMockTest.objects.count()
-    pending_hiring = TeacherMockTest.objects.filter(status__in=['PENDING', 'TAKEN']).count()
-    approved_hiring = TeacherMockTest.objects.filter(status='APPROVED').count()
+    # Teacher Hiring stats (Phase 5: TeacherTestInvite statuses)
+    total_hiring = TeacherTestInvite.objects.count()
+    pending_hiring = TeacherTestInvite.objects.filter(status='SUBMITTED').count()
+    approved_hiring = TeacherTestInvite.objects.filter(status='APPROVED').count()
 
     recent_users = User.objects.order_by('-date_joined')[:5]
     recent_reports = PlatformReport.objects.select_related('reported_by', 'reported_user').order_by('-created_at')[:5]
     recent_exchanges = SkillExchange.objects.select_related('requester', 'receiver').order_by('-created_at')[:5]
     recent_audit_logs = AuditLog.objects.select_related('admin').order_by('-created_at')[:8]
-    recent_hiring = TeacherMockTest.objects.select_related('teacher').order_by('-created_at')[:5]
+    recent_hiring = TeacherTestInvite.objects.select_related('skill').order_by('-created_at')[:5]
 
     categories = SkillCategory.objects.annotate(skill_count=Count('skills'))
 
@@ -275,100 +275,7 @@ skills_categories = manage_skills
 
 
 
-# ---------------------------------------------------------------------------
-# AI Teacher Qualification Mock Test & Hiring Module (Admin Only)
-# ---------------------------------------------------------------------------
-from .ai_generator import generate_ai_mock_test
-
-
-@login_required
-@user_passes_test(is_admin)
-def admin_teacher_hiring(request):
-    """
-    Admin-only module for inspecting AI-generated mock test evaluations & hiring teachers.
-    """
-    mock_tests = TeacherMockTest.objects.select_related('teacher').all()
-    return render(request, 'admin_panel/hiring.html', {
-        'mock_tests': mock_tests,
-        'active_tab': 'hiring',
-    })
-
-
-@login_required
-def take_mock_test(request, test_id=None):
-    """
-    Teacher takes the AI-generated skill mock test.
-    If no test exists for the skill, AI auto-generates one.
-    """
-    if test_id:
-        mock_test = get_object_or_404(TeacherMockTest, id=test_id)
-    else:
-        skill_name = request.GET.get('skill', 'Python & Web Development')
-        questions = generate_ai_mock_test(skill_name)
-        mock_test = TeacherMockTest.objects.create(
-            teacher=request.user,
-            skill_name=skill_name,
-            questions_json=questions,
-            total_questions=len(questions)
-        )
-
-    if request.method == 'POST' and mock_test.status == 'PENDING':
-        questions = mock_test.questions_json
-        submitted_answers = {}
-        correct_count = 0
-
-        for q in questions:
-            q_id = str(q['id'])
-            ans = request.POST.get(f'q_{q_id}', '')
-            submitted_answers[q_id] = ans
-            if ans == q['correct']:
-                correct_count += 1
-
-        score_pct = (correct_count / len(questions)) * 100 if len(questions) > 0 else 0
-        mock_test.answers_json = submitted_answers
-        mock_test.score = correct_count
-        mock_test.percentage = score_pct
-        mock_test.status = 'TAKEN'
-        mock_test.save()
-
-        messages.success(request, f"Mock Test submitted! Your Score: {correct_count}/{len(questions)} ({score_pct:.0f}%). Under Admin Review.")
-        return redirect('admin_panel:take_mock_test', test_id=mock_test.id)
-
-    if mock_test.status != 'PENDING':
-        answers = mock_test.answers_json or {}
-        for q in mock_test.questions_json:
-            q_id = str(q.get('id', ''))
-            q['user_answer'] = answers.get(q_id, '')
-
-    return render(request, 'admin_panel/take_mock_test.html', {
-        'mock_test': mock_test,
-    })
-
-
-@login_required
-@user_passes_test(is_admin)
-def approve_hire_teacher(request, test_id):
-    """
-    Admin approves & hires teacher based on AI Mock Test evaluation.
-    """
-    mock_test = get_object_or_404(TeacherMockTest, id=test_id)
-    if request.method == 'POST':
-        action = request.POST.get('action')
-        notes = request.POST.get('admin_notes', '').strip()
-
-        if action == 'approve':
-            mock_test.status = 'APPROVED'
-            mock_test.admin_notes = notes or "Approved by Admin based on Mock Test performance."
-            mock_test.save()
-            messages.success(request, f"Teacher '{mock_test.teacher.username}' has been APPROVED & HIRED on Skill-Verse!")
-
-        elif action == 'reject':
-            mock_test.status = 'REJECTED'
-            mock_test.admin_notes = notes or "Rejected after review."
-            mock_test.save()
-            messages.warning(request, f"Teacher application for '{mock_test.teacher.username}' has been rejected.")
-
-    return redirect('admin_panel:hiring')
+# Legacy hiring views moved to admin_panel/hiring_views.py and admin_panel/teacher_test_views.py
 
 
 

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Exam Status — Skill-Verse{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width: 720px;">
+  <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+    {% if status_reason == 'SUBMITTED' %}
+      <div class="fs-1 mb-2">✅</div>
+      <h3 class="fw-bold text-success">Exam Submitted</h3>
+      <p class="text-muted">Thank you! Your exam for <strong>{{ invite.skill.title }}</strong> has been submitted and is awaiting admin review.</p>
+    {% elif status_reason == 'APPROVED' %}
+      <div class="fs-1 mb-2">🎉</div>
+      <h3 class="fw-bold text-success">Congratulations — Verified Teacher!</h3>
+      <p class="text-muted">You have been approved and verified for <strong>{{ invite.skill.title }}</strong> on Skill-Verse.</p>
+    {% elif status_reason == 'REJECTED' %}
+      <div class="fs-1 mb-2">📋</div>
+      <h3 class="fw-bold text-danger">Application Not Approved</h3>
+      <p class="text-muted">Your exam for <strong>{{ invite.skill.title }}</strong> was not approved at this time.</p>
+      {% if invite.admin_notes %}<p class="small bg-light p-3 rounded text-start"><strong>Note:</strong> {{ invite.admin_notes }}</p>{% endif %}
+    {% elif status_reason == 'EXPIRED' %}
+      <div class="fs-1 mb-2">⏰</div>
+      <h3 class="fw-bold text-secondary">Invitation Expired</h3>
+      <p class="text-muted">This exam invitation has expired. Please contact an administrator to extend or resend your invite.</p>
+    {% elif status_reason == 'REVOKED' %}
+      <div class="fs-1 mb-2">🚫</div>
+      <h3 class="fw-bold text-secondary">Invitation Revoked</h3>
+      <p class="text-muted">This exam invitation was revoked by an administrator.</p>
+    {% elif status_reason == 'LOCKED' %}
+      <div class="fs-1 mb-2">🔒</div>
+      <h3 class="fw-bold text-danger">Invitation Locked</h3>
+      <p class="text-muted">This invitation was locked after 5 failed sign-in attempts. An administrator has been notified.</p>
+    {% endif %}
+  </div>
+
+  {% if review_items %}
+  <div class="card border-0 shadow-sm rounded-4 p-4 mt-4">
+    <h5 class="fw-bold mb-3">Answer Review</h5>
+    {% for item in review_items %}
+      <div class="mb-3 p-3 rounded border">
+        <div class="fw-semibold">{{ forloop.counter }}. {{ item.question }}</div>
+        <div class="small mt-1">
+          Your Answer: <strong>{{ item.user_answer|default:"(None)" }}</strong> &bull;
+          Correct: <strong class="text-success">{{ item.correct }}</strong>
+        </div>
+        {% if item.explanation %}<div class="small text-muted mt-1">{{ item.explanation }}</div>{% endif %}
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

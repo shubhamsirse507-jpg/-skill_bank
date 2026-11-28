@@ -1,4 +1,4 @@
-﻿# 🚀 Skill-Verse Deployment Guide
+# 🚀 Skill-Verse Deployment Guide
 
 This guide walks you through deploying the **Skill-Verse Platform** to production. All production configuration files (`Procfile`, `requirements.txt`, `build.sh`, `render.yaml`, `runtime.txt`) have been prepared for you.
 
@@ -80,7 +80,13 @@ SECRET_KEY=generate-a-strong-random-key-here
 DEBUG=False
 ALLOWED_HOSTS=.onrender.com,.railway.app,yourcustomdomain.com
 DATABASE_URL=postgres://username:password@ep-host.region.aws.neon.tech/neondb
+BREVO_API_KEY=your-brevo-api-key
+BREVO_SENDER_EMAIL=verified-sender@yourdomain.com
+PROCTOR_SNAPSHOTS_ENABLED=False
+PROCTOR_RETENTION_DAYS=14
+PROCTOR_ALLOW_NO_CAMERA=False
+PROCTOR_AUTO_SUBMIT_THRESHOLD=0
 ```
 
-*(Note: If `DATABASE_URL` is omitted, the app safely defaults to SQLite `db.sqlite3`.)*
+*(Note: If `DATABASE_URL` is omitted, the app safely defaults to SQLite `db.sqlite3`. After first deploy, run `python manage.py seed_question_bank` to populate the teacher exam question banks.)*
 

@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+{% block title %}Review Invite {{ invite.test_code }} — Skill-Verse Admin{% endblock %}
+
+{% block content %}
+<div class="container py-4" style="max-width: 1050px;">
+  <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+    <div>
+      <a href="{% url 'admin_panel:hiring' %}" class="text-decoration-none small fw-semibold" style="color:#0c6c63;">&larr; Back to Hiring</a>
+      <h2 class="fw-bold mt-1 mb-0">Candidate Review: {{ invite.teacher_name|default:invite.teacher_email }}</h2>
+      <p class="text-muted small mb-0">{{ invite.teacher_email }} &bull; Code: <code>{{ invite.test_code }}</code> &bull; Skill: <strong>{{ invite.skill.title }}</strong> ({{ invite.skill_level }})</p>
+    </div>
+    <span class="badge fs-6 px-3 py-2" style="background:#0c6c63;color:#fff;">{{ invite.get_status_display }}</span>
+  </div>
+
+  <!-- Summary Row -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3">
+      <div class="card p-3 border-0 shadow-sm">
+        <div class="small text-muted">Score vs Pass Mark</div>
+        {% if invite.test %}
+          <div class="fs-4 fw-bold {% if invite.test.percentage >= invite.pass_mark %}text-success{% else %}text-danger{% endif %}">
+            {{ invite.test.percentage|floatformat:0 }}% <small class="fs-6 text-muted">({{ invite.test.score }}/{{ invite.test.total_questions }})</small>
+          </div>
+          <div class="small text-muted">Pass mark: {{ invite.pass_mark }}%</div>
+        {% else %}
+          <div class="fs-5 text-muted">Not started</div>
+        {% endif %}
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card p-3 border-0 shadow-sm">
+        <div class="small text-muted">Time Taken</div>
+        <div class="fs-4 fw-bold">
+          {% if time_taken_seconds != None %}
+            {{ time_taken_seconds }}s
+          {% else %}
+            —
+          {% endif %}
+        </div>
+        <div class="small text-muted">Limit: {{ invite.time_limit_minutes }}m</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card p-3 border-0 shadow-sm">
+        <div class="small text-muted">Proctoring Flags</div>
+        <div class="fs-4 fw-bold {% if invite.violation_count > 0 %}text-warning{% else %}text-success{% endif %}">
+          {{ invite.violation_count }}
+        </div>
+        <div class="small text-muted">{% if invite.proctoring_skipped %}Camera skipped{% else %}Camera monitored{% endif %}</div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="card p-3 border-0 shadow-sm">
+        <div class="small text-muted">Failed Sign-ins</div>
+        <div class="fs-4 fw-bold">{{ invite.failed_attempts }} / 5</div>
+        <div class="small text-muted">Created by {{ invite.created_by.username|default:"System" }}</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Decision Box -->
+  <div class="card p-4 border-0 shadow-sm mb-4">
+    <h5 class="fw-bold mb-3">Hiring Decision</h5>
+    {% if invite.status == 'SUBMITTED' %}
+      <form method="POST" action="{% url 'admin_panel:decide_invite' invite.id %}">
+        {% csrf_token %}
+        <div class="mb-3">
+          <label class="form-label fw-semibold small">Reviewer Note (required when rejecting or approving below pass mark)</label>
+          <textarea name="admin_notes" class="form-control" rows="3" placeholder="Enter decision rationale...">{{ invite.admin_notes }}</textarea>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+          <button type="submit" name="action" value="approve" class="btn btn-success fw-bold">
+            <i class="fa-solid fa-check me-1"></i> Approve & Verify Teacher
+          </button>
+          <button type="submit" name="action" value="reject" class="btn btn-danger fw-bold">
+            <i class="fa-solid fa-xmark me-1"></i> Reject Candidate
+          </button>
+          <button type="submit" name="action" value="toggle_review" class="btn btn-outline-secondary ms-auto">
+            Show Answers to Teacher: {% if invite.show_review_to_teacher %}ON{% else %}OFF{% endif %}
+          </button>
+        </div>
+      </form>
+    {% elif invite.status in 'APPROVED,REJECTED' %}
+      <p class="mb-2"><strong>Current Decision:</strong> {{ invite.get_status_display }}</p>
+      <p class="mb-3 text-muted"><strong>Note:</strong> {{ invite.admin_notes|default:"—" }}</p>
+      <form method="POST" action="{% url 'admin_panel:decide_invite' invite.id %}" class="d-flex gap-2 flex-wrap align-items-center">
+        {% csrf_token %}
+        <input type="text" name="admin_notes" class="form-control" style="max-width:340px;" placeholder="Reason for re-opening...">
+        <button type="submit" name="action" value="reopen" class="btn btn-outline-warning fw-semibold">Re-open for Review</button>
+        <button type="submit" name="action" value="toggle_review" class="btn btn-outline-secondary">
+          Show Answers to Teacher: {% if invite.show_review_to_teacher %}ON{% else %}OFF{% endif %}
+        </button>
+      </form>
+    {% else %}
+      <p class="text-muted mb-0">Decisions are only allowed once the candidate has <strong>SUBMITTED</strong> the exam.</p>
+    {% endif %}
+  </div>
+
+  <!-- Violation Timeline -->
+  <div class="card p-4 border-0 shadow-sm mb-4">
+    <h5 class="fw-bold mb-2">Proctoring Event Timeline</h5>
+    <p class="text-muted small mb-3">Note: Automated camera/browser flags are advisory evidence for the admin and may have false positives.</p>
+    {% if violations %}
+      <div class="list-group">
+        {% for v in violations %}
+        <div class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2">
+          <div>
+            <span class="badge bg-warning text-dark me-2">{{ v.get_type_display }}</span>
+            <span class="small text-muted">{{ v.started_at|date:"Y-m-d H:i:s" }} &bull; Duration: {{ v.duration_seconds|floatformat:1 }}s</span>
+          </div>
+          {% if v.snapshot_path %}
+            <a href="{% url 'admin_panel:view_proctor_snapshot' v.id %}" target="_blank" class="btn btn-sm btn-outline-dark">View Snapshot</a>
+          {% endif %}
+        </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-muted mb-0">No proctoring events recorded.</p>
+    {% endif %}
+  </div>
+
+  <!-- Audit Timeline -->
+  <div class="card p-4 border-0 shadow-sm mb-4">
+    <h5 class="fw-bold mb-3">Audit Timeline</h5>
+    {% if audit_logs %}
+      <ul class="list-unstyled mb-0">
+        {% for log in audit_logs %}
+        <li class="mb-2 small">
+          <span class="text-muted">{{ log.created_at|date:"Y-m-d H:i:s" }}</span> —
+          <strong>{{ log.get_action_display }}</strong>
+          {% if log.admin %} by {{ log.admin.username }}{% endif %}
+          {% if log.notes %} <span class="text-muted">({{ log.notes }})</span>{% endif %}
+        </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-muted mb-0">No audit entries yet.</p>
+    {% endif %}
+  </div>
+
+  <!-- Answers Breakdown -->
+  {% if review_items %}
+  <div class="card p-4 border-0 shadow-sm">
+    <h5 class="fw-bold mb-3">Question Breakdown</h5>
+    {% for item in review_items %}
+      <div class="mb-3 p-3 rounded border {% if item.is_correct %}border-success bg-light{% else %}border-danger{% endif %}">
+        <div class="fw-semibold mb-1">{{ forloop.counter }}. {{ item.question }}</div>
+        <div class="small">
+          Candidate Answer: <strong>{{ item.user_answer|default:"(Unanswered)" }}</strong> &bull;
+          Correct Answer: <strong class="text-success">{{ item.correct }}</strong>
+        </div>
+        {% if item.explanation %}
+          <div class="small text-muted mt-1">{{ item.explanation }}</div>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,4 +1,4 @@
-﻿{% extends 'base.html' %}
+{% extends 'base.html' %}
 
 {% block title %}Admin Panel — Skill-Verse{% endblock %}
 
@@ -105,24 +105,24 @@
                 </tr>
             </thead>
             <tbody>
-                {% for test in recent_hiring %}
+                {% for inv in recent_hiring %}
                     <tr style="border-bottom: 1px solid #f3f4f6;">
-                        <td style="padding: 10px;"><strong>{{ test.teacher.get_full_name|default:test.teacher.username }}</strong><br><small style="color:#6b7280;">@{{ test.teacher.username }}</small></td>
-                        <td style="padding: 10px;">{{ test.skill_name }} ({{ test.skill_level }})</td>
-                        <td style="padding: 10px;"><strong>{{ test.score }}/{{ test.total_questions }}</strong> ({{ test.percentage|floatformat:0 }}%)</td>
+                        <td style="padding: 10px;"><strong>{{ inv.teacher_name|default:inv.teacher_email }}</strong><br><small style="color:#6b7280;">{{ inv.teacher_email }} ({{ inv.test_code }})</small></td>
+                        <td style="padding: 10px;">{{ inv.skill.title }} ({{ inv.skill_level }})</td>
+                        <td style="padding: 10px;">{% if inv.test %}<strong>{{ inv.test.score }}/{{ inv.test.total_questions }}</strong> ({{ inv.test.percentage|floatformat:0 }}%){% else %}<span style="color:#9ca3af;">Not started</span>{% endif %}</td>
                         <td style="padding: 10px;">
-                            {% if test.status == 'APPROVED' %}
+                            {% if inv.status == 'APPROVED' %}
                                 <span class="badge-status accepted">Approved</span>
-                            {% elif test.status == 'TAKEN' %}
+                            {% elif inv.status == 'SUBMITTED' %}
                                 <span class="badge-status taken">Under Review</span>
-                            {% elif test.status == 'PENDING' %}
-                                <span class="badge-status pending">Pending Test</span>
+                            {% elif inv.status == 'INVITED' or inv.status == 'STARTED' %}
+                                <span class="badge-status pending">{{ inv.get_status_display }}</span>
                             {% else %}
-                                <span class="badge-status cancelled">Rejected</span>
+                                <span class="badge-status cancelled">{{ inv.get_status_display }}</span>
                             {% endif %}
                         </td>
                         <td style="padding: 10px;">
-                            <a href="/admin-panel/mock-test/{{ test.id }}/" class="btn-ghost" style="padding: 4px 10px; font-size: 12px; text-decoration: none;">Review / Details</a>
+                            <a href="{% url 'admin_panel:review_invite' inv.id %}" class="btn-ghost" style="padding: 4px 10px; font-size: 12px; text-decoration: none;">Review / Details</a>
                         </td>
                     </tr>
                 {% empty %}

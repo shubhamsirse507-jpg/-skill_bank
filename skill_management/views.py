@@ -27,7 +27,7 @@ def create_skill_view(request):
             description=description,
             level=level,
             skill_type=skill_type,
-            status='approved'
+            status='approved',
         )
 
         messages.success(request, f"Skill '{skill.title}' posted successfully!")

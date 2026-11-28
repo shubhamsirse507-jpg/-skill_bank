@@ -1,4 +1,4 @@
-﻿{% extends 'user_dashboard/base.html' %}
+{% extends 'user_dashboard/base.html' %}
 {% load static %}
 
 {% block title %}{{ target_user.first_name|default:target_user.username }}'s Profile | Skill-Verse{% endblock %}
@@ -156,6 +156,17 @@
 
         <!-- Offered Skills -->
         <div class="skills-section">
+            {% if verified_skills %}
+            <div class="section-label">Verified Teacher Skills</div>
+            <div class="skills-tags-wrap" style="margin-bottom:12px;">
+                {% for vs in verified_skills %}
+                    <span class="tag-badge" style="background:#e6f7f5;color:#0c6c63;border:1px solid #14b8a6;font-weight:700;">
+                        <i class="bi bi-patch-check-fill"></i> Verified Teacher: {{ vs.skill.title }}
+                    </span>
+                {% endfor %}
+            </div>
+            {% endif %}
+
             <div class="section-label">Skills Offered (Can Teach)</div>
             <div class="skills-tags-wrap">
                 {% for sk in skills_offered %}

@@ -10,6 +10,7 @@ from django.conf.urls.static import static
 import search.views
 import bookings.views
 import payments.views
+from admin_panel import teacher_test_views
 from django.http import JsonResponse
 from django.db import connection
 
@@ -90,6 +91,15 @@ urlpatterns = [
     path('messaging/', include('messaging.urls')),
     path('ratings/', include('ratings.urls')),
     path('admin-panel/', include('admin_panel.urls')),
+    # Public invite-token Teacher Exam routes (no login required; token + session guarded)
+    path('teacher-test/<str:token>/', teacher_test_views.teacher_test_entry, name='teacher_test_entry'),
+    path('teacher-test/<str:token>/instructions/', teacher_test_views.teacher_test_instructions, name='teacher_test_instructions'),
+    path('teacher-test/<str:token>/start/', teacher_test_views.teacher_test_start, name='teacher_test_start'),
+    path('teacher-test/<str:token>/exam/', teacher_test_views.teacher_test_exam, name='teacher_test_exam'),
+    path('teacher-test/<str:token>/question/<int:idx>/', teacher_test_views.teacher_test_question, name='teacher_test_question'),
+    path('teacher-test/<str:token>/answer/', teacher_test_views.teacher_test_answer, name='teacher_test_answer'),
+    path('teacher-test/<str:token>/submit/', teacher_test_views.teacher_test_submit, name='teacher_test_submit'),
+    path('teacher-test/<str:token>/proctor-event/', teacher_test_views.teacher_test_proctor_event, name='teacher_test_proctor_event'),
     path('skills/', include('skill_management.urls')),
     path('search/', include('search.urls')),
     path('bookings/', include('bookings.urls')),

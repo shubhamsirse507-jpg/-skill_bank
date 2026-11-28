@@ -341,3 +341,18 @@ SWAGGER_SETTINGS = {
     'USE_SESSION_AUTH': False,
     'JSON_EDITOR': True,
 }
+
+# ---------------------------------------------------------------------------
+# Teacher Qualification Exam & Browser Proctoring (Privacy-first)
+# ---------------------------------------------------------------------------
+PRIVATE_MEDIA_ROOT = BASE_DIR / 'private_media'
+PROCTOR_SNAPSHOTS_ENABLED = os.environ.get('PROCTOR_SNAPSHOTS_ENABLED', 'False').lower() == 'true'
+PROCTOR_RETENTION_DAYS = int(os.environ.get('PROCTOR_RETENTION_DAYS', 14))
+PROCTOR_ALLOW_NO_CAMERA = os.environ.get('PROCTOR_ALLOW_NO_CAMERA', 'False').lower() == 'true'
+PROCTOR_AUTO_SUBMIT_THRESHOLD = int(os.environ.get('PROCTOR_AUTO_SUBMIT_THRESHOLD', 0))
+PROCTOR_PRIVACY_NOTE = (
+    "Camera proctoring runs entirely inside your browser. Video is never uploaded. "
+    "Only timestamped monitoring events are recorded"
+    + (" along with small still snapshots on flagged events" if PROCTOR_SNAPSHOTS_ENABLED else "")
+    + f" and retained for {PROCTOR_RETENTION_DAYS} days."
+)

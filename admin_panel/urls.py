@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views
+from . import views, hiring_views
 
 app_name = 'admin_panel'
 
@@ -13,14 +13,17 @@ urlpatterns = [
     path('monitoring/', views.platform_monitoring, name='platform_monitoring'),
     path('notice/post/', views.post_notice, name='post_notice'),
 
-    # AI Teacher Qualification Mock Test & Hiring
-    path('hiring/', views.admin_teacher_hiring, name='hiring'),
-    path('mock-test/', views.take_mock_test, name='start_mock_test'),
-    path('mock-test/<int:test_id>/', views.take_mock_test, name='take_mock_test'),
-    path('mock-test/<int:test_id>/approve/', views.approve_hire_teacher, name='approve_hire_teacher'),
+    # Invite-based Teacher Qualification & Hiring (Admin Only)
+    path('hiring/', hiring_views.admin_teacher_hiring, name='hiring'),
+    path('hiring/invite/', hiring_views.create_teacher_invite, name='create_teacher_invite'),
+    path('hiring/<int:invite_id>/revoke/', hiring_views.revoke_invite, name='revoke_invite'),
+    path('hiring/<int:invite_id>/resend/', hiring_views.resend_invite, name='resend_invite'),
+    path('hiring/<int:invite_id>/extend/', hiring_views.extend_invite, name='extend_invite'),
+    path('hiring/<int:invite_id>/review/', hiring_views.review_invite, name='review_invite'),
+    path('hiring/<int:invite_id>/decide/', hiring_views.decide_invite, name='decide_invite'),
+    path('hiring/snapshot/<int:violation_id>/', hiring_views.view_proctor_snapshot, name='view_proctor_snapshot'),
 
     # REST API Routes
-
     path('api/reports/', views.ReportListCreateView.as_view(), name='report-list'),
     path('api/reports/<int:pk>/', views.ReportDetailView.as_view(), name='report-detail'),
     path('api/notices/', views.NoticeListCreateView.as_view(), name='notice-list'),

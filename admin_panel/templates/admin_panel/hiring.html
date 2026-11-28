@@ -1,4 +1,4 @@
-﻿{% extends "base.html" %}
+{% extends "base.html" %}
 {% block title %}Teacher Hiring — Skill-Verse Admin{% endblock %}
 
 {% block extra_css %}
@@ -6,209 +6,59 @@
   .hiring-hero {
     background: linear-gradient(135deg, #1E3A8A 0%, #0e7d73 100%);
     color: white;
-    padding: 48px 40px 36px;
-    position: relative;
-    overflow: hidden;
-  }
-  .hiring-hero::before {
-    content: '';
-    position: absolute; top: -60px; right: -60px;
-    width: 240px; height: 240px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.06);
+    padding: 40px 40px 32px;
   }
   .hiring-hero h1 { font-family: 'Outfit', sans-serif; font-size: 2rem; font-weight: 800; margin: 0 0 6px; }
-  .hiring-hero p  { font-size: 0.95rem; opacity: 0.82; margin: 0; }
-
+  .hiring-hero p { font-size: 0.95rem; opacity: 0.85; margin: 0; }
   .admin-nav {
-    background: white;
-    border-bottom: 1px solid #e5e7eb;
-    padding: 0 40px;
-    display: flex;
-    gap: 4px;
-    overflow-x: auto;
+    background: white; border-bottom: 1px solid #e5e7eb; padding: 0 40px;
+    display: flex; gap: 4px; overflow-x: auto;
   }
   .admin-nav a {
-    display: flex; align-items: center; gap: 7px;
-    padding: 14px 18px;
-    font-size: 0.88rem; font-weight: 600; color: #6b7280;
-    text-decoration: none; white-space: nowrap;
-    border-bottom: 3px solid transparent;
-    transition: all 0.18s;
+    display: flex; align-items: center; gap: 7px; padding: 14px 18px;
+    font-size: 0.88rem; font-weight: 600; color: #6b7280; text-decoration: none;
+    white-space: nowrap; border-bottom: 3px solid transparent;
   }
-  .admin-nav a:hover { color: #0e7d73; }
-  .admin-nav a.active { color: #0e7d73; border-bottom-color: #0e7d73; }
-
-  .hiring-wrap { max-width: 1100px; margin: 36px auto; padding: 0 24px; }
-
-  /* Stats row */
+  .admin-nav a:hover, .admin-nav a.active { color: #0e7d73; }
+  .admin-nav a.active { border-bottom-color: #0e7d73; }
+  .hiring-wrap { max-width: 1180px; margin: 28px auto; padding: 0 24px; }
   .stats-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 16px;
-    margin-bottom: 32px;
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+    gap: 14px; margin-bottom: 24px;
   }
   .stat-card {
-    background: white;
-    border-radius: 14px;
-    padding: 22px 20px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-    text-align: center;
-    border-top: 4px solid var(--teal-primary);
+    background: white; border-radius: 14px; padding: 18px 20px;
+    border-top: 4px solid #0e7d73; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
   }
-  .stat-card.orange { border-top-color: #f59e0b; }
-  .stat-card.green  { border-top-color: #10b981; }
-  .stat-card.red    { border-top-color: #ef4444; }
-  .stat-card .num { font-size: 2rem; font-weight: 800; color: #1f2937; font-family: 'Outfit', sans-serif; }
-  .stat-card .lbl { font-size: 0.8rem; color: #6b7280; margin-top: 4px; font-weight: 500; }
-
-  /* Start Test CTA */
-  .cta-banner {
-    background: linear-gradient(135deg, #0e7d73, #14b8a6);
-    border-radius: 16px;
-    padding: 28px 32px;
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 16px;
-    margin-bottom: 32px;
+  .stat-card .num { font-size: 1.7rem; font-weight: 800; color: #0e7d73; line-height: 1; }
+  .stat-card .lbl { font-size: 0.78rem; color: #6b7280; margin-top: 6px; font-weight: 600; }
+  .invite-card {
+    background: white; border-radius: 16px; padding: 24px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.06); margin-bottom: 28px;
+    border: 1px solid #e2e8f0;
   }
-  .cta-banner h2 { font-family: 'Outfit', sans-serif; font-size: 1.2rem; font-weight: 800; margin: 0 0 4px; }
-  .cta-banner p  { margin: 0; font-size: 0.88rem; opacity: 0.9; }
-  .btn-white {
-    background: white; color: #0e7d73;
-    padding: 10px 22px; border-radius: 8px;
-    font-weight: 700; font-size: 0.88rem;
-    text-decoration: none; white-space: nowrap;
-    transition: all 0.2s; border: none; cursor: pointer;
-    display: inline-flex; align-items: center; gap: 7px;
+  .creds-banner {
+    background: #ecfdf5; border: 2px solid #10b981; border-radius: 14px;
+    padding: 18px 22px; margin-bottom: 24px;
   }
-  .btn-white:hover { background: #f0fdfa; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,0.12); }
-
-  /* Test cards */
-  .section-header {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 18px;
+  .badge-status {
+    padding: 4px 10px; border-radius: 999px; font-size: 0.74rem; font-weight: 700; display: inline-block;
   }
-  .section-header h3 { font-family: 'Outfit', sans-serif; font-size: 1.15rem; font-weight: 700; color: #1f2937; margin: 0; }
-
-  .test-card {
-    background: white;
-    border-radius: 14px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-    padding: 24px 26px;
-    margin-bottom: 16px;
-    border-left: 5px solid #e5e7eb;
-    transition: box-shadow 0.2s;
-  }
-  .test-card:hover { box-shadow: 0 6px 22px rgba(14,125,115,0.12); }
-  .test-card.pending  { border-left-color: #f59e0b; }
-  .test-card.taken    { border-left-color: #3b82f6; }
-  .test-card.approved { border-left-color: #10b981; }
-  .test-card.rejected { border-left-color: #ef4444; }
-
-  .test-header { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
-  .teacher-info { display: flex; align-items: center; gap: 12px; }
-  .avatar {
-    width: 44px; height: 44px; border-radius: 50%;
-    background: linear-gradient(135deg, #0e7d73, #14b8a6);
-    color: white; display: flex; align-items: center; justify-content: center;
-    font-weight: 800; font-size: 1.1rem; font-family: 'Outfit', sans-serif;
-    flex-shrink: 0;
-  }
-  .teacher-info .name { font-weight: 700; font-size: 0.97rem; color: #1f2937; }
-  .teacher-info .email { font-size: 0.8rem; color: #6b7280; }
-
-  .status-badge {
-    padding: 5px 13px; border-radius: 99px; font-size: 0.75rem; font-weight: 700;
-    white-space: nowrap;
-  }
-  .badge-pending  { background: #fef3c7; color: #92400e; }
-  .badge-taken    { background: #dbeafe; color: #1e40af; }
-  .badge-approved { background: #d1fae5; color: #065f46; }
-  .badge-rejected { background: #fee2e2; color: #991b1b; }
-
-  .meta-row { display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 16px; }
-  .meta-item { font-size: 0.82rem; color: #6b7280; display: flex; align-items: center; gap: 5px; }
-  .meta-item strong { color: #374151; }
-
-  /* Score progress */
-  .score-bar-wrap { margin-bottom: 16px; }
-  .score-label { display: flex; justify-content: space-between; font-size: 0.8rem; font-weight: 600; margin-bottom: 5px; }
-  .score-bar { height: 8px; background: #e5e7eb; border-radius: 99px; overflow: hidden; }
-  .score-fill { height: 100%; border-radius: 99px; transition: width 0.8s ease; }
-  .fill-green  { background: linear-gradient(90deg, #10b981, #34d399); }
-  .fill-yellow { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
-  .fill-red    { background: linear-gradient(90deg, #ef4444, #f87171); }
-
-  .action-row { display: flex; gap: 10px; flex-wrap: wrap; }
-
-  .btn-approve {
-    background: #10b981; color: white;
-    padding: 8px 18px; border-radius: 7px;
-    font-size: 0.82rem; font-weight: 700;
-    border: none; cursor: pointer; transition: all 0.2s;
-    display: inline-flex; align-items: center; gap: 6px;
-  }
-  .btn-approve:hover { background: #059669; transform: translateY(-1px); }
-
-  .btn-reject {
-    background: white; color: #ef4444; border: 1.5px solid #ef4444;
-    padding: 8px 18px; border-radius: 7px;
-    font-size: 0.82rem; font-weight: 700;
-    cursor: pointer; transition: all 0.2s;
-    display: inline-flex; align-items: center; gap: 6px;
-  }
-  .btn-reject:hover { background: #fee2e2; }
-
-  .btn-view {
-    background: #f3f4f6; color: #374151; border: none;
-    padding: 8px 18px; border-radius: 7px;
-    font-size: 0.82rem; font-weight: 600;
-    cursor: pointer; transition: all 0.2s; text-decoration: none;
-    display: inline-flex; align-items: center; gap: 6px;
-  }
-  .btn-view:hover { background: #e5e7eb; }
-
-  /* Modal */
-  .modal-overlay {
-    display: none; position: fixed; inset: 0;
-    background: rgba(0,0,0,0.55); z-index: 2000;
-    align-items: center; justify-content: center;
-    backdrop-filter: blur(3px);
-  }
-  .modal-overlay.open { display: flex; }
-  .modal-box {
-    background: white; border-radius: 18px;
-    padding: 32px; max-width: 460px; width: 94%;
-    box-shadow: 0 25px 60px rgba(0,0,0,0.18);
-    animation: popIn 0.25s ease;
-  }
-  @keyframes popIn { from { transform: scale(0.92); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-  .modal-box h3 { font-family: 'Outfit', sans-serif; font-size: 1.15rem; font-weight: 800; margin: 0 0 6px; color: #1f2937; }
-  .modal-box p  { font-size: 0.88rem; color: #6b7280; margin: 0 0 18px; }
-  .modal-textarea { width: 100%; border: 1.5px solid #e5e7eb; border-radius: 9px; padding: 10px 14px; font-size: 0.88rem; color: #1f2937; resize: vertical; min-height: 80px; font-family: 'Inter', sans-serif; box-sizing: border-box; }
-  .modal-textarea:focus { outline: none; border-color: #0e7d73; }
-  .modal-actions { display: flex; gap: 10px; margin-top: 18px; justify-content: flex-end; }
-  .btn-cancel { background: #f3f4f6; color: #374151; border: none; padding: 9px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; }
-
-  .empty-state { text-align: center; padding: 60px 20px; }
-  .empty-state i { font-size: 3.5rem; color: #d1d5db; margin-bottom: 16px; }
-  .empty-state h3 { font-family: 'Outfit', sans-serif; font-size: 1.2rem; color: #374151; margin: 0 0 8px; }
-  .empty-state p  { font-size: 0.88rem; color: #9ca3af; margin: 0; }
+  .st-INVITED { background: #e0f2fe; color: #0369a1; }
+  .st-STARTED { background: #fef3c7; color: #b45309; }
+  .st-SUBMITTED { background: #ede9fe; color: #6d28d9; }
+  .st-APPROVED { background: #d1fae5; color: #065f46; }
+  .st-REJECTED { background: #fee2e2; color: #991b1b; }
+  .st-LOCKED, .st-REVOKED, .st-EXPIRED { background: #f3f4f6; color: #4b5563; }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- Hero -->
 <div class="hiring-hero">
-  <h1><i class="fa-solid fa-user-graduate" style="margin-right:10px;opacity:0.85;"></i>Teacher Hiring Portal</h1>
-  <p>AI-generated mock tests evaluate teacher qualifications before platform onboarding.</p>
+  <h1><i class="fa-solid fa-user-graduate me-2"></i>Teacher Qualification & Hiring</h1>
+  <p>Invite candidates by email, run proctored skill exams, and verify teachers per skill.</p>
 </div>
 
-<!-- Admin Nav -->
 <nav class="admin-nav">
   <a href="/admin-panel/"><i class="fa-solid fa-gauge"></i> Dashboard</a>
   <a href="/admin-panel/users/"><i class="fa-solid fa-users"></i> Users</a>
@@ -219,176 +69,157 @@
 </nav>
 
 <div class="hiring-wrap">
-
-  <!-- Stats -->
-  {% with total=mock_tests.count %}
-  <div class="stats-grid">
-    <div class="stat-card">
-      <div class="num">{{ total }}</div>
-      <div class="lbl">Total Applications</div>
-    </div>
-    <div class="stat-card orange">
-      <div class="num">{{ mock_tests|length }}</div>
-      <div class="lbl">Awaiting Review</div>
-    </div>
-    <div class="stat-card green">
-      <div class="num">{{ mock_tests|length }}</div>
-      <div class="lbl">Approved Teachers</div>
-    </div>
-    <div class="stat-card red">
-      <div class="num">0</div>
-      <div class="lbl">Rejected</div>
-    </div>
+  {% if one_time_creds %}
+  <div class="creds-banner" role="alert">
+    <h5 class="fw-bold text-success mb-2"><i class="fa-solid fa-key me-1"></i> One-Time Invite Credentials (Shown Once)</h5>
+    <p class="mb-1 small"><strong>Candidate:</strong> {{ one_time_creds.teacher_email }}</p>
+    <p class="mb-1 small"><strong>Exam URL:</strong> <a href="{{ one_time_creds.exam_url }}" target="_blank">{{ one_time_creds.exam_url }}</a></p>
+    <p class="mb-1 small"><strong>Test Code:</strong> <code>{{ one_time_creds.test_code }}</code> &nbsp;|&nbsp; <strong>Password:</strong> <code>{{ one_time_creds.password }}</code></p>
+    <p class="mb-0 text-muted" style="font-size:0.78rem;">Copy now if needed; the password is never stored in plaintext and won't be shown again.</p>
   </div>
-  {% endwith %}
-
-  <!-- CTA Banner -->
-  <div class="cta-banner">
-    <div>
-      <h2><i class="fa-solid fa-robot"></i> AI Mock Test — Start Teacher Evaluation</h2>
-      <p>Send a teacher to take an AI-generated skill qualification test before hiring them on Skill-Verse.</p>
-    </div>
-    <a href="/admin-panel/mock-test/" class="btn-white">
-      <i class="fa-solid fa-play"></i> Start New Test
-    </a>
-  </div>
-
-  <!-- Applications List -->
-  <div class="section-header">
-    <h3><i class="fa-solid fa-clipboard-list" style="color:#0e7d73;margin-right:7px;"></i>All Mock Test Applications</h3>
-    <span style="font-size:0.82rem;color:#9ca3af;">{{ mock_tests|length }} total</span>
-  </div>
-
-  {% if mock_tests %}
-    {% for test in mock_tests %}
-    {% with pct=test.percentage|floatformat:"0" %}
-    <div class="test-card {{ test.status|lower }}">
-      <div class="test-header">
-        <div class="teacher-info">
-          <div class="avatar">{{ test.teacher.username|slice:":1"|upper }}</div>
-          <div>
-            <div class="name">{{ test.teacher.get_full_name|default:test.teacher.username }}</div>
-            <div class="email">{{ test.teacher.email }}</div>
-          </div>
-        </div>
-        <span class="status-badge badge-{{ test.status|lower }}">
-          {% if test.status == 'PENDING' %}<i class="fa-solid fa-hourglass-half"></i> Pending Test
-          {% elif test.status == 'TAKEN' %}<i class="fa-solid fa-file-alt"></i> Under Review
-          {% elif test.status == 'APPROVED' %}<i class="fa-solid fa-check-circle"></i> Approved
-          {% elif test.status == 'REJECTED' %}<i class="fa-solid fa-times-circle"></i> Rejected
-          {% endif %}
-        </span>
-      </div>
-
-      <div class="meta-row">
-        <div class="meta-item"><i class="fa-solid fa-code"></i> Skill: <strong>{{ test.skill_name }}</strong></div>
-        <div class="meta-item"><i class="fa-solid fa-layer-group"></i> Level: <strong>{{ test.skill_level }}</strong></div>
-        <div class="meta-item"><i class="fa-solid fa-question-circle"></i> Questions: <strong>{{ test.total_questions }}</strong></div>
-        <div class="meta-item"><i class="fa-solid fa-calendar"></i> Applied: <strong>{{ test.created_at|date:"M d, Y" }}</strong></div>
-      </div>
-
-      {% if test.status != 'PENDING' %}
-      <div class="score-bar-wrap">
-        <div class="score-label">
-          <span>Score: {{ test.score }}/{{ test.total_questions }}</span>
-          <span style="{% if test.percentage >= 70 %}color:#10b981;{% elif test.percentage >= 50 %}color:#f59e0b;{% else %}color:#ef4444;{% endif %}font-weight:700;">{{ pct }}%</span>
-        </div>
-        <div class="score-bar">
-          <div class="score-fill {% if test.percentage >= 70 %}fill-green{% elif test.percentage >= 50 %}fill-yellow{% else %}fill-red{% endif %}" style="width:{{ pct }}%;"></div>
-        </div>
-      </div>
-      {% endif %}
-
-      {% if test.admin_notes %}
-      <div style="background:#f9fafb;border-radius:8px;padding:10px 14px;margin-bottom:14px;font-size:0.82rem;color:#374151;">
-        <i class="fa-solid fa-note-sticky" style="color:#0e7d73;"></i> Admin Notes: {{ test.admin_notes }}
-      </div>
-      {% endif %}
-
-      <div class="action-row">
-        <a href="/admin-panel/mock-test/{{ test.id }}/" class="btn-view">
-          <i class="fa-solid fa-eye"></i> View Test
-        </a>
-        {% if test.status == 'TAKEN' %}
-          <button class="btn-approve" onclick="openModal('approve', {{ test.id }}, '{{ test.teacher.username }}')">
-            <i class="fa-solid fa-check"></i> Approve & Hire
-          </button>
-          <button class="btn-reject" onclick="openModal('reject', {{ test.id }}, '{{ test.teacher.username }}')">
-            <i class="fa-solid fa-times"></i> Reject
-          </button>
-        {% elif test.status == 'PENDING' %}
-          <a href="/admin-panel/mock-test/{{ test.id }}/" class="btn-approve" style="background:#f59e0b;">
-            <i class="fa-solid fa-hourglass"></i> Awaiting Submission
-          </a>
-        {% endif %}
-      </div>
-    </div>
-    {% endwith %}
-    {% endfor %}
-
-  {% else %}
-    <div class="empty-state">
-      <i class="fa-solid fa-inbox"></i>
-      <h3>No Applications Yet</h3>
-      <p>Teacher applications will appear here once mock tests are created. Start a new evaluation above.</p>
-    </div>
   {% endif %}
 
-</div>
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card"><div class="num">{{ stats.total }}</div><div class="lbl">Total Invites</div></div>
+    <div class="stat-card" style="border-top-color:#0284c7;"><div class="num" style="color:#0284c7;">{{ stats.invited }}</div><div class="lbl">Invited</div></div>
+    <div class="stat-card" style="border-top-color:#d97706;"><div class="num" style="color:#d97706;">{{ stats.started }}</div><div class="lbl">In Progress</div></div>
+    <div class="stat-card" style="border-top-color:#7c3aed;"><div class="num" style="color:#7c3aed;">{{ stats.submitted }}</div><div class="lbl">Submitted (Review)</div></div>
+    <div class="stat-card" style="border-top-color:#059669;"><div class="num" style="color:#059669;">{{ stats.approved }}</div><div class="lbl">Verified & Hired</div></div>
+    <div class="stat-card" style="border-top-color:#dc2626;"><div class="num" style="color:#dc2626;">{{ stats.rejected }}</div><div class="lbl">Rejected</div></div>
+  </div>
 
-<!-- Approve/Reject Modal -->
-<div class="modal-overlay" id="actionModal">
-  <div class="modal-box">
-    <h3 id="modal-title">Approve Teacher?</h3>
-    <p id="modal-desc">Add optional admin notes before confirming this action.</p>
-    <form id="modal-form" method="post">
+  <!-- Invite Teacher Form -->
+  <div class="invite-card">
+    <h4 class="fw-bold mb-3" style="color:#0c6c63;"><i class="fa-solid fa-paper-plane me-2"></i>Invite Teacher for Qualification Exam</h4>
+    <form method="POST" action="{% url 'admin_panel:create_teacher_invite' %}" class="row g-3">
       {% csrf_token %}
-      <input type="hidden" name="action" id="modal-action" value="">
-      <textarea name="admin_notes" class="modal-textarea" id="modal-notes" placeholder="Optional admin notes (e.g. 'Excellent performance — 90%')..."></textarea>
-      <div class="modal-actions">
-        <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
-        <button type="submit" class="btn-approve" id="modal-submit-btn">
-          <i class="fa-solid fa-check"></i> Confirm
+      <div class="col-md-4">
+        <label class="form-label fw-semibold small">Teacher Email *</label>
+        <input type="email" name="teacher_email" class="form-control" required placeholder="teacher@example.com">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold small">Teacher Name (optional)</label>
+        <input type="text" name="teacher_name" class="form-control" maxlength="200" placeholder="Jane Doe">
+      </div>
+      <div class="col-md-3">
+        <label class="form-label fw-semibold small">Skill *</label>
+        <select name="skill_id" class="form-select" required>
+          <option value="">-- Select Skill --</option>
+          {% for sk in skills %}
+            <option value="{{ sk.id }}">{{ sk.title }} ({{ sk.category.category_name }})</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label fw-semibold small">Level</label>
+        <select name="skill_level" class="form-select">
+          <option value="Beginner">Beginner</option>
+          <option value="Intermediate" selected>Intermediate</option>
+          <option value="Advanced">Advanced</option>
+        </select>
+      </div>
+      <div class="col-md-2">
+        <label class="form-label fw-semibold small">Pass Mark (%)</label>
+        <input type="number" name="pass_mark" class="form-control" value="60" min="1" max="100">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label fw-semibold small">Time Limit (min)</label>
+        <input type="number" name="time_limit_minutes" class="form-control" value="20" min="5" max="180">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label fw-semibold small">Questions</label>
+        <input type="number" name="question_count" class="form-control" value="10" min="3" max="50">
+      </div>
+      <div class="col-md-2">
+        <label class="form-label fw-semibold small">Expires In (days)</label>
+        <input type="number" name="expiry_days" class="form-control" value="3" min="1" max="30">
+      </div>
+      <div class="col-md-4 d-flex align-items-end">
+        <button type="submit" class="btn w-100 fw-bold text-white" style="background:#0c6c63;">
+          <i class="fa-solid fa-envelope me-1"></i> Send Exam Invite
         </button>
       </div>
     </form>
   </div>
+
+  <!-- Invites Table -->
+  <div class="invite-card">
+    <h4 class="fw-bold mb-3">All Exam Invites</h4>
+    <div class="table-responsive">
+      <table class="table align-middle table-hover">
+        <thead class="table-light">
+          <tr>
+            <th>Code</th>
+            <th>Candidate</th>
+            <th>Skill & Level</th>
+            <th>Status</th>
+            <th>Score</th>
+            <th>Flags</th>
+            <th>Expires</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for inv in invites %}
+          <tr>
+            <td><code>{{ inv.test_code }}</code></td>
+            <td>
+              <strong>{{ inv.teacher_name|default:inv.teacher_email }}</strong><br>
+              <small class="text-muted">{{ inv.teacher_email }}</small>
+            </td>
+            <td>{{ inv.skill.title }} <span class="text-muted small">({{ inv.skill_level }})</span></td>
+            <td><span class="badge-status st-{{ inv.status }}">{{ inv.get_status_display }}</span></td>
+            <td>
+              {% if inv.test and inv.status == 'SUBMITTED' or inv.status == 'APPROVED' or inv.status == 'REJECTED' %}
+                <strong>{{ inv.test.score }}/{{ inv.test.total_questions }}</strong> ({{ inv.test.percentage|floatformat:0 }}%)
+                <br><small class="text-muted">Pass: {{ inv.pass_mark }}%</small>
+              {% else %}
+                <span class="text-muted small">—</span>
+              {% endif %}
+            </td>
+            <td>
+              {% if inv.violation_count > 0 %}
+                <span class="badge bg-warning text-dark">{{ inv.violation_count }} flag{{ inv.violation_count|pluralize }}</span>
+              {% else %}
+                <span class="text-muted small">0</span>
+              {% endif %}
+              {% if inv.proctoring_skipped %}
+                <br><span class="badge bg-secondary" style="font-size:0.68rem;">No camera</span>
+              {% endif %}
+            </td>
+            <td class="small">{{ inv.expires_at|date:"M d, H:i" }}</td>
+            <td>
+              <div class="d-flex flex-wrap gap-1">
+                <a href="{% url 'admin_panel:review_invite' inv.id %}" class="btn btn-sm btn-outline-primary">Review</a>
+                {% if inv.status == 'INVITED' or inv.status == 'STARTED' or inv.status == 'LOCKED' or inv.status == 'EXPIRED' %}
+                  <form method="POST" action="{% url 'admin_panel:resend_invite' inv.id %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-success">Resend</button>
+                  </form>
+                {% endif %}
+                {% if inv.status == 'INVITED' or inv.status == 'STARTED' or inv.status == 'LOCKED' or inv.status == 'EXPIRED' %}
+                  <form method="POST" action="{% url 'admin_panel:extend_invite' inv.id %}" class="d-inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="days" value="3">
+                    <button type="submit" class="btn btn-sm btn-outline-secondary">+3d</button>
+                  </form>
+                {% endif %}
+                {% if inv.status == 'INVITED' or inv.status == 'STARTED' or inv.status == 'LOCKED' %}
+                  <form method="POST" action="{% url 'admin_panel:revoke_invite' inv.id %}" class="d-inline">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-outline-danger">Revoke</button>
+                  </form>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% empty %}
+          <tr><td colspan="8" class="text-center text-muted py-4">No teacher exam invites yet. Use the form above to invite a teacher.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script>
-function openModal(action, testId, username) {
-  const modal = document.getElementById('actionModal');
-  const title = document.getElementById('modal-title');
-  const desc  = document.getElementById('modal-desc');
-  const form  = document.getElementById('modal-form');
-  const btn   = document.getElementById('modal-submit-btn');
-  const act   = document.getElementById('modal-action');
-
-  form.action = `/admin-panel/mock-test/${testId}/approve/`;
-  act.value = action;
-
-  if (action === 'approve') {
-    title.textContent = `✅ Approve & Hire ${username}?`;
-    desc.textContent = `This will mark ${username} as a verified Skill-Verse Teacher.`;
-    btn.className = 'btn-approve';
-    btn.innerHTML = '<i class="fa-solid fa-check"></i> Approve & Hire';
-  } else {
-    title.textContent = `❌ Reject Application: ${username}?`;
-    desc.textContent = `Please provide a reason for rejection to inform the applicant.`;
-    btn.style.background = '#ef4444';
-    btn.innerHTML = '<i class="fa-solid fa-times"></i> Reject';
-  }
-
-  modal.classList.add('open');
-  document.getElementById('modal-notes').focus();
-}
-function closeModal() {
-  document.getElementById('actionModal').classList.remove('open');
-}
-document.getElementById('actionModal').addEventListener('click', function(e) {
-  if (e.target === this) closeModal();
-});
-</script>
 {% endblock %}
